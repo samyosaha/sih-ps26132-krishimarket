@@ -89,10 +89,7 @@ export default function BrowseLotsPage() {
     loadLots(applied);
   }, [applied, loadLots]);
 
-  const districtOptions = useMemo(
-    () => (applied.state ? DISTRICTS_BY_STATE[applied.state] ?? [] : []),
-    [applied.state]
-  );
+
 
   const availableDistricts = useMemo(() => {
     const list = filters.state ? DISTRICTS_BY_STATE[filters.state] ?? [] : [];
@@ -271,7 +268,7 @@ export default function BrowseLotsPage() {
                 </span>
               ) : null}
               {applied.commodity ? (
-                <span className="ml-1">· "{applied.commodity}"</span>
+                <span className="ml-1">· &ldquo;{applied.commodity}&rdquo;</span>
               ) : null}
               {applied.quality_grade ? (
                 <span className="ml-1">· Grade {applied.quality_grade}</span>
@@ -306,14 +303,9 @@ export default function BrowseLotsPage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {lots.map((lot) => {
-            const farmerName =
-              lot.farmer?.name || lot.farmer_name || "Unknown Farmer";
-            const district = lot.district ?? "";
-            const state = lot.state ?? "";
+            const farmerName = lot.farmer_name || "Unknown Farmer";
             const location =
-              [district, state].filter(Boolean).join(", ") ||
-              lot.location ||
-              "";
+              [lot.district, lot.state].filter(Boolean).join(", ");
             return (
               <Link
                 key={lot.id}
@@ -325,11 +317,11 @@ export default function BrowseLotsPage() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <CardTitle className="truncate text-lg group-hover:text-emerald-700">
-                          {lot.title}
+                          {lot.commodity}
                         </CardTitle>
                         <CardDescription className="mt-1 inline-flex items-center gap-1 text-sm">
                           <Sprout className="h-3.5 w-3.5" />
-                          {lot.produce || lot.commodity || "Produce"}
+                          {lot.commodity}
                           {lot.variety ? (
                             <span className="text-muted-foreground">
                               {" · "}{lot.variety}
@@ -352,18 +344,18 @@ export default function BrowseLotsPage() {
                         <Scale className="h-4 w-4" />
                         <span>
                           <span className="font-medium text-foreground">
-                            {lot.quantity}
+                            {lot.quantity_kg}
                           </span>{" "}
-                          {lot.unit}
+                          kg
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5 text-muted-foreground">
                         <Tag className="h-4 w-4" />
                         <span>
                           <span className="font-semibold text-emerald-700">
-                            {formatINR(lot.price_per_unit)}
+                            {formatINR(lot.asking_price_per_kg)}
                           </span>
-                          <span className="ml-0.5">/{lot.unit}</span>
+                          <span className="ml-0.5">/kg</span>
                         </span>
                       </div>
                     </div>

@@ -9,7 +9,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  ReferenceLine,
 } from "recharts";
 import { cn } from "cn";
 import { apiFetch } from "@/lib/api";
@@ -210,7 +209,7 @@ function InsufficientDataState() {
           Insufficient Price Data
         </h3>
         <p className="mt-2 max-w-sm text-sm text-muted-foreground leading-relaxed">
-          We don't have enough historical price records for this commodity in the
+          We don&apos;t have enough historical price records for this commodity in the
           selected region to generate a meaningful forecast. Try selecting a
           different commodity, state, or district.
         </p>

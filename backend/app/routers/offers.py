@@ -1,6 +1,6 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from pydantic import BaseModel
 
 from app.database import get_db
@@ -10,10 +10,40 @@ from app.auth import get_current_user
 router = APIRouter(prefix="/offers", tags=["offers"])
 
 
+# ── Request schemas ──────────────────────────────────────────────────
+
 class OfferCreate(BaseModel):
     lot_id: int
     offered_price_per_kg: float
     message: Optional[str] = None
+
+
+# ── Nested response schemas ──────────────────────────────────────────
+
+class UserStub(BaseModel):
+    id: int
+    name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class LotStub(BaseModel):
+    id: int
+    commodity: str
+    variety: Optional[str] = None
+    quantity_kg: float
+    quality_grade: str
+    asking_price_per_kg: float
+    district: str
+    state: str
+    status: str
+    farmer_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
 
 
 class OfferResponse(BaseModel):
@@ -27,6 +57,25 @@ class OfferResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
+class OfferWithBuyer(OfferResponse):
+    """Offer enriched with buyer info — used in farmer's received offers."""
+    buyer: UserStub
+
+
+class OfferWithLotAndFarmer(OfferResponse):
+    """Offer enriched with lot + farmer info — used in buyer's sent offers."""
+    lot: Optional[LotStub] = None
+    farmer: Optional[UserStub] = None
+
+
+class ReceivedOffersGroup(BaseModel):
+    """One lot with all its offers (including buyer info)."""
+    lot: LotStub
+    offers: list[OfferWithBuyer]
+
+
+# ── Endpoints ────────────────────────────────────────────────────────
 
 @router.post("", response_model=OfferResponse)
 def create_offer(
@@ -53,32 +102,117 @@ def create_offer(
     return offer
 
 
-@router.get("/received", response_model=list[OfferResponse])
+@router.get("/received", response_model=list[ReceivedOffersGroup])
 def offers_received(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """Return offers grouped by lot for the authenticated farmer."""
     if current_user.role != UserRole.farmer:
         raise HTTPException(status_code=403, detail="Only farmers can view received offers")
 
-    return (
-        db.query(Offer)
-        .join(Lot, Offer.lot_id == Lot.id)
+    # Get all lots for this farmer that have offers
+    lots = (
+        db.query(Lot)
         .filter(Lot.farmer_id == current_user.id)
+        .options(joinedload(Lot.offers))
         .all()
     )
 
+    result = []
+    for lot in lots:
+        if not lot.offers:
+            continue
 
-@router.get("/sent", response_model=list[OfferResponse])
+        lot_stub = LotStub(
+            id=lot.id,
+            commodity=lot.commodity,
+            variety=lot.variety,
+            quantity_kg=lot.quantity_kg,
+            quality_grade=lot.quality_grade.value if hasattr(lot.quality_grade, 'value') else str(lot.quality_grade),
+            asking_price_per_kg=lot.asking_price_per_kg,
+            district=lot.district,
+            state=lot.state,
+            status=lot.status.value if hasattr(lot.status, 'value') else str(lot.status),
+            farmer_name=lot.farmer.name if lot.farmer else None,
+        )
+
+        offer_items = []
+        for offer in lot.offers:
+            buyer = db.query(User).filter(User.id == offer.buyer_id).first()
+            buyer_stub = UserStub(
+                id=buyer.id,
+                name=buyer.name,
+                email=buyer.email,
+                phone=buyer.phone,
+            ) if buyer else UserStub(id=offer.buyer_id, name="Unknown")
+
+            offer_items.append(OfferWithBuyer(
+                id=offer.id,
+                lot_id=offer.lot_id,
+                buyer_id=offer.buyer_id,
+                offered_price_per_kg=offer.offered_price_per_kg,
+                message=offer.message,
+                status=offer.status,
+                buyer=buyer_stub,
+            ))
+
+        result.append(ReceivedOffersGroup(lot=lot_stub, offers=offer_items))
+
+    return result
+
+
+@router.get("/sent", response_model=list[OfferWithLotAndFarmer])
 def offers_sent(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """Return all offers placed by the authenticated buyer, with lot + farmer info."""
     if current_user.role != UserRole.buyer:
         raise HTTPException(status_code=403, detail="Only buyers can view sent offers")
 
-    return db.query(Offer).filter(Offer.buyer_id == current_user.id).all()
+    offers = db.query(Offer).filter(Offer.buyer_id == current_user.id).all()
 
+    result = []
+    for offer in offers:
+        lot = db.query(Lot).filter(Lot.id == offer.lot_id).first()
+        farmer = db.query(User).filter(User.id == lot.farmer_id).first() if lot else None
+
+        lot_stub = LotStub(
+            id=lot.id,
+            commodity=lot.commodity,
+            variety=lot.variety,
+            quantity_kg=lot.quantity_kg,
+            quality_grade=lot.quality_grade.value if hasattr(lot.quality_grade, 'value') else str(lot.quality_grade),
+            asking_price_per_kg=lot.asking_price_per_kg,
+            district=lot.district,
+            state=lot.state,
+            status=lot.status.value if hasattr(lot.status, 'value') else str(lot.status),
+            farmer_name=farmer.name if farmer else None,
+        ) if lot else None
+
+        farmer_stub = UserStub(
+            id=farmer.id,
+            name=farmer.name,
+            email=farmer.email,
+            phone=farmer.phone,
+        ) if farmer else None
+
+        result.append(OfferWithLotAndFarmer(
+            id=offer.id,
+            lot_id=offer.lot_id,
+            buyer_id=offer.buyer_id,
+            offered_price_per_kg=offer.offered_price_per_kg,
+            message=offer.message,
+            status=offer.status,
+            lot=lot_stub,
+            farmer=farmer_stub,
+        ))
+
+    return result
+
+
+# ── Accept / Reject ──────────────────────────────────────────────────
 
 def _get_owned_offer(offer_id: int, db: Session, current_user: User) -> Offer:
     offer = db.query(Offer).filter(Offer.id == offer_id).first()

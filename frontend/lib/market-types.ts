@@ -1,7 +1,7 @@
 export type QualityGrade = "A" | "B" | "C";
 export type LotStatus = "available" | "reserved" | "sold";
 export type OfferStatus = "pending" | "accepted" | "rejected";
-export type PaymentStatus = "pending" | "paid" | "failed";
+export type PaymentStatus = "pending" | "paid" | "delivered";
 export type UserRole = "farmer" | "buyer";
 
 export interface UserStub {
@@ -15,53 +15,45 @@ export interface UserStub {
 
 export interface Lot {
   id: string | number;
-  title: string;
-  produce: string;
-  commodity?: string;
-  variety?: string;
-  quantity: number;
-  unit: string;
-  price_per_unit: number;
-  quality_grade: QualityGrade;
-  description?: string;
-  harvest_date?: string;
-  location?: string;
-  state?: string;
-  district?: string;
-  status: LotStatus;
-  created_at?: string;
-  farmer?: UserStub;
   farmer_id?: string | number;
+  commodity: string;
+  variety?: string;
+  quantity_kg: number;
+  quality_grade: QualityGrade;
+  asking_price_per_kg: number;
+  district: string;
+  state: string;
+  status: LotStatus;
   farmer_name?: string;
+  created_at?: string;
   [key: string]: unknown;
 }
 
 export interface SentOffer {
   id: string | number;
   lot_id: string | number;
-  lot?: Lot;
+  buyer_id: string | number;
   offered_price_per_kg: number;
-  price?: number;
   message?: string;
   status: OfferStatus;
-  created_at?: string;
+  lot?: Lot;
   farmer?: UserStub;
+  created_at?: string;
   [key: string]: unknown;
 }
 
 export interface Transaction {
   id: string | number;
-  lot_id: string | number;
-  lot_title?: string;
-  lot?: Lot;
   offer_id?: string | number;
+  final_price_per_kg: number;
+  payment_status: PaymentStatus;
+  lot_id?: string | number;
+  lot_title?: string;
+  quantity?: number;
+  unit?: string;
+  total_amount?: number;
   farmer?: UserStub;
   buyer?: UserStub;
-  quantity: number;
-  unit?: string;
-  final_price_per_unit: number;
-  total_amount: number;
-  payment_status: PaymentStatus;
   created_at?: string;
   [key: string]: unknown;
 }
@@ -81,7 +73,7 @@ export const OFFER_STATUS_STYLES: Record<OfferStatus, string> = {
 export const PAYMENT_STATUS_STYLES: Record<PaymentStatus, string> = {
   pending: "bg-amber-100 text-amber-800 hover:bg-amber-100",
   paid: "bg-emerald-100 text-emerald-800 hover:bg-emerald-100",
-  failed: "bg-red-100 text-red-800 hover:bg-red-100",
+  delivered: "bg-sky-100 text-sky-800 hover:bg-sky-100",
 };
 
 export function gradeBadgeClass(grade: QualityGrade): string {

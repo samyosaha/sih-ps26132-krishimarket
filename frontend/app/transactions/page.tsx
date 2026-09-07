@@ -39,7 +39,7 @@ const FILTER_TABS: { key: Filter; label: string }[] = [
   { key: "all", label: "All" },
   { key: "pending", label: "Pending Payment" },
   { key: "paid", label: "Paid" },
-  { key: "failed", label: "Failed" },
+  { key: "delivered", label: "Delivered" },
 ];
 
 function TransactionsInner() {
@@ -72,11 +72,11 @@ function TransactionsInner() {
       all: transactions.length,
       pending: 0,
       paid: 0,
-      failed: 0,
+      delivered: 0,
     };
     let volume = 0;
     for (const t of transactions) {
-      c[t.payment_status] += 1;
+      c[t.payment_status] = (c[t.payment_status] || 0) + 1;
       volume += Number(t.total_amount || 0);
     }
     return { ...c, volume };
@@ -240,8 +240,8 @@ function TransactionsInner() {
         <div className="space-y-4">
           {filtered.map((t) => {
             const counterparty = getCounterparty(t);
-            const unit = t.unit ?? t.lot?.unit ?? "unit";
-            const lotTitle = t.lot_title ?? t.lot?.title ?? `Lot #${t.lot_id}`;
+            const unit = t.unit ?? "kg";
+            const lotTitle = t.lot_title ?? `Lot #${t.lot_id ?? ""}`;
             const isPending = t.payment_status === "pending";
             return (
               <Card
@@ -251,7 +251,7 @@ function TransactionsInner() {
                     ? "border-l-4 border-l-amber-400"
                     : t.payment_status === "paid"
                     ? "border-l-4 border-l-emerald-400"
-                    : "border-l-4 border-l-red-300"
+                    : "border-l-4 border-l-sky-400"
                 }
               >
                 <CardContent className="p-5">
@@ -286,9 +286,9 @@ function TransactionsInner() {
                           <Scale className="h-4 w-4" />
                           <span>
                             <span className="font-medium text-foreground">
-                              {t.quantity}
+                              {t.quantity ?? "—"}
                             </span>{" "}
-                            {unit} × {formatINR(t.final_price_per_unit)}
+                            {unit} × {formatINR(t.final_price_per_kg)}
                           </span>
                         </div>
                         {counterparty?.email ? (
@@ -316,7 +316,7 @@ function TransactionsInner() {
                         Final amount
                       </div>
                       <div className="mt-1 text-3xl font-bold text-emerald-700">
-                        {formatINR(t.total_amount)}
+                        {t.total_amount ? formatINR(t.total_amount) : "—"}
                       </div>
                     </div>
 
@@ -346,8 +346,9 @@ function TransactionsInner() {
                           Payment complete
                         </span>
                       ) : (
-                        <span className="text-xs font-medium text-red-700">
-                          Issue with payment
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-sky-700">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Delivered
                         </span>
                       )}
                     </div>

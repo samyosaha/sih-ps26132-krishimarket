@@ -84,9 +84,9 @@ export function Navbar() {
                 active={pathname === "/transactions"}
               />
               <NavLink
-                href="/price-dashboard"
+                href="/prices"
                 label="Price Dashboard"
-                active={pathname === "/price-dashboard"}
+                active={pathname === "/prices"}
               />
             </nav>
           )}

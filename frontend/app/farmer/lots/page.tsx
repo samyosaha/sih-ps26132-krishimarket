@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useState, FormEvent, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { FarmerRouteGuard } from "@/components/farmer-route-guard";
 import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -38,66 +36,40 @@ import {
   Plus,
   Sprout,
   MapPin,
-  Calendar,
   Scale,
   Tag,
 } from "lucide-react";
-
-type QualityGrade = "A" | "B" | "C";
-type LotStatus = "available" | "reserved" | "sold";
-
-interface Lot {
-  id: string | number;
-  title: string;
-  produce: string;
-  variety?: string;
-  quantity: number;
-  unit: string;
-  price_per_unit: number;
-  quality_grade: QualityGrade;
-  description?: string;
-  harvest_date?: string;
-  location?: string;
-  status: LotStatus;
-  created_at?: string;
-  farmer_id?: string | number;
-  [key: string]: unknown;
-}
+import {
+  Lot,
+  QualityGrade,
+  LOT_STATUS_STYLES,
+  gradeBadgeClass,
+  formatINR,
+  INDIAN_STATES,
+  DISTRICTS_BY_STATE,
+} from "@/lib/market-types";
 
 interface CreateLotPayload {
-  title: string;
-  produce: string;
+  commodity: string;
   variety?: string;
-  quantity: number;
-  unit: string;
-  price_per_unit: number;
+  quantity_kg: number;
   quality_grade: QualityGrade;
-  description?: string;
-  harvest_date?: string;
-  location?: string;
+  asking_price_per_kg: number;
+  district: string;
+  state: string;
 }
 
-const STATUS_STYLES: Record<LotStatus, string> = {
-  available: "bg-emerald-100 text-emerald-800 hover:bg-emerald-100",
-  reserved: "bg-amber-100 text-amber-800 hover:bg-amber-100",
-  sold: "bg-slate-200 text-slate-700 hover:bg-slate-200",
-};
-
 const emptyForm = (): CreateLotPayload => ({
-  title: "",
-  produce: "",
+  commodity: "",
   variety: "",
-  quantity: 0,
-  unit: "kg",
-  price_per_unit: 0,
+  quantity_kg: 0,
   quality_grade: "A",
-  description: "",
-  harvest_date: "",
-  location: "",
+  asking_price_per_kg: 0,
+  district: "",
+  state: "",
 });
 
 function FarmerLotsInner() {
-  const router = useRouter();
   const [lots, setLots] = useState<Lot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -126,6 +98,10 @@ function FarmerLotsInner() {
     value: CreateLotPayload[K]
   ) => setForm((prev) => ({ ...prev, [key]: value }));
 
+  const availableDistricts = form.state
+    ? DISTRICTS_BY_STATE[form.state] ?? []
+    : [];
+
   const handleCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -133,9 +109,6 @@ function FarmerLotsInner() {
       const cleaned: CreateLotPayload = {
         ...form,
         variety: form.variety?.trim() || undefined,
-        description: form.description?.trim() || undefined,
-        harvest_date: form.harvest_date || undefined,
-        location: form.location?.trim() || undefined,
       };
       await apiFetch("/lots", {
         method: "POST",
@@ -145,7 +118,6 @@ function FarmerLotsInner() {
       setDialogOpen(false);
       setForm(emptyForm());
       await loadLots();
-      router.refresh();
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Failed to create lot";
@@ -182,24 +154,13 @@ function FarmerLotsInner() {
             <form onSubmit={handleCreate} className="space-y-5">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="lot-title">Lot Title</Label>
+                  <Label htmlFor="commodity">Commodity</Label>
                   <Input
-                    id="lot-title"
+                    id="commodity"
                     required
-                    placeholder="e.g. Premium Organic Tomatoes"
-                    value={form.title}
-                    onChange={(e) => updateField("title", e.target.value)}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="produce">Produce</Label>
-                  <Input
-                    id="produce"
-                    required
-                    placeholder="e.g. Tomato"
-                    value={form.produce}
-                    onChange={(e) => updateField("produce", e.target.value)}
+                    placeholder="e.g. Tomato, Onion, Wheat"
+                    value={form.commodity}
+                    onChange={(e) => updateField("commodity", e.target.value)}
                     disabled={isSubmitting}
                   />
                 </div>
@@ -207,49 +168,38 @@ function FarmerLotsInner() {
                   <Label htmlFor="variety">Variety <span className="text-muted-foreground">(optional)</span></Label>
                   <Input
                     id="variety"
-                    placeholder="e.g. Heirloom"
+                    placeholder="e.g. Heirloom, Desi"
                     value={form.variety}
                     onChange={(e) => updateField("variety", e.target.value)}
                     disabled={isSubmitting}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="quantity">Quantity</Label>
+                  <Label htmlFor="quantity">Quantity (kg)</Label>
                   <Input
                     id="quantity"
                     type="number"
                     min={0}
                     step="any"
                     required
-                    value={form.quantity || ""}
+                    value={form.quantity_kg || ""}
                     onChange={(e) =>
-                      updateField("quantity", Number(e.target.value))
+                      updateField("quantity_kg", Number(e.target.value))
                     }
                     disabled={isSubmitting}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="unit">Unit</Label>
-                  <Input
-                    id="unit"
-                    required
-                    placeholder="e.g. kg, quintal, crate"
-                    value={form.unit}
-                    onChange={(e) => updateField("unit", e.target.value)}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="price">Price per Unit (₹)</Label>
+                  <Label htmlFor="price">Asking Price per kg (₹)</Label>
                   <Input
                     id="price"
                     type="number"
                     min={0}
                     step="any"
                     required
-                    value={form.price_per_unit || ""}
+                    value={form.asking_price_per_kg || ""}
                     onChange={(e) =>
-                      updateField("price_per_unit", Number(e.target.value))
+                      updateField("asking_price_per_kg", Number(e.target.value))
                     }
                     disabled={isSubmitting}
                   />
@@ -274,45 +224,55 @@ function FarmerLotsInner() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="harvest">
-                    Harvest Date <span className="text-muted-foreground">(optional)</span>
-                  </Label>
-                  <Input
-                    id="harvest"
-                    type="date"
-                    value={form.harvest_date}
-                    onChange={(e) =>
-                      updateField("harvest_date", e.target.value)
-                    }
+                  <Label htmlFor="state">State</Label>
+                  <Select
+                    value={form.state || ""}
+                    onValueChange={(v) => {
+                      updateField("state", v);
+                      updateField("district", "");
+                    }}
                     disabled={isSubmitting}
-                  />
+                  >
+                    <SelectTrigger id="state">
+                      <SelectValue placeholder="Select state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {INDIAN_STATES.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="location">
-                    Location <span className="text-muted-foreground">(optional)</span>
-                  </Label>
-                  <Input
-                    id="location"
-                    placeholder="e.g. Nashik, Maharashtra"
-                    value={form.location}
-                    onChange={(e) => updateField("location", e.target.value)}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="description">
-                    Description <span className="text-muted-foreground">(optional)</span>
-                  </Label>
-                  <Textarea
-                    id="description"
-                    rows={3}
-                    placeholder="Describe the produce, farming methods, storage conditions…"
-                    value={form.description}
-                    onChange={(e) =>
-                      updateField("description", e.target.value)
-                    }
-                    disabled={isSubmitting}
-                  />
+                <div className="space-y-2">
+                  <Label htmlFor="district">District</Label>
+                  <Select
+                    value={form.district || ""}
+                    onValueChange={(v) => updateField("district", v)}
+                    disabled={isSubmitting || !form.state}
+                  >
+                    <SelectTrigger id="district">
+                      <SelectValue
+                        placeholder={
+                          form.state ? "Select district" : "Pick a state first"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableDistricts.length === 0 ? (
+                        <SelectItem value="__none" disabled>
+                          No districts available
+                        </SelectItem>
+                      ) : (
+                        availableDistricts.map((d) => (
+                          <SelectItem key={d} value={d}>
+                            {d}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <DialogFooter>
@@ -371,85 +331,79 @@ function FarmerLotsInner() {
         </Card>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {lots.map((lot) => (
-            <Card key={lot.id} className="overflow-hidden transition-shadow hover:shadow-md">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <CardTitle className="truncate text-lg">
-                      {lot.title}
-                    </CardTitle>
-                    <CardDescription className="mt-1 inline-flex items-center gap-1 text-sm">
-                      <Sprout className="h-3.5 w-3.5" />
-                      {lot.produce}
-                      {lot.variety ? (
-                        <span className="text-muted-foreground">
-                          {" · "}{lot.variety}
-                        </span>
-                      ) : null}
-                    </CardDescription>
+          {lots.map((lot) => {
+            const location = [lot.district, lot.state]
+              .filter(Boolean)
+              .join(", ");
+            return (
+              <Card
+                key={lot.id}
+                className="overflow-hidden transition-shadow hover:shadow-md"
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <CardTitle className="truncate text-lg">
+                        {lot.commodity}
+                      </CardTitle>
+                      <CardDescription className="mt-1 inline-flex items-center gap-1 text-sm">
+                        <Sprout className="h-3.5 w-3.5" />
+                        {lot.commodity}
+                        {lot.variety ? (
+                          <span className="text-muted-foreground">
+                            {" · "}{lot.variety}
+                          </span>
+                        ) : null}
+                      </CardDescription>
+                    </div>
+                    <Badge
+                      variant="secondary"
+                      className={`shrink-0 ${LOT_STATUS_STYLES[lot.status]}`}
+                    >
+                      {lot.status.charAt(0).toUpperCase() + lot.status.slice(1)}
+                    </Badge>
                   </div>
-                  <Badge
-                    variant="secondary"
-                    className={`shrink-0 ${STATUS_STYLES[lot.status]}`}
-                  >
-                    {lot.status.charAt(0).toUpperCase() + lot.status.slice(1)}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3 pt-0">
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <Scale className="h-4 w-4" />
-                    <span>
-                      <span className="font-medium text-foreground">
-                        {lot.quantity}
-                      </span>{" "}
-                      {lot.unit}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <Tag className="h-4 w-4" />
-                    <span>
-                      ₹
-                      <span className="font-medium text-foreground">
-                        {Number(lot.price_per_unit).toLocaleString("en-IN")}
+                </CardHeader>
+                <CardContent className="space-y-3 pt-0">
+                  <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Scale className="h-4 w-4" />
+                      <span>
+                        <span className="font-medium text-foreground">
+                          {lot.quantity_kg}
+                        </span>{" "}
+                        kg
                       </span>
-                      /{lot.unit}
-                    </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Tag className="h-4 w-4" />
+                      <span>
+                        <span className="font-semibold text-emerald-700">
+                          {formatINR(lot.asking_price_per_kg)}
+                        </span>
+                        /kg
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-between text-xs">
-                  <Badge
-                    variant="outline"
-                    className={
-                      lot.quality_grade === "A"
-                        ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                        : lot.quality_grade === "B"
-                        ? "border-amber-300 bg-amber-50 text-amber-700"
-                        : "border-slate-300 bg-slate-50 text-slate-700"
-                    }
-                  >
-                    Grade {lot.quality_grade}
-                  </Badge>
-                  {lot.location ? (
-                    <span className="inline-flex items-center gap-1 text-muted-foreground">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {lot.location}
-                    </span>
-                  ) : null}
-                </div>
-
-                {lot.harvest_date ? (
-                  <div className="flex items-center gap-1.5 border-t pt-3 text-xs text-muted-foreground">
-                    <Calendar className="h-3.5 w-3.5" />
-                    Harvested {new Date(lot.harvest_date).toLocaleDateString("en-IN")}
+                  <div className="flex items-center justify-between text-xs">
+                    <Badge
+                      variant="outline"
+                      className={gradeBadgeClass(lot.quality_grade)}
+                    >
+                      Grade {lot.quality_grade}
+                    </Badge>
+                    {location ? (
+                      <span className="inline-flex items-center gap-1 text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5" />
+                        {location}
+                      </span>
+                    ) : null}
                   </div>
-                ) : null}
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

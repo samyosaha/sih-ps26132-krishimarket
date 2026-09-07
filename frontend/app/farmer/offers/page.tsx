@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import { FarmerRouteGuard } from "@/components/farmer-route-guard";
 import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
+import {
+  OfferStatus,
+  OFFER_STATUS_STYLES,
+  formatINR,
+} from "@/lib/market-types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -33,72 +38,58 @@ import {
   User,
   Phone,
   Mail,
-  Calendar,
   Tag,
   Scale,
   Sprout,
   MessageSquare,
 } from "lucide-react";
 
-type OfferStatus = "pending" | "accepted" | "rejected";
+/* ── Types matching enriched backend response ── */
 
 interface BuyerInfo {
   id: string | number;
   name: string;
-  email: string;
+  email?: string;
   phone?: string;
-  [key: string]: unknown;
 }
 
-interface Offer {
+interface OfferItem {
   id: string | number;
   lot_id: string | number;
-  buyer: BuyerInfo;
-  buyer_id?: string | number;
-  price: number;
-  quantity?: number;
-  status: OfferStatus;
+  buyer_id: string | number;
+  offered_price_per_kg: number;
   message?: string;
-  created_at?: string;
-  [key: string]: unknown;
+  status: OfferStatus;
+  buyer: BuyerInfo;
 }
 
 interface LotStub {
   id: string | number;
-  title: string;
-  produce?: string;
+  commodity: string;
   variety?: string;
-  quantity?: number;
-  unit?: string;
-  price_per_unit?: number;
-  status?: string;
-  [key: string]: unknown;
+  quantity_kg: number;
+  quality_grade: string;
+  asking_price_per_kg: number;
+  district: string;
+  state: string;
+  status: string;
 }
 
-interface OffersReceivedResponseItem {
+interface ReceivedOffersGroup {
   lot: LotStub;
-  offers: Offer[];
-  [key: string]: unknown;
+  offers: OfferItem[];
 }
-
-const OFFER_STATUS_STYLES: Record<OfferStatus, string> = {
-  pending: "bg-amber-100 text-amber-800 hover:bg-amber-100",
-  accepted: "bg-emerald-100 text-emerald-800 hover:bg-emerald-100",
-  rejected: "bg-slate-200 text-slate-700 hover:bg-slate-200",
-};
 
 function FarmerOffersInner() {
   const router = useRouter();
-  const [groups, setGroups] = useState<OffersReceivedResponseItem[]>([]);
+  const [groups, setGroups] = useState<ReceivedOffersGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [actingOnId, setActingOnId] = useState<string | number | null>(null);
 
   const loadOffers = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await apiFetch<OffersReceivedResponseItem[]>(
-        "/offers/received"
-      );
+      const data = await apiFetch<ReceivedOffersGroup[]>("/offers/received");
       setGroups(data);
     } catch (err) {
       const msg =
@@ -232,7 +223,7 @@ function FarmerOffersInner() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h2 className="text-lg font-semibold">
-                      {group.lot.title}
+                      {group.lot.commodity}
                     </h2>
                     {group.lot.status ? (
                       <Badge variant="outline" className="text-xs">
@@ -243,25 +234,17 @@ function FarmerOffersInner() {
                   <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                     <span className="inline-flex items-center gap-1">
                       <Sprout className="h-3.5 w-3.5" />
-                      {group.lot.produce}
+                      {group.lot.commodity}
                       {group.lot.variety ? ` · ${group.lot.variety}` : ""}
                     </span>
-                    {group.lot.quantity != null && group.lot.unit ? (
-                      <span className="inline-flex items-center gap-1">
-                        <Scale className="h-3.5 w-3.5" />
-                        {group.lot.quantity} {group.lot.unit} listed
-                      </span>
-                    ) : null}
-                    {group.lot.price_per_unit != null && group.lot.unit ? (
-                      <span className="inline-flex items-center gap-1">
-                        <Tag className="h-3.5 w-3.5" />
-                        ₹
-                        {Number(group.lot.price_per_unit).toLocaleString(
-                          "en-IN"
-                        )}
-                        /{group.lot.unit} (asking)
-                      </span>
-                    ) : null}
+                    <span className="inline-flex items-center gap-1">
+                      <Scale className="h-3.5 w-3.5" />
+                      {group.lot.quantity_kg} kg listed
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <Tag className="h-3.5 w-3.5" />
+                      {formatINR(group.lot.asking_price_per_kg)}/kg (asking)
+                    </span>
                   </div>
                 </div>
                 <Badge variant="secondary">
@@ -291,10 +274,12 @@ function FarmerOffersInner() {
                               {offer.buyer.name}
                             </div>
                             <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
-                              <div className="inline-flex items-center gap-1">
-                                <Mail className="h-3 w-3" />
-                                {offer.buyer.email}
-                              </div>
+                              {offer.buyer.email ? (
+                                <div className="inline-flex items-center gap-1">
+                                  <Mail className="h-3 w-3" />
+                                  {offer.buyer.email}
+                                </div>
+                              ) : null}
                               {offer.buyer.phone ? (
                                 <div className="inline-flex items-center gap-1 ml-3">
                                   <Phone className="h-3 w-3" />
@@ -319,31 +304,21 @@ function FarmerOffersInner() {
                               Offered
                             </span>
                             <div className="text-lg font-bold text-emerald-700">
-                              ₹
-                              {Number(offer.price).toLocaleString("en-IN")}
-                              {offer.quantity && group.lot.unit
-                                ? ` / ${group.lot.unit}`
-                                : ""}
+                              {formatINR(offer.offered_price_per_kg)}/kg
                             </div>
                           </div>
-                          {offer.quantity != null && group.lot.unit ? (
-                            <div className="text-right">
-                              <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                                For
-                              </span>
-                              <div className="text-sm font-semibold">
-                                {offer.quantity} {group.lot.unit}
-                                <span className="ml-1 text-xs font-normal text-muted-foreground">
-                                  (≈ ₹
-                                  {(
-                                    Number(offer.price) *
-                                    Number(offer.quantity)
-                                  ).toLocaleString("en-IN")}
-                                  )
-                                </span>
-                              </div>
+                          <div className="text-right">
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              Total
+                            </span>
+                            <div className="text-sm font-semibold">
+                              ≈{" "}
+                              {formatINR(
+                                Number(offer.offered_price_per_kg) *
+                                  Number(group.lot.quantity_kg)
+                              )}
                             </div>
-                          ) : null}
+                          </div>
                         </div>
 
                         {offer.message ? (
@@ -352,16 +327,6 @@ function FarmerOffersInner() {
                             <p className="text-muted-foreground">
                               {offer.message}
                             </p>
-                          </div>
-                        ) : null}
-
-                        {offer.created_at ? (
-                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <Calendar className="h-3.5 w-3.5" />
-                            Received{" "}
-                            {new Date(offer.created_at).toLocaleString(
-                              "en-IN"
-                            )}
                           </div>
                         ) : null}
 
@@ -401,10 +366,7 @@ function FarmerOffersInner() {
                                   <AlertDialogDescription>
                                     You are about to reject the offer of{" "}
                                     <span className="font-semibold text-foreground">
-                                      ₹
-                                      {Number(offer.price).toLocaleString(
-                                        "en-IN"
-                                      )}
+                                      {formatINR(offer.offered_price_per_kg)}/kg
                                     </span>{" "}
                                     from{" "}
                                     <span className="font-semibold text-foreground">

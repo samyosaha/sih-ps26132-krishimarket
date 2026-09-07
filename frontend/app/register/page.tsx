@@ -42,10 +42,11 @@ export default function RegisterPage() {
 
     try {
       await register({ name, phone, email, password, role });
-      setSuccessMsg("Account created! Redirecting you to log in…");
+      setSuccessMsg("Account created! Signing you in…");
       setTimeout(() => {
-        router.push("/login");
-      }, 1500);
+        router.push("/");
+        router.refresh();
+      }, 1000);
     } catch (err) {
       const message =
         err instanceof Error

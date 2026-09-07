@@ -37,7 +37,6 @@ import {
   Loader2,
   Sprout,
   MapPin,
-  Calendar,
   Scale,
   Tag,
   User,
@@ -67,7 +66,7 @@ export default function LotDetailPage() {
     try {
       const data = await apiFetch<Lot>(`/lots/${lotId}`);
       setLot(data);
-      setOfferedPrice(data.price_per_unit ?? "");
+      setOfferedPrice(data.asking_price_per_kg ?? "");
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Failed to load lot details";
@@ -82,7 +81,6 @@ export default function LotDetailPage() {
   }, [loadLot]);
 
   const isBuyer = user?.role === ("buyer" as UserRole);
-  const canOffer = isBuyer && lot?.status === "available";
 
   const handleSubmitOffer = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -168,11 +166,11 @@ export default function LotDetailPage() {
                         </Badge>
                       </div>
                       <CardTitle className="mt-3 text-3xl font-bold tracking-tight">
-                        {lot.title}
+                        {lot.commodity}
                       </CardTitle>
                       <CardDescription className="mt-2 inline-flex items-center gap-1.5 text-base">
                         <Sprout className="h-4 w-4 text-emerald-600" />
-                        {lot.produce || lot.commodity || "Produce"}
+                        {lot.commodity}
                         {lot.variety ? (
                           <span className="text-muted-foreground">
                             {" · Variety: "}{lot.variety}
@@ -189,9 +187,9 @@ export default function LotDetailPage() {
                         Asking price
                       </div>
                       <div className="text-2xl font-bold text-emerald-700">
-                        {formatINR(lot.price_per_unit)}
+                        {formatINR(lot.asking_price_per_kg)}
                         <span className="ml-1 text-sm font-medium text-muted-foreground">
-                          /{lot.unit}
+                          /kg
                         </span>
                       </div>
                     </div>
@@ -201,9 +199,9 @@ export default function LotDetailPage() {
                         Available quantity
                       </div>
                       <div className="text-2xl font-bold">
-                        {lot.quantity}
+                        {lot.quantity_kg}
                         <span className="ml-1 text-sm font-medium text-muted-foreground">
-                          {lot.unit}
+                          kg
                         </span>
                       </div>
                     </div>
@@ -213,35 +211,14 @@ export default function LotDetailPage() {
                       </div>
                       <div className="text-2xl font-bold">
                         {formatINR(
-                          Number(lot.price_per_unit) * Number(lot.quantity)
+                          Number(lot.asking_price_per_kg) * Number(lot.quantity_kg)
                         )}
                       </div>
                     </div>
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {lot.harvest_date ? (
-                      <div className="flex items-start gap-3 rounded-md border p-4">
-                        <Calendar className="mt-0.5 h-5 w-5 text-muted-foreground" />
-                        <div>
-                          <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                            Harvest date
-                          </div>
-                          <div className="mt-1 font-medium">
-                            {new Date(lot.harvest_date).toLocaleDateString(
-                              "en-IN",
-                              {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              }
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ) : null}
-
-                    {lot.state || lot.district || lot.location ? (
+                    {lot.state || lot.district ? (
                       <div className="flex items-start gap-3 rounded-md border p-4">
                         <MapPin className="mt-0.5 h-5 w-5 text-muted-foreground" />
                         <div>
@@ -249,26 +226,14 @@ export default function LotDetailPage() {
                             Location
                           </div>
                           <div className="mt-1 font-medium">
-                            {[
-                              lot.district,
-                              lot.state,
-                            ]
+                            {[lot.district, lot.state]
                               .filter(Boolean)
-                              .join(", ") || lot.location}
+                              .join(", ")}
                           </div>
                         </div>
                       </div>
                     ) : null}
                   </div>
-
-                  {lot.description ? (
-                    <div className="space-y-2 border-t pt-5">
-                      <h3 className="font-semibold">Description</h3>
-                      <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-                        {lot.description}
-                      </p>
-                    </div>
-                  ) : null}
                 </CardContent>
               </Card>
             </div>
@@ -285,7 +250,7 @@ export default function LotDetailPage() {
                     </div>
                     <div className="min-w-0">
                       <div className="truncate font-semibold">
-                        {lot.farmer?.name || lot.farmer_name || "Farmer"}
+                        {lot.farmer_name || "Farmer"}
                       </div>
                       <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                         <ShieldCheck className="h-3 w-3 text-emerald-600" />
@@ -293,22 +258,6 @@ export default function LotDetailPage() {
                       </div>
                     </div>
                   </div>
-                  {lot.farmer?.email ? (
-                    <div className="rounded-md bg-slate-50 p-3 text-xs dark:bg-slate-900/50">
-                      <div className="text-muted-foreground">Email</div>
-                      <div className="mt-0.5 font-medium">
-                        {lot.farmer.email}
-                      </div>
-                    </div>
-                  ) : null}
-                  {lot.farmer?.phone ? (
-                    <div className="rounded-md bg-slate-50 p-3 text-xs dark:bg-slate-900/50">
-                      <div className="text-muted-foreground">Phone</div>
-                      <div className="mt-0.5 font-medium">
-                        {lot.farmer.phone}
-                      </div>
-                    </div>
-                  ) : null}
                 </CardContent>
               </Card>
 
@@ -366,8 +315,8 @@ export default function LotDetailPage() {
                         <DialogHeader>
                           <DialogTitle>Make an offer</DialogTitle>
                           <DialogDescription>
-                            Submit your best price per {lot.unit} for &ldquo;
-                            {lot.title}&rdquo;. The farmer will see your
+                            Submit your best price per kg for &ldquo;
+                            {lot.commodity}&rdquo;. The farmer will see your
                             message.
                           </DialogDescription>
                         </DialogHeader>
@@ -378,7 +327,7 @@ export default function LotDetailPage() {
                                 Asking
                               </div>
                               <div className="font-semibold">
-                                {formatINR(lot.price_per_unit)} / {lot.unit}
+                                {formatINR(lot.asking_price_per_kg)} / kg
                               </div>
                             </div>
                             <div>
@@ -386,14 +335,14 @@ export default function LotDetailPage() {
                                 Available
                               </div>
                               <div className="font-semibold">
-                                {lot.quantity} {lot.unit}
+                                {lot.quantity_kg} kg
                               </div>
                             </div>
                           </div>
 
                           <div className="space-y-2">
                             <Label htmlFor="offer-price">
-                              Your offer price per {lot.unit} (₹)
+                              Your offer price per kg (₹)
                             </Label>
                             <Input
                               id="offer-price"
@@ -417,10 +366,10 @@ export default function LotDetailPage() {
                                 Total at this price:{" "}
                                 <span className="font-medium text-foreground">
                                   {formatINR(
-                                    offeredPrice * Number(lot.quantity)
+                                    offeredPrice * Number(lot.quantity_kg)
                                   )}
                                 </span>{" "}
-                                for {lot.quantity} {lot.unit}
+                                for {lot.quantity_kg} kg
                               </p>
                             ) : null}
                           </div>

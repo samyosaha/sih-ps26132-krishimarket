@@ -27,7 +27,6 @@ import {
   Scale,
   Tag,
   User,
-  Calendar,
   MessageSquare,
   ChevronRight,
 } from "lucide-react";
@@ -196,11 +195,10 @@ function BuyerOffersInner() {
         <div className="grid gap-6 sm:grid-cols-2">
           {filtered.map((offer) => {
             const lot = offer.lot;
-            const price = offer.offered_price_per_kg ?? offer.price ?? 0;
-            const quantity = lot?.quantity;
-            const unit = lot?.unit ?? "kg";
+            const price = offer.offered_price_per_kg ?? 0;
+            const quantity = lot?.quantity_kg;
             const farmerName =
-              offer.farmer?.name || lot?.farmer?.name || "Farmer";
+              offer.farmer?.name || lot?.farmer_name || "Farmer";
             const borderCls =
               offer.status === "pending"
                 ? "border-l-4 border-l-amber-400"
@@ -221,7 +219,7 @@ function BuyerOffersInner() {
                           className="group inline-flex items-center gap-1.5"
                         >
                           <CardTitle className="truncate text-lg group-hover:text-emerald-700">
-                            {lot.title}
+                            {lot.commodity}
                           </CardTitle>
                           <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-emerald-600" />
                         </Link>
@@ -232,9 +230,7 @@ function BuyerOffersInner() {
                       )}
                       <CardDescription className="mt-1 inline-flex items-center gap-1 text-sm">
                         <Sprout className="h-3.5 w-3.5" />
-                        {lot?.produce ||
-                          lot?.commodity ||
-                          "Produce"}
+                        {lot?.commodity || "Produce"}
                         {lot?.variety ? ` · ${lot.variety}` : ""}
                       </CardDescription>
                     </div>
@@ -256,7 +252,7 @@ function BuyerOffersInner() {
                         <span className="font-semibold text-emerald-700">
                           {formatINR(price)}
                         </span>
-                        /{unit}
+                        /kg
                       </span>
                     </div>
                     {quantity ? (
@@ -266,7 +262,7 @@ function BuyerOffersInner() {
                           <span className="font-medium text-foreground">
                             {quantity}
                           </span>{" "}
-                          {unit}
+                          kg
                         </span>
                         <span className="text-muted-foreground">
                           (≈ {formatINR(price * Number(quantity))})
@@ -292,12 +288,6 @@ function BuyerOffersInner() {
                         {farmerName}
                       </span>
                     </div>
-                    {offer.created_at ? (
-                      <div className="flex items-center gap-1.5 text-muted-foreground">
-                        <Calendar className="h-3.5 w-3.5" />
-                        {new Date(offer.created_at).toLocaleString("en-IN")}
-                      </div>
-                    ) : null}
                   </div>
                 </CardContent>
               </Card>

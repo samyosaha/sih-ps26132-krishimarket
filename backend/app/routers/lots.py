@@ -37,6 +37,7 @@ class LotResponse(BaseModel):
     district: str
     state: str
     status: LotStatus
+    farmer_name: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -44,6 +45,23 @@ class LotResponse(BaseModel):
 
 class LotDetailResponse(LotResponse):
     farmer_name: str
+
+
+def _lot_to_response(lot: Lot) -> LotResponse:
+    """Convert a Lot ORM object to a LotResponse, including farmer_name."""
+    return LotResponse(
+        id=lot.id,
+        farmer_id=lot.farmer_id,
+        commodity=lot.commodity,
+        variety=lot.variety,
+        quantity_kg=lot.quantity_kg,
+        quality_grade=lot.quality_grade,
+        asking_price_per_kg=lot.asking_price_per_kg,
+        district=lot.district,
+        state=lot.state,
+        status=lot.status,
+        farmer_name=lot.farmer.name if lot.farmer else None,
+    )
 
 
 @router.post("", response_model=LotResponse)
@@ -68,7 +86,24 @@ def create_lot(
     db.add(lot)
     db.commit()
     db.refresh(lot)
-    return lot
+    return _lot_to_response(lot)
+
+
+@router.get("/mine", response_model=list[LotResponse])
+def list_my_lots(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Return all lots belonging to the authenticated farmer."""
+    if current_user.role != UserRole.farmer:
+        raise HTTPException(status_code=403, detail="Only farmers can view their own lots")
+    lots = (
+        db.query(Lot)
+        .filter(Lot.farmer_id == current_user.id)
+        .order_by(Lot.created_at.desc())
+        .all()
+    )
+    return [_lot_to_response(lot) for lot in lots]
 
 
 @router.get("", response_model=list[LotResponse])
@@ -91,7 +126,8 @@ def list_lots(
         query = query.filter(Lot.quality_grade == quality_grade)
     if status:
         query = query.filter(Lot.status == status)
-    return query.order_by(Lot.created_at.desc()).all()
+    lots = query.order_by(Lot.created_at.desc()).all()
+    return [_lot_to_response(lot) for lot in lots]
 
 
 @router.get("/{lot_id}", response_model=LotDetailResponse)
@@ -101,8 +137,17 @@ def get_lot(lot_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Lot not found")
 
     return LotDetailResponse(
-        **LotResponse.model_validate(lot).model_dump(),
-        farmer_name=lot.farmer.name,
+        id=lot.id,
+        farmer_id=lot.farmer_id,
+        commodity=lot.commodity,
+        variety=lot.variety,
+        quantity_kg=lot.quantity_kg,
+        quality_grade=lot.quality_grade,
+        asking_price_per_kg=lot.asking_price_per_kg,
+        district=lot.district,
+        state=lot.state,
+        status=lot.status,
+        farmer_name=lot.farmer.name if lot.farmer else "Unknown",
     )
 
 
@@ -128,4 +173,4 @@ def update_lot(
 
     db.commit()
     db.refresh(lot)
-    return lot
+    return _lot_to_response(lot)
