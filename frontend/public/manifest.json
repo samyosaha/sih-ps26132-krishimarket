@@ -1,0 +1,22 @@
+{
+  "name": "KrishiMarket — Farmer Market Linkage Platform",
+  "short_name": "KrishiMarket",
+  "description": "Connect farmers directly with buyers. List produce, negotiate offers, and check real-time mandi prices.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#059669",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

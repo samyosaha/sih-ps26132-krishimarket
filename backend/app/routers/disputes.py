@@ -1,17 +1,24 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
 from app.database import get_db
 from app.models import Dispute, Transaction, Offer, Lot, User, UserRole, DisputeStatus
 from app.auth import get_current_user
+from app.sanitize import sanitize_text
+from app.rate_limiter import create_rate_limiter
 
 router = APIRouter(prefix="/disputes", tags=["disputes"])
 
 
 class DisputeCreate(BaseModel):
     transaction_id: int
-    reason: str
+    reason: str = Field(..., min_length=10, max_length=1000)
+
+    @field_validator("reason")
+    @classmethod
+    def sanitize_reason(cls, v: str) -> str:
+        return sanitize_text(v, max_length=1000)
 
 
 class DisputeResponse(BaseModel):
@@ -30,6 +37,7 @@ def create_dispute(
     payload: DisputeCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    _rl=Depends(create_rate_limiter(max_calls=5, window_seconds=60)),
 ):
     transaction = db.query(Transaction).filter(Transaction.id == payload.transaction_id).first()
     if not transaction:
@@ -40,6 +48,22 @@ def create_dispute(
 
     if current_user.id not in (lot.farmer_id, offer.buyer_id):
         raise HTTPException(status_code=403, detail="Not part of this transaction")
+
+    # Prevent duplicate open disputes on the same transaction by the same user
+    existing_dispute = (
+        db.query(Dispute)
+        .filter(
+            Dispute.transaction_id == payload.transaction_id,
+            Dispute.raised_by_id == current_user.id,
+            Dispute.status == DisputeStatus.open,
+        )
+        .first()
+    )
+    if existing_dispute:
+        raise HTTPException(
+            status_code=409,
+            detail="You already have an open dispute on this transaction",
+        )
 
     dispute = Dispute(
         transaction_id=payload.transaction_id,
@@ -72,6 +96,9 @@ def resolve_dispute(
     dispute = db.query(Dispute).filter(Dispute.id == dispute_id).first()
     if not dispute:
         raise HTTPException(status_code=404, detail="Dispute not found")
+
+    if dispute.status == DisputeStatus.resolved:
+        raise HTTPException(status_code=400, detail="Dispute is already resolved")
 
     dispute.status = DisputeStatus.resolved
     db.commit()

@@ -1,11 +1,13 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
 from app.database import get_db
 from app.models import Offer, Lot, Transaction, User, UserRole, OfferStatus, LotStatus
 from app.auth import get_current_user
+from app.sanitize import sanitize_text
+from app.rate_limiter import create_rate_limiter
 
 router = APIRouter(prefix="/offers", tags=["offers"])
 
@@ -14,8 +16,15 @@ router = APIRouter(prefix="/offers", tags=["offers"])
 
 class OfferCreate(BaseModel):
     lot_id: int
-    offered_price_per_kg: float
-    message: Optional[str] = None
+    offered_price_per_kg: float = Field(..., gt=0, le=100_000)
+    message: Optional[str] = Field(default=None, max_length=500)
+
+    @field_validator("message")
+    @classmethod
+    def sanitize_message(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        return sanitize_text(v, max_length=500)
 
 
 # ── Nested response schemas ──────────────────────────────────────────
@@ -82,6 +91,7 @@ def create_offer(
     payload: OfferCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    _rl=Depends(create_rate_limiter(max_calls=10, window_seconds=60)),
 ):
     if current_user.role != UserRole.buyer:
         raise HTTPException(status_code=403, detail="Only buyers can make offers")
@@ -89,6 +99,29 @@ def create_offer(
     lot = db.query(Lot).filter(Lot.id == payload.lot_id).first()
     if not lot:
         raise HTTPException(status_code=404, detail="Lot not found")
+
+    # Only allow offers on available lots
+    if lot.status != LotStatus.available:
+        raise HTTPException(
+            status_code=400,
+            detail="This lot is no longer available for offers",
+        )
+
+    # Prevent duplicate pending offers from the same buyer on the same lot
+    existing_offer = (
+        db.query(Offer)
+        .filter(
+            Offer.lot_id == payload.lot_id,
+            Offer.buyer_id == current_user.id,
+            Offer.status == OfferStatus.pending,
+        )
+        .first()
+    )
+    if existing_offer:
+        raise HTTPException(
+            status_code=409,
+            detail="You already have a pending offer on this lot",
+        )
 
     offer = Offer(
         lot_id=payload.lot_id,
@@ -229,8 +262,16 @@ def accept_offer(
     offer_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    _rl=Depends(create_rate_limiter(max_calls=15, window_seconds=60)),
 ):
     offer = _get_owned_offer(offer_id, db, current_user)
+
+    # Only pending offers can be accepted
+    if offer.status != OfferStatus.pending:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot accept an offer that is already {offer.status.value}",
+        )
 
     offer.status = OfferStatus.accepted
 
@@ -253,8 +294,17 @@ def reject_offer(
     offer_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    _rl=Depends(create_rate_limiter(max_calls=15, window_seconds=60)),
 ):
     offer = _get_owned_offer(offer_id, db, current_user)
+
+    # Only pending offers can be rejected
+    if offer.status != OfferStatus.pending:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot reject an offer that is already {offer.status.value}",
+        )
+
     offer.status = OfferStatus.rejected
     db.commit()
     db.refresh(offer)

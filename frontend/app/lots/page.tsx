@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import {
@@ -42,6 +43,7 @@ import {
   Search,
   RotateCcw,
   ArrowRight,
+  ShieldCheck,
 } from "lucide-react";
 
 interface LotFilters {
@@ -61,6 +63,7 @@ const EMPTY_FILTERS: LotFilters = {
 };
 
 export default function BrowseLotsPage() {
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [lots, setLots] = useState<Lot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<LotFilters>(EMPTY_FILTERS);
@@ -111,6 +114,43 @@ export default function BrowseLotsPage() {
 
   return (
     <div className="space-y-8">
+      {/* CTA banner for visitors — one clear call to action */}
+      {!authLoading && !isAuthenticated && (
+        <section className="relative overflow-hidden rounded-2xl border border-emerald-200/60 bg-gradient-to-r from-emerald-50 via-white to-amber-50 p-6 sm:p-8">
+          <div className="absolute right-0 top-0 -z-10 h-40 w-40 rounded-full bg-emerald-100/50 blur-3xl" aria-hidden="true" />
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-2">
+              <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
+                Ready to source quality produce?
+              </h2>
+              <p className="max-w-lg text-sm text-muted-foreground">
+                Create a free buyer account to send offers directly to farmers, compare mandi prices, and close deals — no middlemen.
+              </p>
+              <div className="flex items-center gap-4 pt-1 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                  Verified farmers
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <Tag className="h-3.5 w-3.5 text-emerald-600" />
+                  Fair prices
+                </span>
+              </div>
+            </div>
+            <Button
+              asChild
+              size="lg"
+              className="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-base font-semibold shadow-lg shadow-emerald-600/20"
+            >
+              <Link href="/register">
+                Get started free
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </section>
+      )}
+
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Browse Lots</h1>
         <p className="text-sm text-muted-foreground">

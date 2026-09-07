@@ -48,6 +48,12 @@ import {
   INDIAN_STATES,
   DISTRICTS_BY_STATE,
 } from "@/lib/market-types";
+import { FieldError } from "@/components/field-error";
+import {
+  validateRequired,
+  validatePositiveNumber,
+} from "@/lib/validation";
+import { isRateLimited } from "@/lib/anti-spam";
 
 interface CreateLotPayload {
   commodity: string;
@@ -75,6 +81,7 @@ function FarmerLotsInner() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<CreateLotPayload>(emptyForm());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
 
   const loadLots = useCallback(async () => {
     setIsLoading(true);
@@ -102,8 +109,28 @@ function FarmerLotsInner() {
     ? DISTRICTS_BY_STATE[form.state] ?? []
     : [];
 
+  const validateForm = (): boolean => {
+    const errors: Record<string, string | null> = {
+      commodity: validateRequired(form.commodity, "Commodity"),
+      quantity_kg: validatePositiveNumber(form.quantity_kg || "", "Quantity"),
+      asking_price_per_kg: validatePositiveNumber(form.asking_price_per_kg || "", "Asking price"),
+      state: validateRequired(form.state, "State"),
+      district: validateRequired(form.district, "District"),
+    };
+    setFieldErrors(errors);
+    return !Object.values(errors).some(Boolean);
+  };
+
   const handleCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (isRateLimited("create-lot", 5, 60_000)) {
+      toast.error("Too many attempts. Please wait a minute and try again.");
+      return;
+    }
+
+    if (!validateForm()) return;
+
     setIsSubmitting(true);
     try {
       const cleaned: CreateLotPayload = {
@@ -117,6 +144,7 @@ function FarmerLotsInner() {
       toast.success("Lot listed successfully!");
       setDialogOpen(false);
       setForm(emptyForm());
+      setFieldErrors({});
       await loadLots();
     } catch (err) {
       const msg =
@@ -151,7 +179,7 @@ function FarmerLotsInner() {
                 information when browsing.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleCreate} className="space-y-5">
+            <form onSubmit={handleCreate} className="space-y-5" noValidate>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="commodity">Commodity</Label>
@@ -162,7 +190,9 @@ function FarmerLotsInner() {
                     value={form.commodity}
                     onChange={(e) => updateField("commodity", e.target.value)}
                     disabled={isSubmitting}
+                    aria-invalid={!!fieldErrors.commodity}
                   />
+                  <FieldError message={fieldErrors.commodity} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="variety">Variety <span className="text-muted-foreground">(optional)</span></Label>
@@ -187,7 +217,9 @@ function FarmerLotsInner() {
                       updateField("quantity_kg", Number(e.target.value))
                     }
                     disabled={isSubmitting}
+                    aria-invalid={!!fieldErrors.quantity_kg}
                   />
+                  <FieldError message={fieldErrors.quantity_kg} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="price">Asking Price per kg (₹)</Label>
@@ -202,7 +234,9 @@ function FarmerLotsInner() {
                       updateField("asking_price_per_kg", Number(e.target.value))
                     }
                     disabled={isSubmitting}
+                    aria-invalid={!!fieldErrors.asking_price_per_kg}
                   />
+                  <FieldError message={fieldErrors.asking_price_per_kg} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="quality">Quality Grade</Label>

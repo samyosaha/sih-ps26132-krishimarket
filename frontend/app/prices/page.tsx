@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
 import { apiFetch } from "@/lib/api";
 import { formatINR, INDIAN_STATES, DISTRICTS_BY_STATE } from "@/lib/market-types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,6 +41,20 @@ import {
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
+interface BackendPriceRecord {
+  id: number;
+  state: string;
+  district: string;
+  market: string;
+  commodity: string;
+  variety?: string;
+  grade?: string;
+  arrival_date: string;
+  min_price?: number;
+  max_price?: number;
+  modal_price?: number;
+}
+
 interface PriceRecord {
   date: string;
   modal_price: number;
@@ -54,12 +68,13 @@ interface ForecastPoint {
 }
 
 interface ForecastResponse {
+  status: string;
   current_price: number;
   predicted_price_7d: number;
   predicted_price_14d: number;
-  recommendation: "HOLD" | "SELL NOW" | "insufficient_data";
+  recommendation: string;
   reason: string;
-  forecast_points: ForecastPoint[];
+  chart_points: ForecastPoint[];
 }
 
 /* ------------------------------------------------------------------ */
@@ -296,14 +311,24 @@ export default function PriceDiscoveryPage() {
     setForecast(null);
     setSearched(true);
     try {
-      const [priceData, forecastData] = await Promise.all([
-        apiFetch<PriceRecord[]>("/prices", {
-          params: { commodity, state, district },
+      const [rawPriceData, forecastData] = await Promise.all([
+        apiFetch<BackendPriceRecord[]>("/prices", {
+          params: { commodity, state, district, days: 30 },
         }),
         apiFetch<ForecastResponse>("/forecast", {
           params: { commodity, state, district },
         }),
       ]);
+      // Map backend arrival_date → date for the chart
+      const priceData: PriceRecord[] = rawPriceData
+        .filter((r) => r.arrival_date && r.modal_price != null)
+        .map((r) => ({
+          date: r.arrival_date,
+          modal_price: r.modal_price!,
+          min_price: r.min_price,
+          max_price: r.max_price,
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
       setPrices(priceData);
       setForecast(forecastData);
     } catch (err) {
@@ -329,8 +354,8 @@ export default function PriceDiscoveryPage() {
       predicted: undefined as number | undefined,
     }));
 
-    // forecast_points includes historical + predicted — we only want the 2 future predicted points
-    const forecastPts = forecast?.forecast_points ?? [];
+    // chart_points from backend includes historical + predicted — we only want the 2 future predicted points
+    const forecastPts = forecast?.chart_points ?? [];
     const lastActualDate = actual.length
       ? actual[actual.length - 1].fullDate
       : "";
@@ -360,12 +385,12 @@ export default function PriceDiscoveryPage() {
   }, [prices, forecast]);
 
   /* ---------- derived ---------- */
-  const isInsufficient = forecast?.recommendation === "insufficient_data";
+  const isInsufficient = forecast?.status === "insufficient_data";
   const canSearch = commodity && state && district;
 
   /* ---------- recommendation badge styles ---------- */
   const recStyles =
-    forecast?.recommendation === "SELL NOW"
+    forecast?.recommendation === "sell_now"
       ? {
           gradient: "from-emerald-500/15 via-emerald-500/5 to-transparent",
           badge: "bg-emerald-500 text-white shadow-emerald-500/30",

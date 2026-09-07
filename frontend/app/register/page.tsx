@@ -20,10 +20,20 @@ import {
   RadioGroupItem,
 } from "@/components/ui/radio-group";
 import { Loader2, AlertCircle, Sprout, ShoppingBasket } from "lucide-react";
+import { FieldError } from "@/components/field-error";
+import {
+  validateEmail,
+  validatePassword,
+  validatePhone,
+  validateName,
+} from "@/lib/validation";
+import { useHoneypot, HoneypotField, isRateLimited } from "@/lib/anti-spam";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { register } = useAuth();
+  const honeypot = useHoneypot();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -34,12 +44,44 @@ export default function RegisterPage() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Per-field errors (shown on submit attempt)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>(
+    {}
+  );
+
+  const validate = (): boolean => {
+    const errors: Record<string, string | null> = {
+      name: validateName(name),
+      phone: validatePhone(phone),
+      email: validateEmail(email),
+      password: validatePassword(password),
+    };
+    setFieldErrors(errors);
+    return !Object.values(errors).some(Boolean);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setSuccessMsg(null);
-    setIsSubmitting(true);
 
+    // Anti-spam: honeypot check
+    if (honeypot.isFilled()) {
+      // Silently pretend it worked
+      setSuccessMsg("Account created! Signing you in…");
+      return;
+    }
+
+    // Anti-spam: rate limit
+    if (isRateLimited("register", 3, 60_000)) {
+      setError("Too many attempts. Please wait a minute and try again.");
+      return;
+    }
+
+    // Client-side validation
+    if (!validate()) return;
+
+    setIsSubmitting(true);
     try {
       await register({ name, phone, email, password, role });
       setSuccessMsg("Account created! Signing you in…");
@@ -67,8 +109,10 @@ export default function RegisterPage() {
             Join KrishiMarket to start trading produce directly
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <CardContent className="space-y-4">
+            <HoneypotField {...honeypot.fieldProps} />
+
             {error && (
               <div className="flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
@@ -89,11 +133,16 @@ export default function RegisterPage() {
                 type="text"
                 placeholder="e.g. Ramesh Kumar"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (fieldErrors.name) setFieldErrors((p) => ({ ...p, name: validateName(e.target.value) }));
+                }}
                 autoComplete="name"
                 required
                 disabled={isSubmitting}
+                aria-invalid={!!fieldErrors.name}
               />
+              <FieldError message={fieldErrors.name} />
             </div>
 
             <div className="space-y-2">
@@ -103,11 +152,16 @@ export default function RegisterPage() {
                 type="tel"
                 placeholder="e.g. 9876543210"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  if (fieldErrors.phone) setFieldErrors((p) => ({ ...p, phone: validatePhone(e.target.value) }));
+                }}
                 autoComplete="tel"
                 required
                 disabled={isSubmitting}
+                aria-invalid={!!fieldErrors.phone}
               />
+              <FieldError message={fieldErrors.phone} />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -118,11 +172,16 @@ export default function RegisterPage() {
                   type="email"
                   placeholder="you@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (fieldErrors.email) setFieldErrors((p) => ({ ...p, email: validateEmail(e.target.value) }));
+                  }}
                   autoComplete="email"
                   required
                   disabled={isSubmitting}
+                  aria-invalid={!!fieldErrors.email}
                 />
+                <FieldError message={fieldErrors.email} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -131,12 +190,16 @@ export default function RegisterPage() {
                   type="password"
                   placeholder="At least 6 characters"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (fieldErrors.password) setFieldErrors((p) => ({ ...p, password: validatePassword(e.target.value) }));
+                  }}
                   autoComplete="new-password"
                   required
-                  minLength={6}
                   disabled={isSubmitting}
+                  aria-invalid={!!fieldErrors.password}
                 />
+                <FieldError message={fieldErrors.password} />
               </div>
             </div>
 

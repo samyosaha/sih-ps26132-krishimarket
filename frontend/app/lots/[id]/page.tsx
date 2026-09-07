@@ -41,15 +41,20 @@ import {
   Tag,
   User,
   ArrowLeft,
+  ArrowRight,
   MessageSquare,
   ShieldCheck,
 } from "lucide-react";
+import { FieldError } from "@/components/field-error";
+import { validatePositiveNumber } from "@/lib/validation";
+import { useHoneypot, HoneypotField, isRateLimited } from "@/lib/anti-spam";
 
 export default function LotDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const lotId = params.id;
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const honeypot = useHoneypot();
 
   const [lot, setLot] = useState<Lot | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,6 +63,7 @@ export default function LotDetailPage() {
   const [offeredPrice, setOfferedPrice] = useState<number | "">("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
 
   const loadLot = useCallback(async () => {
     if (!lotId) return;
@@ -82,12 +88,32 @@ export default function LotDetailPage() {
 
   const isBuyer = user?.role === ("buyer" as UserRole);
 
+  const validateOffer = (): boolean => {
+    const errors: Record<string, string | null> = {
+      offeredPrice: validatePositiveNumber(offeredPrice, "Offer price"),
+    };
+    setFieldErrors(errors);
+    return !Object.values(errors).some(Boolean);
+  };
+
   const handleSubmitOffer = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!lot || offeredPrice === "" || Number(offeredPrice) <= 0) {
-      toast.error("Please enter a valid offer price.");
+
+    // Anti-spam: honeypot
+    if (honeypot.isFilled()) {
+      toast.success("Offer sent! The farmer will be notified.");
       return;
     }
+
+    // Anti-spam: rate limit (5 offers per minute)
+    if (isRateLimited("make-offer", 5, 60_000)) {
+      toast.error("Too many offers submitted. Please wait a minute and try again.");
+      return;
+    }
+
+    // Validation
+    if (!lot || !validateOffer()) return;
+
     setIsSubmitting(true);
     try {
       await apiFetch("/offers", {
@@ -101,6 +127,7 @@ export default function LotDetailPage() {
       toast.success("Offer sent! The farmer will be notified.");
       setDialogOpen(false);
       setMessage("");
+      setFieldErrors({});
       setTimeout(() => router.push("/buyer/offers"), 1200);
     } catch (err) {
       const msg =
@@ -270,21 +297,30 @@ export default function LotDetailPage() {
                 </CardHeader>
                 <CardContent>
                   {!isAuthenticated ? (
-                    <div className="space-y-3 text-sm">
-                      <p className="text-muted-foreground">
-                        Please sign in to make an offer on this lot.
-                      </p>
-                      <div className="flex flex-col gap-2 sm:flex-row">
-                        <Button asChild variant="outline" className="flex-1">
-                          <Link href="/login">Sign in</Link>
-                        </Button>
-                        <Button
-                          asChild
-                          className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-                        >
-                          <Link href="/register">Create account</Link>
-                        </Button>
+                    <div className="space-y-4 text-sm">
+                      <div className="rounded-lg border border-emerald-200 bg-gradient-to-br from-emerald-50 to-amber-50 p-4 text-center">
+                        <Sprout className="mx-auto mb-2 h-8 w-8 text-emerald-600" />
+                        <p className="font-semibold text-foreground">
+                          Join KrishiMarket to trade directly
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Create a free account to send offers, negotiate prices, and close deals with farmers — no middlemen.
+                        </p>
                       </div>
+                      <Button
+                        asChild
+                        size="lg"
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-base font-semibold"
+                      >
+                        <Link href="/register">
+                          Get started free
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <p className="text-center text-xs text-muted-foreground">
+                        Already a member?{" "}
+                        <Link href="/login" className="font-medium text-emerald-600 underline-offset-2 hover:underline">Sign in</Link>
+                      </p>
                     </div>
                   ) : !isBuyer ? (
                     <div className="space-y-2 text-sm">
@@ -320,7 +356,8 @@ export default function LotDetailPage() {
                             message.
                           </DialogDescription>
                         </DialogHeader>
-                        <form onSubmit={handleSubmitOffer} className="space-y-5">
+                        <form onSubmit={handleSubmitOffer} className="space-y-5" noValidate>
+                          <HoneypotField {...honeypot.fieldProps} />
                           <div className="grid gap-3 rounded-md bg-slate-50 p-3 text-xs dark:bg-slate-900/50 sm:grid-cols-2">
                             <div>
                               <div className="text-muted-foreground">
@@ -350,16 +387,18 @@ export default function LotDetailPage() {
                               min={0}
                               step="any"
                               value={offeredPrice}
-                              onChange={(e) =>
-                                setOfferedPrice(
-                                  e.target.value === ""
-                                    ? ""
-                                    : Number(e.target.value)
-                                )
-                              }
+                              onChange={(e) => {
+                                const val = e.target.value === "" ? "" : Number(e.target.value);
+                                setOfferedPrice(val);
+                                if (fieldErrors.offeredPrice) {
+                                  setFieldErrors((p) => ({ ...p, offeredPrice: validatePositiveNumber(val, "Offer price") }));
+                                }
+                              }}
                               required
                               disabled={isSubmitting}
+                              aria-invalid={!!fieldErrors.offeredPrice}
                             />
+                            <FieldError message={fieldErrors.offeredPrice} />
                             {offeredPrice !== "" &&
                             typeof offeredPrice === "number" ? (
                               <p className="text-xs text-muted-foreground">

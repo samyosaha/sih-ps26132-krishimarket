@@ -1,28 +1,42 @@
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
 from app.database import get_db
 from app.models import Lot, User, UserRole, QualityGrade, LotStatus
 from app.auth import get_current_user
+from app.sanitize import sanitize_string
+from app.rate_limiter import create_rate_limiter
 
 router = APIRouter(prefix="/lots", tags=["lots"])
 
 
 class LotCreate(BaseModel):
-    commodity: str
-    variety: Optional[str] = None
-    quantity_kg: float
+    commodity: str = Field(..., min_length=1, max_length=100)
+    variety: Optional[str] = Field(default=None, max_length=100)
+    quantity_kg: float = Field(..., gt=0, le=1_000_000)
     quality_grade: QualityGrade
-    asking_price_per_kg: float
-    district: str
-    state: str
+    asking_price_per_kg: float = Field(..., gt=0, le=100_000)
+    district: str = Field(..., min_length=1, max_length=100)
+    state: str = Field(..., min_length=1, max_length=100)
+
+    @field_validator("commodity", "district", "state")
+    @classmethod
+    def sanitize_required_strings(cls, v: str) -> str:
+        return sanitize_string(v, max_length=100)
+
+    @field_validator("variety")
+    @classmethod
+    def sanitize_variety(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        return sanitize_string(v, max_length=100)
 
 
 class LotUpdate(BaseModel):
-    quantity_kg: Optional[float] = None
-    asking_price_per_kg: Optional[float] = None
+    quantity_kg: Optional[float] = Field(default=None, gt=0, le=1_000_000)
+    asking_price_per_kg: Optional[float] = Field(default=None, gt=0, le=100_000)
     status: Optional[LotStatus] = None
 
 
@@ -69,6 +83,7 @@ def create_lot(
     payload: LotCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    _rl=Depends(create_rate_limiter(max_calls=10, window_seconds=60)),
 ):
     if current_user.role != UserRole.farmer:
         raise HTTPException(status_code=403, detail="Only farmers can create lots")
@@ -113,6 +128,8 @@ def list_lots(
     district: Optional[str] = None,
     quality_grade: Optional[QualityGrade] = None,
     status: Optional[LotStatus] = LotStatus.available,
+    limit: int = Query(default=50, ge=1, le=200, description="Max results to return"),
+    offset: int = Query(default=0, ge=0, description="Number of results to skip"),
     db: Session = Depends(get_db),
 ):
     query = db.query(Lot)
@@ -126,7 +143,7 @@ def list_lots(
         query = query.filter(Lot.quality_grade == quality_grade)
     if status:
         query = query.filter(Lot.status == status)
-    lots = query.order_by(Lot.created_at.desc()).all()
+    lots = query.order_by(Lot.created_at.desc()).offset(offset).limit(limit).all()
     return [_lot_to_response(lot) for lot in lots]
 
 
@@ -157,6 +174,7 @@ def update_lot(
     payload: LotUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    _rl=Depends(create_rate_limiter(max_calls=15, window_seconds=60)),
 ):
     lot = db.query(Lot).filter(Lot.id == lot_id).first()
     if not lot:

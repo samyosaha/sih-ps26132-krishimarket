@@ -3,11 +3,32 @@ from datetime import timedelta
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from sqlalchemy.orm import Session
+from sqlalchemy import func as sa_func
 
 from app.models import PriceRecord
 
 MIN_DATA_POINTS = 7
 HOLD_THRESHOLD_PCT = 4.0
+
+
+def _query_records(
+    commodity: str,
+    state: str,
+    district: Optional[str],
+    db: Session,
+) -> list:
+    """Build a case-insensitive query for price records."""
+    query = db.query(PriceRecord).filter(
+        sa_func.lower(PriceRecord.commodity) == commodity.lower(),
+        sa_func.lower(PriceRecord.state) == state.lower(),
+        PriceRecord.modal_price.isnot(None),
+        PriceRecord.arrival_date.isnot(None),
+    )
+    if district:
+        query = query.filter(
+            sa_func.lower(PriceRecord.district) == district.lower()
+        )
+    return query.order_by(PriceRecord.arrival_date.asc()).all()
 
 
 def forecast_price(
@@ -16,16 +37,25 @@ def forecast_price(
     district: Optional[str],
     db: Session,
 ) -> dict:
-    query = db.query(PriceRecord).filter(
-        PriceRecord.commodity == commodity,
-        PriceRecord.state == state,
-        PriceRecord.modal_price.isnot(None),
-        PriceRecord.arrival_date.isnot(None),
-    )
-    if district:
-        query = query.filter(PriceRecord.district == district)
+    records = _query_records(commodity, state, district, db)
 
-    records = query.order_by(PriceRecord.arrival_date.asc()).all()
+    # If district-level data is insufficient, try a live fetch first
+    if len(records) < MIN_DATA_POINTS and commodity and state:
+        from app.services.price_ingestion import fetch_live_prices
+
+        fetch_live_prices(
+            commodity=commodity, state=state, district=district
+        )
+        # Re-query after live fetch
+        records = _query_records(commodity, state, district, db)
+
+    # If still insufficient at district level, fall back to state-level
+    used_fallback = False
+    if len(records) < MIN_DATA_POINTS and district:
+        state_records = _query_records(commodity, state, None, db)
+        if len(state_records) >= MIN_DATA_POINTS:
+            records = state_records
+            used_fallback = True
 
     if len(records) < MIN_DATA_POINTS:
         return {
@@ -82,6 +112,13 @@ def forecast_price(
                 f"Prices are trending down — predicted to fall about "
                 f"{abs(pct_change_7d):.1f}% over the next 7 days. Selling now may get a better price than waiting."
             )
+
+    # Append a note if we used state-level fallback
+    if used_fallback:
+        reason += (
+            f" (Note: Limited data for {district} district — "
+            f"forecast is based on {state}-wide prices.)"
+        )
 
     chart_start = max(0, len(records) - 30)
     history_points = [

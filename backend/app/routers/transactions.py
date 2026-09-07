@@ -1,13 +1,21 @@
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
 from app.database import get_db
 from app.models import Transaction, Offer, Lot, User, PaymentStatus
 from app.auth import get_current_user
+from app.rate_limiter import create_rate_limiter
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
+
+# Valid payment status transitions (forward-only state machine)
+_VALID_TRANSITIONS: dict[PaymentStatus, set[PaymentStatus]] = {
+    PaymentStatus.pending: {PaymentStatus.paid},
+    PaymentStatus.paid: {PaymentStatus.delivered},
+    PaymentStatus.delivered: set(),  # terminal state
+}
 
 
 class UserStub(BaseModel):
@@ -69,6 +77,8 @@ def _enrich_transaction(t: Transaction, db: Session) -> TransactionResponse:
 
 @router.get("", response_model=list[TransactionResponse])
 def list_transactions(
+    limit: int = Query(default=50, ge=1, le=200, description="Max results to return"),
+    offset: int = Query(default=0, ge=0, description="Number of results to skip"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -79,6 +89,9 @@ def list_transactions(
         .filter(
             (Lot.farmer_id == current_user.id) | (Offer.buyer_id == current_user.id)
         )
+        .order_by(Transaction.created_at.desc())
+        .offset(offset)
+        .limit(limit)
         .all()
     )
     return [_enrich_transaction(t, db) for t in txns]
@@ -90,6 +103,7 @@ def update_payment_status(
     payload: PaymentStatusUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    _rl=Depends(create_rate_limiter(max_calls=10, window_seconds=60)),
 ):
     transaction = db.query(Transaction).filter(Transaction.id == transaction_id).first()
     if not transaction:
@@ -101,7 +115,28 @@ def update_payment_status(
     if current_user.id not in (lot.farmer_id, offer.buyer_id):
         raise HTTPException(status_code=403, detail="Not part of this transaction")
 
-    transaction.payment_status = payload.payment_status
+    # Enforce valid state transitions
+    current_status = transaction.payment_status
+    requested_status = payload.payment_status
+
+    if requested_status == current_status:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Payment status is already '{current_status.value}'",
+        )
+
+    allowed_next = _VALID_TRANSITIONS.get(current_status, set())
+    if requested_status not in allowed_next:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Cannot transition from '{current_status.value}' to "
+                f"'{requested_status.value}'. "
+                f"Allowed transitions: {', '.join(s.value for s in allowed_next) or 'none (terminal state)'}"
+            ),
+        )
+
+    transaction.payment_status = requested_status
     db.commit()
     db.refresh(transaction)
     return _enrich_transaction(transaction, db)

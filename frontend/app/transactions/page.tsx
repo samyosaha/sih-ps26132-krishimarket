@@ -184,7 +184,7 @@ function TransactionsInner() {
         </Card>
       </div>
 
-      <div className="flex flex-wrap gap-2 border-b">
+      <div className="flex gap-2 border-b overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
         {FILTER_TABS.map((t) => {
           const active = filter === t.key;
           return (
@@ -192,7 +192,7 @@ function TransactionsInner() {
               key={t.key}
               type="button"
               onClick={() => setFilter(t.key)}
-              className={`-mb-px border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
+              className={`-mb-px whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
                 active
                   ? "border-emerald-600 text-emerald-700"
                   : "border-transparent text-muted-foreground hover:text-emerald-700"
