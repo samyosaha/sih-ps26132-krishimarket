@@ -21,26 +21,11 @@ export interface User {
   [key: string]: unknown;
 }
 
-export interface LoginPayload {
-  email: string;
-  password: string;
-}
-
-export interface RegisterPayload {
-  name: string;
-  phone: string;
-  email: string;
-  password: string;
-  role: UserRole;
-}
-
 interface AuthContextValue {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (payload: LoginPayload) => Promise<void>;
-  register: (payload: RegisterPayload) => Promise<void>;
   setSession: (accessToken: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
@@ -87,33 +72,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     fetchCurrentUser();
   }, [fetchCurrentUser]);
 
-  const login = useCallback(async (payload: LoginPayload): Promise<void> => {
-    const res = await apiFetch<{ access_token: string }>("/auth/login", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-    const accessToken = res.access_token;
-    persistToken(accessToken);
-    setTokenState(accessToken);
-    const me = await apiFetch<User>("/auth/me");
-    setUser(me);
-  }, []);
-
-  const register = useCallback(
-    async (payload: RegisterPayload): Promise<void> => {
-      const res = await apiFetch<{ access_token: string }>("/auth/register", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-      const accessToken = res.access_token;
-      persistToken(accessToken);
-      setTokenState(accessToken);
-      const me = await apiFetch<User>("/auth/me");
-      setUser(me);
-    },
-    []
-  );
-
   const setSession = useCallback(async (accessToken: string): Promise<void> => {
     persistToken(accessToken);
     setTokenState(accessToken);
@@ -133,13 +91,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       token,
       isAuthenticated: !!user && !!token,
       isLoading,
-      login,
-      register,
       setSession,
       logout,
       refreshUser: fetchCurrentUser,
     }),
-    [user, token, isLoading, login, register, setSession, logout, fetchCurrentUser]
+    [user, token, isLoading, setSession, logout, fetchCurrentUser]
   );
 
   return (

@@ -2,7 +2,7 @@ import os
 import re
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, ValidationError, field_validator
 from typing import Optional
 
 from app.database import get_db
@@ -12,7 +12,7 @@ from app.auth import (
     decode_refresh_token, get_current_user,
 )
 from app.services.otp_service import (
-    create_otp_record, verify_and_consume_otp, send_otp_sms,
+    create_otp_record, invalidate_otp, verify_and_consume_otp, send_otp_sms,
 )
 from app.sanitize import sanitize_string
 from app.rate_limiter import create_rate_limiter
@@ -26,7 +26,25 @@ _PHONE_RE = re.compile(r"^(\+?91)?[6-9]\d{9}$")
 _ALLOWED_REGISTER_ROLES = {UserRole.farmer, UserRole.buyer}
 
 
-class RegisterRequest(BaseModel):
+def _normalise_phone(value: str) -> str:
+    """Validate and store every Indian mobile number in one 10-digit format."""
+    cleaned = re.sub(r"[\s\-().]+", "", value)
+    if not _PHONE_RE.match(cleaned):
+        raise ValueError("Please provide a valid 10-digit Indian phone number")
+    return cleaned[-10:]
+
+
+def _validate_password_strength(value: str) -> str:
+    if len(value) < 8:
+        raise ValueError("Password must be at least 8 characters")
+    if not re.search(r"[A-Za-z]", value):
+        raise ValueError("Password must contain at least one letter")
+    if not re.search(r"\d", value):
+        raise ValueError("Password must contain at least one digit")
+    return value
+
+
+class SignupDetails(BaseModel):
     name: str = Field(..., min_length=2, max_length=100)
     phone: str = Field(..., min_length=10, max_length=15)
     email: EmailStr
@@ -48,21 +66,12 @@ class RegisterRequest(BaseModel):
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, v: str) -> str:
-        cleaned = re.sub(r"[\s\-().]+", "", v)
-        if not _PHONE_RE.match(cleaned):
-            raise ValueError("Please provide a valid 10-digit Indian phone number")
-        return cleaned
+        return _normalise_phone(v)
 
     @field_validator("password")
     @classmethod
     def validate_password_strength(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters")
-        if not re.search(r"[A-Za-z]", v):
-            raise ValueError("Password must contain at least one letter")
-        if not re.search(r"\d", v):
-            raise ValueError("Password must contain at least one digit")
-        return v
+        return _validate_password_strength(v)
 
     @field_validator("role")
     @classmethod
@@ -70,6 +79,11 @@ class RegisterRequest(BaseModel):
         if v not in _ALLOWED_REGISTER_ROLES:
             raise ValueError("Invalid role. Please choose 'farmer' or 'buyer'.")
         return v
+
+
+class RegisterRequest(SignupDetails):
+    """Legacy registration endpoint, now protected by a sign-up OTP."""
+    otp: str = Field(..., min_length=6, max_length=6)
 
 
 class LoginRequest(BaseModel):
@@ -81,6 +95,13 @@ class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str | None = None
     token_type: str = "bearer"
+
+
+class OtpChallengeResponse(BaseModel):
+    message: str
+    phone: str
+    expires_in_seconds: int = 300
+    dev_otp: str | None = None
 
 
 class UserResponse(BaseModel):
@@ -104,31 +125,28 @@ class UserResponse(BaseModel):
 class OtpRequestSchema(BaseModel):
     phone: str = Field(..., min_length=10, max_length=15)
     purpose: OtpPurpose = OtpPurpose.login
+    email: EmailStr | None = None
 
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, v: str) -> str:
-        cleaned = re.sub(r"[\s\-().]+", "", v)
-        if not _PHONE_RE.match(cleaned):
-            raise ValueError("Please provide a valid 10-digit Indian phone number")
-        return cleaned
+        return _normalise_phone(v)
 
 
 class OtpVerifySchema(BaseModel):
     phone: str = Field(..., min_length=10, max_length=15)
     otp: str = Field(..., min_length=6, max_length=6)
     purpose: OtpPurpose = OtpPurpose.login
-    # For signup via OTP, include user details
+    # Sign-up details are supplied only after a user has received the code.
     name: Optional[str] = Field(default=None, min_length=2, max_length=100)
+    email: EmailStr | None = None
+    password: Optional[str] = Field(default=None, min_length=8, max_length=128)
     role: Optional[UserRole] = None
 
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, v: str) -> str:
-        cleaned = re.sub(r"[\s\-().]+", "", v)
-        if not _PHONE_RE.match(cleaned):
-            raise ValueError("Please provide a valid 10-digit Indian phone number")
-        return cleaned
+        return _normalise_phone(v)
 
 
 class ForgotPasswordSchema(BaseModel):
@@ -137,10 +155,7 @@ class ForgotPasswordSchema(BaseModel):
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, v: str) -> str:
-        cleaned = re.sub(r"[\s\-().]+", "", v)
-        if not _PHONE_RE.match(cleaned):
-            raise ValueError("Please provide a valid 10-digit Indian phone number")
-        return cleaned
+        return _normalise_phone(v)
 
 
 class ResetPasswordSchema(BaseModel):
@@ -151,25 +166,67 @@ class ResetPasswordSchema(BaseModel):
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, v: str) -> str:
-        cleaned = re.sub(r"[\s\-().]+", "", v)
-        if not _PHONE_RE.match(cleaned):
-            raise ValueError("Please provide a valid 10-digit Indian phone number")
-        return cleaned
+        return _normalise_phone(v)
 
     @field_validator("new_password")
     @classmethod
     def validate_password_strength(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters")
-        if not re.search(r"[A-Za-z]", v):
-            raise ValueError("Password must contain at least one letter")
-        if not re.search(r"\d", v):
-            raise ValueError("Password must contain at least one digit")
-        return v
+        return _validate_password_strength(v)
 
 
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
+
+
+def _tokens_for(user: User) -> TokenResponse:
+    return TokenResponse(
+        access_token=create_access_token({"sub": str(user.id)}),
+        refresh_token=create_refresh_token({"sub": str(user.id)}),
+    )
+
+
+def _create_user_from_signup(payload: SignupDetails, db: Session) -> User:
+    if db.query(User).filter(User.email == payload.email).first():
+        raise HTTPException(status_code=409, detail="Email already registered")
+    if db.query(User).filter(User.phone == payload.phone).first():
+        raise HTTPException(status_code=409, detail="Phone number already registered")
+
+    user = User(
+        name=payload.name,
+        phone=payload.phone,
+        email=payload.email,
+        password_hash=hash_password(payload.password),
+        role=payload.role,
+        phone_verified=True,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def _dev_otp_response(otp_plain: str) -> dict[str, str | int]:
+    """Expose the code only for local development when no SMS provider is set."""
+    response: dict[str, str | int] = {
+        "message": "OTP sent successfully",
+        "expires_in_seconds": 300,
+    }
+    if os.getenv("ENVIRONMENT", "development").lower() in {"development", "dev", "local"}:
+        from app.services.otp_service import SMS_API_KEY
+
+        if not SMS_API_KEY:
+            response["dev_otp"] = otp_plain
+            response["message"] = f"OTP sent (dev mode). Code: {otp_plain}"
+    return response
+
+
+async def _send_new_otp(db: Session, phone: str, purpose: OtpPurpose) -> dict[str, str | int]:
+    """Create and deliver an OTP, invalidating it if the SMS gateway fails."""
+    record, otp_plain = create_otp_record(db, phone, purpose)
+    if not await send_otp_sms(phone, otp_plain):
+        invalidate_otp(db, record)
+        raise HTTPException(status_code=502, detail="Failed to send OTP. Please try again.")
+    return _dev_otp_response(otp_plain)
 
 
 @router.post("/register", response_model=TokenResponse)
@@ -178,32 +235,16 @@ def register(
     db: Session = Depends(get_db),
     _rl=Depends(create_rate_limiter(max_calls=5, window_seconds=60)),
 ):
-    existing_email = db.query(User).filter(User.email == payload.email).first()
-    if existing_email:
-        raise HTTPException(status_code=400, detail="Email already registered")
-
-    existing_phone = db.query(User).filter(User.phone == payload.phone).first()
-    if existing_phone:
-        raise HTTPException(status_code=400, detail="Phone number already registered")
-
-    user = User(
-        name=payload.name,
-        phone=payload.phone,
-        email=payload.email,
-        password_hash=hash_password(payload.password),
-        role=payload.role,
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-
-    access = create_access_token({"sub": str(user.id)})
-    refresh = create_refresh_token({"sub": str(user.id)})
-    return TokenResponse(access_token=access, refresh_token=refresh)
+    """Complete legacy registration only after a valid sign-up OTP is supplied."""
+    try:
+        verify_and_consume_otp(db, payload.phone, payload.otp, OtpPurpose.signup)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return _tokens_for(_create_user_from_signup(payload, db))
 
 
-@router.post("/login", response_model=TokenResponse)
-def login(
+@router.post("/login", response_model=OtpChallengeResponse)
+async def login(
     payload: LoginRequest,
     db: Session = Depends(get_db),
     _rl=Depends(create_rate_limiter(max_calls=5, window_seconds=60)),
@@ -212,9 +253,11 @@ def login(
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Incorrect email or password")
 
-    access = create_access_token({"sub": str(user.id)})
-    refresh = create_refresh_token({"sub": str(user.id)})
-    return TokenResponse(access_token=access, refresh_token=refresh)
+    try:
+        delivery = await _send_new_otp(db, user.phone, OtpPurpose.login)
+    except ValueError as e:
+        raise HTTPException(status_code=429, detail=str(e))
+    return OtpChallengeResponse(phone=user.phone, **delivery)
 
 
 @router.get("/me", response_model=UserResponse)
@@ -232,20 +275,20 @@ async def request_otp(
     _rl=Depends(create_rate_limiter(max_calls=3, window_seconds=60)),
 ):
     """Generate and send an OTP to the given phone number."""
-    try:
-        record, otp_plain = create_otp_record(db, payload.phone, payload.purpose)
-        sent = await send_otp_sms(payload.phone, otp_plain)
-        if not sent:
-            raise HTTPException(status_code=502, detail="Failed to send OTP. Please try again.")
-        response = {"message": "OTP sent successfully", "expires_in_seconds": 300}
-        # Prototype / local: SMS is not configured, so return the code to the client.
-        if os.getenv("ENVIRONMENT", "development") != "production":
-            from app.services.otp_service import SMS_API_KEY
+    existing_phone = db.query(User).filter(User.phone == payload.phone).first()
+    if payload.purpose == OtpPurpose.signup:
+        if existing_phone:
+            raise HTTPException(status_code=409, detail="Phone number already registered")
+        if payload.email and db.query(User).filter(User.email == payload.email).first():
+            raise HTTPException(status_code=409, detail="Email already registered")
+    elif payload.purpose == OtpPurpose.login:
+        if not existing_phone:
+            raise HTTPException(status_code=400, detail="No account found for this phone number")
+    else:
+        raise HTTPException(status_code=400, detail="Use the password recovery endpoint for reset OTPs")
 
-            if not SMS_API_KEY:
-                response["dev_otp"] = otp_plain
-                response["message"] = f"OTP sent (dev mode). Code: {otp_plain}"
-        return response
+    try:
+        return await _send_new_otp(db, payload.phone, payload.purpose)
     except ValueError as e:
         raise HTTPException(status_code=429, detail=str(e))
 
@@ -257,32 +300,30 @@ def verify_otp(
     _rl=Depends(create_rate_limiter(max_calls=5, window_seconds=60)),
 ):
     """Verify an OTP and issue a JWT."""
+    signup: SignupDetails | None = None
+    if payload.purpose == OtpPurpose.signup:
+        try:
+            signup = SignupDetails.model_validate(
+                {
+                    "name": payload.name,
+                    "phone": payload.phone,
+                    "email": payload.email,
+                    "password": payload.password,
+                    "role": payload.role,
+                }
+            )
+        except ValidationError as e:
+            raise HTTPException(status_code=422, detail=e.errors())
+
     try:
         verify_and_consume_otp(db, payload.phone, payload.otp, payload.purpose)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    # Find or create user
     user = db.query(User).filter(User.phone == payload.phone).first()
 
     if payload.purpose == OtpPurpose.signup:
-        if user:
-            raise HTTPException(status_code=400, detail="Phone number already registered")
-        if not payload.name or not payload.role:
-            raise HTTPException(
-                status_code=400,
-                detail="Name and role are required for signup",
-            )
-        user = User(
-            name=payload.name,
-            phone=payload.phone,
-            password_hash=hash_password(payload.otp),  # temporary, user should set a real password
-            role=payload.role,
-            phone_verified=True,
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
+        user = _create_user_from_signup(signup, db)
     else:
         # Login via OTP
         if not user:
@@ -290,9 +331,7 @@ def verify_otp(
         user.phone_verified = True
         db.commit()
 
-    access = create_access_token({"sub": str(user.id)})
-    refresh = create_refresh_token({"sub": str(user.id)})
-    return TokenResponse(access_token=access, refresh_token=refresh)
+    return _tokens_for(user)
 
 
 # ── Password recovery ────────────────────────────────────────────────
@@ -311,20 +350,14 @@ async def forgot_password(
         return {"message": "If this phone is registered, an OTP has been sent."}
 
     try:
-        record, otp_plain = create_otp_record(db, payload.phone, OtpPurpose.password_reset)
-        await send_otp_sms(payload.phone, otp_plain)
-        if os.getenv("ENVIRONMENT", "development") != "production":
-            from app.services.otp_service import SMS_API_KEY
-
-            if not SMS_API_KEY:
-                return {
-                    "message": f"If this phone is registered, an OTP has been sent. Dev code: {otp_plain}",
-                    "dev_otp": otp_plain,
-                }
+        delivery = await _send_new_otp(db, payload.phone, OtpPurpose.password_reset)
     except ValueError as e:
         raise HTTPException(status_code=429, detail=str(e))
 
-    return {"message": "If this phone is registered, an OTP has been sent."}
+    response: dict[str, str] = {"message": "If this phone is registered, an OTP has been sent."}
+    if "dev_otp" in delivery:
+        response["dev_otp"] = str(delivery["dev_otp"])
+    return response
 
 
 @router.post("/password/reset")

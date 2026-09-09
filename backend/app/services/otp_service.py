@@ -6,7 +6,7 @@ When SMS_API_KEY is not set, OTPs are logged to the console for local dev.
 """
 
 import os
-import random
+import secrets
 import logging
 from datetime import datetime, timedelta, timezone
 
@@ -40,7 +40,14 @@ SMS_API_BASE = "https://2factor.in/API/V1"
 
 def generate_otp() -> str:
     """Generate a random 6-digit numeric OTP."""
-    return "".join(str(random.randint(0, 9)) for _ in range(OTP_LENGTH))
+    # `random` is predictable and is not suitable for authentication codes.
+    return f"{secrets.randbelow(10 ** OTP_LENGTH):0{OTP_LENGTH}d}"
+
+
+def invalidate_otp(db: Session, otp_record: OtpRequest) -> None:
+    """Prevent a code from being used when delivery was unsuccessful."""
+    otp_record.is_used = True
+    db.commit()
 
 
 def hash_otp(otp: str) -> str:
@@ -55,7 +62,7 @@ def verify_otp_hash(plain_otp: str, hashed: str) -> bool:
 
 # ── Rate limiting checks ────────────────────────────────────────────
 
-def check_rate_limit(db: Session, phone: str) -> None:
+def check_rate_limit(db: Session, phone: str, purpose: OtpPurpose) -> None:
     """
     Raise ValueError if the phone has exceeded the OTP request limit.
     Checks both the window limit and the resend cooldown.
@@ -68,6 +75,7 @@ def check_rate_limit(db: Session, phone: str) -> None:
         db.query(sa_func.count(OtpRequest.id))
         .filter(
             OtpRequest.phone_number == phone,
+            OtpRequest.purpose == purpose,
             OtpRequest.created_at >= window_start,
         )
         .scalar()
@@ -81,7 +89,10 @@ def check_rate_limit(db: Session, phone: str) -> None:
     # Check resend cooldown — most recent request must be > RESEND_COOLDOWN ago
     last_request = (
         db.query(OtpRequest)
-        .filter(OtpRequest.phone_number == phone)
+        .filter(
+            OtpRequest.phone_number == phone,
+            OtpRequest.purpose == purpose,
+        )
         .order_by(OtpRequest.created_at.desc())
         .first()
     )
@@ -117,7 +128,7 @@ def create_otp_record(
     The plaintext code is returned ONLY so it can be passed to send_otp_sms.
     It must NEVER be logged, stored in plaintext, or returned in an API response.
     """
-    check_rate_limit(db, phone)
+    check_rate_limit(db, phone, purpose)
 
     otp_plain = generate_otp()
     otp_hashed = hash_otp(otp_plain)
