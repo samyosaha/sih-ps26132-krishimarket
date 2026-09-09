@@ -24,7 +24,10 @@ from app.database import Base
 from app import models  # noqa: F401
 
 load_dotenv()
-config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
+config.set_main_option(
+    "sqlalchemy.url",
+    os.getenv("DATABASE_URL") or "sqlite:///./krishimarket.db",
+)
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

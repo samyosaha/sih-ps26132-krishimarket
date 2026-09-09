@@ -16,6 +16,7 @@ from app.models import (
 )
 from app.auth import get_current_user
 from app.services.storage_service import save_file, StorageError
+from app.services.notification_service import notify_verification_update
 from app.rate_limiter import create_rate_limiter
 
 router = APIRouter(tags=["verification"])
@@ -189,6 +190,14 @@ def review_verification_request(
 
     db.commit()
     db.refresh(request)
+
+    # Notify the applicant of the outcome
+    notify_verification_update(
+        db,
+        request.user_id,
+        approved=(payload.status == VerificationStatus.approved),
+        reason=payload.rejection_reason,
+    )
 
     return _to_response(request)
 

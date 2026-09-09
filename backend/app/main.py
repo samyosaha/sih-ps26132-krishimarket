@@ -23,6 +23,8 @@ from app.routers import ratings as ratings_router
 from app.routers import verification as verification_router
 from app.routers import notifications as notifications_router
 from app.routers import price_alerts as price_alerts_router
+from app.routers import translation as translation_router
+from app.routers import voice as voice_router
 
 load_dotenv()
 
@@ -117,6 +119,8 @@ app.include_router(ratings_router.router)
 app.include_router(verification_router.router)
 app.include_router(notifications_router.router)
 app.include_router(price_alerts_router.router)
+app.include_router(translation_router.router)
+app.include_router(voice_router.router)
 
 # ── Static file serving for uploads (local dev) ──────────────────────
 

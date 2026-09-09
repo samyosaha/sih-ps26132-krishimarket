@@ -1,11 +1,12 @@
 import os
 import time
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, func
 from app.database import SessionLocal
-from app.models import PriceRecord
+from app.models import PriceRecord, PriceAlert, AlertCondition, NotificationType
+from app.services.notification_service import create_notification
 
 API_URL = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
 
@@ -257,6 +258,101 @@ def fetch_live_prices(
         db.close()
 
 
+def check_price_alerts(commodities: list[str] | None = None) -> int:
+    """
+    Match active price alerts against the latest synced prices.
+
+    Creates an in-app Notification on every match and sets the alert's
+    last_triggered_at.  A 24-hour dedup prevents repeat firing: an alert
+    will not re-trigger if last_triggered_at is within the last 24 hours.
+
+    Returns the number of alerts triggered.
+    """
+    db = SessionLocal()
+    triggered = 0
+    try:
+        query = db.query(PriceAlert).filter(
+            PriceAlert.is_active == True,  # noqa: E712
+        )
+        if commodities:
+            lowered = [c.lower() for c in commodities]
+            query = query.filter(
+                func.lower(PriceAlert.commodity).in_(lowered)
+            )
+        alerts = query.all()
+
+        now = datetime.now(timezone.utc)
+
+        for alert in alerts:
+            # 24-hour dedup window
+            if alert.last_triggered_at:
+                last = alert.last_triggered_at
+                if last.tzinfo is None:
+                    last = last.replace(tzinfo=timezone.utc)
+                if (now - last) < timedelta(hours=24):
+                    continue
+
+            # Latest matching price record
+            price_query = db.query(PriceRecord).filter(
+                func.lower(PriceRecord.commodity) == alert.commodity.lower(),
+                PriceRecord.modal_price.isnot(None),
+            )
+            if alert.state:
+                price_query = price_query.filter(
+                    func.lower(PriceRecord.state) == alert.state.lower()
+                )
+            if alert.district:
+                price_query = price_query.filter(
+                    func.lower(PriceRecord.district) == alert.district.lower()
+                )
+
+            record = (
+                price_query.order_by(PriceRecord.arrival_date.desc()).first()
+            )
+            if not record:
+                continue
+
+            matched = False
+            if (
+                alert.condition == AlertCondition.at_or_above
+                and record.modal_price >= alert.target_price
+            ):
+                matched = True
+            elif (
+                alert.condition == AlertCondition.at_or_below
+                and record.modal_price <= alert.target_price
+            ):
+                matched = True
+
+            if matched:
+                create_notification(
+                    db,
+                    user_id=alert.user_id,
+                    notification_type=NotificationType.price_alert,
+                    title=f"Price alert: {alert.commodity}",
+                    body=(
+                        f"{alert.commodity} modal price is now "
+                        f"\u20b9{record.modal_price:.2f}/quintal"
+                    ),
+                    related_entity_type="price_alert",
+                    related_entity_id=alert.id,
+                )
+                alert.last_triggered_at = now
+                triggered += 1
+                print(
+                    f"[price_ingestion] Price alert #{alert.id} triggered "
+                    f"for user {alert.user_id} ({alert.commodity})"
+                )
+
+        db.commit()
+    except Exception as e:
+        print(f"[price_ingestion] check_price_alerts error: {e}")
+        db.rollback()
+    finally:
+        db.close()
+    return triggered
+
+
 def sync_prices():
     """
     Fetch the latest records for all commodities across all states.
@@ -278,6 +374,14 @@ def sync_prices():
             time.sleep(0.5)  # rate-limit between commodities
     finally:
         db.close()
+
+    # After a successful sync, fire any matching price alerts
+    try:
+        triggered = check_price_alerts(commodities=COMMODITIES)
+        print(f"[price_ingestion] Price alerts triggered: {triggered}")
+    except Exception as e:
+        print(f"[price_ingestion] check_price_alerts failed: {e}")
+
     return total
 
 

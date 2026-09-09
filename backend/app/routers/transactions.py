@@ -7,6 +7,10 @@ from app.database import get_db
 from app.models import Transaction, Offer, Lot, User, PaymentStatus
 from app.auth import get_current_user
 from app.rate_limiter import create_rate_limiter
+from app.services.notification_service import (
+    notify_payment_update,
+    notify_rate_prompt,
+)
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
@@ -139,4 +143,20 @@ def update_payment_status(
     transaction.payment_status = requested_status
     db.commit()
     db.refresh(transaction)
+
+    # Notify both parties about the status change
+    farmer = db.query(User).filter(User.id == lot.farmer_id).first()
+    buyer = db.query(User).filter(User.id == offer.buyer_id).first()
+
+    notify_payment_update(
+        db, lot.farmer_id, transaction.id, requested_status.value
+    )
+    notify_payment_update(
+        db, offer.buyer_id, transaction.id, requested_status.value
+    )
+
+    if requested_status == PaymentStatus.delivered:
+        notify_rate_prompt(db, lot.farmer_id, transaction.id, buyer.name if buyer else "the buyer")
+        notify_rate_prompt(db, offer.buyer_id, transaction.id, farmer.name if farmer else "the farmer")
+
     return _enrich_transaction(transaction, db)
