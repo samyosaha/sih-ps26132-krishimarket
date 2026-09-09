@@ -2,11 +2,16 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
+from apscheduler.schedulers.background import BackgroundScheduler
+from pathlib import Path
+
 from app.database import engine, Base
 from app import models  # noqa: F401
 from app.auth import get_current_user
 from app.models import User, UserRole
+from app.services.price_ingestion import sync_prices, backfill_prices
 from app.routers import auth as auth_router
 from app.routers import lots as lots_router
 from app.routers import offers as offers_router
@@ -14,6 +19,10 @@ from app.routers import transactions as transactions_router
 from app.routers import disputes as disputes_router
 from app.routers import prices as prices_router
 from app.routers import forecast as forecast_router
+from app.routers import ratings as ratings_router
+from app.routers import verification as verification_router
+from app.routers import notifications as notifications_router
+from app.routers import price_alerts as price_alerts_router
 
 load_dotenv()
 
@@ -24,9 +33,9 @@ Base.metadata.create_all(bind=engine)
 
 
 class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
-    """Reject request bodies larger than a configured limit (default: 1 MB)."""
+    """Reject request bodies larger than a configured limit (default: 5 MB)."""
 
-    def __init__(self, app, max_body_bytes: int = 1_048_576):
+    def __init__(self, app, max_body_bytes: int = 5_242_880):
         super().__init__(app)
         self.max_body_bytes = max_body_bytes
 
@@ -93,7 +102,9 @@ app.add_middleware(
 
 # Apply security middleware (order matters: outermost runs first)
 app.add_middleware(SecurityHeadersMiddleware)
-app.add_middleware(RequestSizeLimitMiddleware, max_body_bytes=1_048_576)  # 1 MB
+app.add_middleware(RequestSizeLimitMiddleware, max_body_bytes=5_242_880)  # 5 MB for doc uploads
+
+# ── Routers ──────────────────────────────────────────────────────────
 
 app.include_router(auth_router.router)
 app.include_router(lots_router.router)
@@ -102,6 +113,40 @@ app.include_router(transactions_router.router)
 app.include_router(disputes_router.router)
 app.include_router(prices_router.router)
 app.include_router(forecast_router.router)
+app.include_router(ratings_router.router)
+app.include_router(verification_router.router)
+app.include_router(notifications_router.router)
+app.include_router(price_alerts_router.router)
+
+# ── Static file serving for uploads (local dev) ──────────────────────
+
+uploads_dir = Path("uploads")
+uploads_dir.mkdir(exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
+
+# ── Background scheduler ────────────────────────────────────────────
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(sync_prices, "interval", days=1, id="daily_price_sync")
+
+
+@app.on_event("startup")
+def start_scheduler():
+    try:
+        scheduler.start()
+    except Exception:
+        pass
+
+
+@app.on_event("shutdown")
+def stop_scheduler():
+    try:
+        scheduler.shutdown()
+    except Exception:
+        pass
+
+
+# ── Root endpoints ───────────────────────────────────────────────────
 
 @app.get("/")
 def read_root():
@@ -114,3 +159,27 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+
+# ── Admin endpoints ─────────────────────────────────────────────────
+
+@app.post("/admin/sync-prices")
+def trigger_price_sync(current_user: User = Depends(get_current_user)):
+    if current_user.role != UserRole.admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    try:
+        count = sync_prices()
+        return {"status": "ok", "records_processed": count}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+@app.post("/admin/backfill-prices")
+def trigger_backfill(current_user: User = Depends(get_current_user)):
+    if current_user.role != UserRole.admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    try:
+        count = backfill_prices()
+        return {"status": "ok", "records_processed": count}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

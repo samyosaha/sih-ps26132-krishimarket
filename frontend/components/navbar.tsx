@@ -5,7 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
-import { Sprout, LogOut, Menu, X } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Sprout, LogOut, Menu, X, ArrowUpRight } from "lucide-react";
 
 function NavLink({
   href,
@@ -22,8 +23,8 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`text-sm font-medium transition-colors hover:text-emerald-700 ${
-        active ? "text-emerald-700" : "text-muted-foreground"
+      className={`text-sm font-medium transition-colors hover:text-primary ${
+        active ? "text-primary" : "text-muted-foreground"
       }`}
     >
       {label}
@@ -98,26 +99,32 @@ export function Navbar() {
   ) : null;
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/75">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-10">
           <Link href="/" className="flex items-center gap-2" aria-label="KrishiMarket home">
-            <Sprout className="h-6 w-6 text-emerald-600" aria-hidden="true" />
-            <span className="text-xl font-bold tracking-tight text-emerald-700">
+            <Sprout className="h-6 w-6 text-accent" aria-hidden="true" />
+            <span className="font-display text-xl tracking-tight text-primary">
               KrishiMarket
             </span>
           </Link>
 
           {/* Desktop nav */}
-          {isAuthenticated && !isLoading && user && (
+          {isAuthenticated && !isLoading && user ? (
             <nav className="hidden items-center gap-6 md:flex" aria-label="Main navigation">
               {navLinks}
               {commonLinks}
+            </nav>
+          ) : (
+            <nav className="hidden items-center gap-6 md:flex" aria-label="Public navigation">
+              <NavLink href="/prices" label="Market prices" active={pathname === "/prices"} />
+              <NavLink href="/lots" label="Browse lots" active={pathname?.startsWith("/lots")} />
             </nav>
           )}
         </div>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           {/* Desktop auth buttons */}
           {isLoading ? null : isAuthenticated && user ? (
             <>
@@ -126,10 +133,10 @@ export function Navbar() {
                   Hi, <span className="font-medium text-foreground">{user.name}</span>
                 </span>
                 <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
+                  className={`border border-border px-2 py-0.5 text-xs font-semibold uppercase ${
                     user.role === "farmer"
-                      ? "bg-emerald-100 text-emerald-800"
-                      : "bg-amber-100 text-amber-800"
+                      ? "text-primary"
+                      : "text-clay"
                   }`}
                 >
                   {user.role}
@@ -147,11 +154,11 @@ export function Navbar() {
             </>
           ) : (
             <div className="hidden sm:flex items-center gap-2">
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-                <Link href="/register">Register</Link>
+              <Link href="/login" className="hidden text-sm font-medium text-muted-foreground hover:text-primary sm:inline-flex">
+                Sign in
+              </Link>
+              <Button asChild size="sm" className="hidden gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 sm:inline-flex">
+                <Link href="/register">Join the market <ArrowUpRight className="h-4 w-4" /></Link>
               </Button>
             </div>
           )}
@@ -184,10 +191,10 @@ export function Navbar() {
                     Hi, <span className="font-medium text-foreground">{user.name}</span>
                   </span>
                   <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
+                    className={`border border-border px-2 py-0.5 text-xs font-semibold uppercase ${
                       user.role === "farmer"
-                        ? "bg-emerald-100 text-emerald-800"
-                        : "bg-amber-100 text-amber-800"
+                      ? "text-primary"
+                      : "text-clay"
                     }`}
                   >
                     {user.role}
@@ -211,11 +218,11 @@ export function Navbar() {
               </>
             ) : (
               <div className="flex flex-col gap-2">
-                <Button asChild variant="ghost" size="sm" className="justify-start">
-                  <Link href="/login" onClick={closeMobile}>Login</Link>
-                </Button>
-                <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700 justify-start">
-                  <Link href="/register" onClick={closeMobile}>Register</Link>
+                <Link href="/prices" onClick={closeMobile} className="py-2 text-sm font-medium text-muted-foreground">Market prices</Link>
+                <Link href="/lots" onClick={closeMobile} className="py-2 text-sm font-medium text-muted-foreground">Browse lots</Link>
+                <Link href="/login" onClick={closeMobile} className="py-2 text-sm font-medium text-muted-foreground">Sign in</Link>
+                <Button asChild size="sm" className="justify-start bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Link href="/register" onClick={closeMobile}>Join the market <ArrowUpRight className="h-4 w-4" /></Link>
                 </Button>
               </div>
             )}

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Bree_Serif, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 import { Navbar } from "@/components/navbar";
@@ -7,11 +7,19 @@ import { Footer } from "@/components/footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { Analytics } from "@/components/analytics";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-dm-sans",
+});
+
+const breeSerif = Bree_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+  variable: "--font-bree-serif",
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://krishimarket.in";
@@ -20,7 +28,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#059669",
+  themeColor: "#234936",
 };
 
 export const metadata: Metadata = {
@@ -87,18 +95,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans min-h-screen bg-background antialiased flex flex-col`}>
-        <AuthProvider>
-          <Navbar />
-          <main className="container mx-auto px-4 py-6 max-w-7xl flex-1">
-            {children}
-          </main>
-          <Footer />
-          <CookieConsent />
-          <Analytics />
-          <Toaster richColors position="top-right" />
-        </AuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${dmSans.variable} ${breeSerif.variable} font-sans min-h-screen bg-background antialiased flex flex-col`}>
+        <ThemeProvider>
+          <AuthProvider>
+            <Navbar />
+            <main className="container mx-auto px-4 py-6 max-w-7xl flex-1">
+              {children}
+            </main>
+            <Footer />
+            <CookieConsent />
+            <Analytics />
+            <Toaster richColors position="top-right" />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

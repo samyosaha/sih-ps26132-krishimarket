@@ -1,6 +1,7 @@
 import enum
 from sqlalchemy import (
-    Column, Integer, String, Float, Boolean, ForeignKey, DateTime, Enum, Text
+    Column, Integer, String, Float, Boolean, ForeignKey, DateTime, Enum, Text,
+    UniqueConstraint, CheckConstraint,
 )
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -42,6 +43,48 @@ class DisputeStatus(str, enum.Enum):
     resolved = "resolved"
 
 
+class DisputeOutcome(str, enum.Enum):
+    favor_farmer = "favor_farmer"
+    favor_buyer = "favor_buyer"
+    mutual = "mutual"
+    no_fault = "no_fault"
+
+
+class OtpPurpose(str, enum.Enum):
+    signup = "signup"
+    login = "login"
+    password_reset = "password_reset"
+
+
+class NotificationType(str, enum.Enum):
+    new_offer = "new_offer"
+    offer_accepted = "offer_accepted"
+    offer_rejected = "offer_rejected"
+    price_alert = "price_alert"
+    dispute_update = "dispute_update"
+    payment_update = "payment_update"
+    announcement = "announcement"
+    rate_prompt = "rate_prompt"
+    verification_update = "verification_update"
+
+
+class DevicePlatform(str, enum.Enum):
+    web = "web"
+    android = "android"
+    ios = "ios"
+
+
+class AlertCondition(str, enum.Enum):
+    at_or_above = "at_or_above"
+    at_or_below = "at_or_below"
+
+
+class VerificationStatus(str, enum.Enum):
+    pending = "pending"
+    approved = "approved"
+    rejected = "rejected"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -54,8 +97,20 @@ class User(Base):
     is_verified_buyer = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+    # Phase 6 additions
+    preferred_language = Column(String, default="en", nullable=False, server_default="en")
+    phone_verified = Column(Boolean, default=False, nullable=False, server_default="false")
+    average_rating = Column(Float, nullable=True)
+    total_ratings = Column(Integer, default=0, nullable=False, server_default="0")
+
     lots = relationship("Lot", back_populates="farmer")
     offers = relationship("Offer", back_populates="buyer")
+    ratings_given = relationship("Rating", foreign_keys="Rating.rater_id", back_populates="rater")
+    ratings_received = relationship("Rating", foreign_keys="Rating.ratee_id", back_populates="ratee")
+    notifications = relationship("Notification", back_populates="user")
+    device_tokens = relationship("DeviceToken", back_populates="user")
+    price_alerts = relationship("PriceAlert", back_populates="user")
+    verification_requests = relationship("VerificationRequest", foreign_keys="VerificationRequest.user_id", back_populates="user")
 
 
 class Lot(Base):
@@ -116,7 +171,14 @@ class Dispute(Base):
     status = Column(Enum(DisputeStatus), default=DisputeStatus.open)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+    # Phase 6 additions — audit trail for dispute resolution
+    resolution_notes = Column(Text, nullable=True)
+    resolved_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    resolved_at = Column(DateTime(timezone=True), nullable=True)
+    outcome = Column(Enum(DisputeOutcome), nullable=True)
+
     transaction = relationship("Transaction", back_populates="disputes")
+    resolved_by = relationship("User", foreign_keys=[resolved_by_id])
 
 
 class PriceRecord(Base):
@@ -133,3 +195,103 @@ class PriceRecord(Base):
     min_price = Column(Float, nullable=True)
     max_price = Column(Float, nullable=True)
     modal_price = Column(Float, nullable=True)
+
+
+# ── Phase 6 new tables ───────────────────────────────────────────────
+
+
+class Rating(Base):
+    __tablename__ = "ratings"
+    __table_args__ = (
+        UniqueConstraint("transaction_id", "rater_id", name="uq_rating_per_transaction_rater"),
+        CheckConstraint("rating_value >= 1 AND rating_value <= 5", name="ck_rating_value_range"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    transaction_id = Column(Integer, ForeignKey("transactions.id"), nullable=False)
+    rater_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    ratee_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    rating_value = Column(Integer, nullable=False)
+    comment = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    transaction = relationship("Transaction")
+    rater = relationship("User", foreign_keys=[rater_id], back_populates="ratings_given")
+    ratee = relationship("User", foreign_keys=[ratee_id], back_populates="ratings_received")
+
+
+class OtpRequest(Base):
+    __tablename__ = "otp_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    phone_number = Column(String, nullable=False, index=True)
+    otp_hash = Column(String, nullable=False)
+    purpose = Column(Enum(OtpPurpose), nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    attempt_count = Column(Integer, default=0, nullable=False, server_default="0")
+    is_used = Column(Boolean, default=False, nullable=False, server_default="false")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class VerificationRequest(Base):
+    __tablename__ = "verification_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    business_name = Column(String, nullable=False)
+    gst_number = Column(String, nullable=True)
+    id_document_url = Column(String, nullable=True)
+    status = Column(Enum(VerificationStatus), default=VerificationStatus.pending, nullable=False)
+    reviewed_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    rejection_reason = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    reviewed_at = Column(DateTime(timezone=True), nullable=True)
+
+    user = relationship("User", foreign_keys=[user_id], back_populates="verification_requests")
+    reviewed_by = relationship("User", foreign_keys=[reviewed_by_id])
+
+
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    type = Column(Enum(NotificationType), nullable=False)
+    title = Column(String, nullable=False)
+    body = Column(Text, nullable=False)
+    related_entity_type = Column(String, nullable=True)
+    related_entity_id = Column(Integer, nullable=True)
+    is_read = Column(Boolean, default=False, nullable=False, server_default="false")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="notifications")
+
+
+class DeviceToken(Base):
+    __tablename__ = "device_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    token = Column(Text, nullable=False, unique=True)
+    platform = Column(Enum(DevicePlatform), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_used_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="device_tokens")
+
+
+class PriceAlert(Base):
+    __tablename__ = "price_alerts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    commodity = Column(String, nullable=False)
+    state = Column(String, nullable=True)
+    district = Column(String, nullable=True)
+    target_price = Column(Float, nullable=False)
+    condition = Column(Enum(AlertCondition), nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False, server_default="true")
+    last_triggered_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="price_alerts")

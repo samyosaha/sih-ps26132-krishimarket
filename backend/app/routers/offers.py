@@ -8,6 +8,9 @@ from app.models import Offer, Lot, Transaction, User, UserRole, OfferStatus, Lot
 from app.auth import get_current_user
 from app.sanitize import sanitize_text
 from app.rate_limiter import create_rate_limiter
+from app.services.notification_service import (
+    notify_new_offer, notify_offer_accepted, notify_offer_rejected,
+)
 
 router = APIRouter(prefix="/offers", tags=["offers"])
 
@@ -132,6 +135,10 @@ def create_offer(
     db.add(offer)
     db.commit()
     db.refresh(offer)
+
+    # Notify the farmer about the new offer
+    notify_new_offer(db, lot.farmer_id, current_user.name, lot.commodity, offer.id)
+
     return offer
 
 
@@ -286,6 +293,10 @@ def accept_offer(
 
     db.commit()
     db.refresh(offer)
+
+    # Notify the buyer that their offer was accepted
+    notify_offer_accepted(db, offer.buyer_id, lot.commodity, offer.id)
+
     return offer
 
 
@@ -308,4 +319,9 @@ def reject_offer(
     offer.status = OfferStatus.rejected
     db.commit()
     db.refresh(offer)
+
+    # Notify the buyer that their offer was rejected
+    lot = db.query(Lot).filter(Lot.id == offer.lot_id).first()
+    notify_offer_rejected(db, offer.buyer_id, lot.commodity if lot else "lot", offer.id)
+
     return offer

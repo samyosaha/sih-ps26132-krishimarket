@@ -17,9 +17,11 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        sans: ["var(--font-dm-sans)", "sans-serif"],
+        display: ["var(--font-bree-serif)", "Georgia", "serif"],
       },
       colors: {
+        clay: "hsl(10 48% 52%)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

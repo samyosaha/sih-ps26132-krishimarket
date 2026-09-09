@@ -1,180 +1,37 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Sprout,
-  ShoppingBasket,
-  TrendingUp,
-  Users,
-  Handshake,
-  ShieldCheck,
-  ArrowRight,
-} from "lucide-react";
+import { ArrowRight, Check, MapPin, ShieldCheck, TrendingUp, Wheat } from "lucide-react";
+
+const steps = [
+  { number: "01", title: "List the lot", description: "Share crop, grade, quantity, location, and your asking price." },
+  { number: "02", title: "Compare openly", description: "See offers beside the market range, not buried in a phone call." },
+  { number: "03", title: "Trade directly", description: "Agree on the terms, track delivery, and keep the record in one place." },
+];
+
+const marketPulse = [42, 48, 44, 57, 53, 67, 72];
 
 export default function Home() {
   return (
-    <div className="space-y-20 py-8">
-      <section className="grid gap-10 py-10 md:grid-cols-2 md:items-center">
-        <div className="space-y-6">
-          <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-800">
-            <Sprout className="h-3.5 w-3.5" />
-            KrishiMarket
-          </span>
-          <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
-            Fair prices for every harvest.
-            <span className="block text-emerald-700">
-              Direct from farmers to buyers.
-            </span>
-          </h1>
-          <p className="max-w-xl text-lg leading-relaxed text-muted-foreground">
-            List your produce, make transparent offers, and track payments — all
-            in one place. No middlemen, no hidden cuts.
-          </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button
-              asChild
-              size="lg"
-              className="bg-emerald-600 hover:bg-emerald-700"
-            >
-              <Link href="/register">
-                Get started
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="/lots">Browse produce</Link>
-            </Button>
+    <div className="-mx-4 overflow-hidden sm:-mx-6 lg:-mx-8">
+      <section className="relative border-b border-border/70 px-4 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
+        <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div className="max-w-2xl">
+            <p className="mb-6 flex items-center gap-2 text-sm font-semibold text-primary"><span className="h-px w-8 bg-accent" />A clearer market for India&apos;s harvest</p>
+            <h1 className="font-display text-5xl leading-[0.98] tracking-tight text-foreground sm:text-6xl lg:text-7xl">Direct trade.<span className="block text-primary">Fairer ground.</span></h1>
+            <p className="mt-7 max-w-xl text-lg leading-8 text-muted-foreground sm:text-xl">KrishiMarket gives farmers a stronger read on price and gives buyers a better way to compare the lots behind it.</p>
+            <div className="mt-9 flex flex-wrap gap-3"><Link href="/register" className="inline-flex h-11 items-center gap-2 rounded-sm bg-primary px-5 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5">Put a lot on market <ArrowRight className="h-4 w-4" /></Link><Link href="/lots" className="inline-flex h-11 items-center gap-2 rounded-sm border border-primary/30 bg-transparent px-5 text-sm font-semibold text-primary hover:bg-secondary">Browse available lots</Link></div>
+            <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 border-t border-border/70 pt-5 text-sm text-muted-foreground"><span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" />Identity-aware trading</span><span className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />Built for mandi realities</span></div>
           </div>
-          <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" />
-              Verified users
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Handshake className="h-4 w-4 text-emerald-600" />
-              Direct P2P offers
-            </div>
-            <div className="flex items-center gap-1.5">
-              <TrendingUp className="h-4 w-4 text-emerald-600" />
-              Live price dashboard
-            </div>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="absolute -inset-8 -z-10 rounded-3xl bg-gradient-to-br from-emerald-100 via-amber-50 to-transparent blur-2xl" />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Card className="border-emerald-200/60">
-              <CardHeader className="pb-2">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
-                  <Sprout className="h-5 w-5" />
-                </div>
-                <CardTitle className="mt-3 text-lg">For Farmers</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p>🌾 List unlimited harvest lots with quality grade</p>
-                <p>📩 Receive & compare multiple buyer offers</p>
-                <p>✅ Accept / reject in one click with instant notifs</p>
-                <p>💸 Track transaction & payment status end-to-end</p>
-              </CardContent>
-            </Card>
-            <Card className="mt-6 border-amber-200/60 sm:mt-0">
-              <CardHeader className="pb-2">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
-                  <ShoppingBasket className="h-5 w-5" />
-                </div>
-                <CardTitle className="mt-3 text-lg">For Buyers</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p>🔎 Browse lots by commodity, district, and grade</p>
-                <p>💰 Send targeted offers directly to farmers</p>
-                <p>📊 Compare prices with the market dashboard</p>
-                <p>🧾 Confirm payments when produce is delivered</p>
-              </CardContent>
-            </Card>
+          <div className="market-board market-grid relative overflow-hidden border border-primary/20 bg-card p-5 sm:p-7">
+            <div className="flex items-start justify-between border-b border-border/70 pb-5"><div><p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">Market board / illustrative snapshot</p><h2 className="mt-2 font-display text-3xl text-foreground">Onion · Nashik</h2></div><span className="flex items-center gap-1.5 text-sm font-semibold text-primary"><span className="h-2 w-2 rounded-full bg-primary" />Today</span></div>
+            <div className="price-reveal py-7"><div className="flex items-end justify-between gap-4"><p className="text-sm text-muted-foreground">Indicative market range</p><span className="text-xs text-muted-foreground">Updated 08 Sep 2026</span></div><div className="mt-1 flex flex-wrap items-end gap-3"><span className="font-display text-5xl text-foreground sm:text-6xl">₹2,480</span><span className="mb-2 text-sm font-semibold text-primary">/ quintal <span className="ml-2 text-clay">↑ 4.8%</span></span></div><div className="mt-6 flex h-10 items-end gap-1 border-b border-border/70 pb-1">{marketPulse.map((height, index) => <span key={index} className="flex-1 bg-accent/70 transition-all first:bg-primary last:bg-primary" style={{ height: `${height}%` }} />)}</div><div className="mt-2 flex justify-between text-xs text-muted-foreground"><span>7-day movement</span><span>₹2,350 low · ₹2,620 high</span></div></div>
+            <div className="grid gap-px border-y border-border/70 bg-border/70 sm:grid-cols-3"><div className="bg-card px-4 py-4"><p className="text-xs text-muted-foreground">Farmer ask</p><p className="mt-1 text-lg font-bold">₹2,350</p></div><div className="bg-card px-4 py-4"><p className="text-xs text-muted-foreground">Buyer range</p><p className="mt-1 text-lg font-bold">₹2.4–2.52k</p></div><div className="bg-card px-4 py-4"><p className="text-xs text-muted-foreground">Available</p><p className="mt-1 text-lg font-bold">18 quintal</p></div></div>
+            <div className="mt-5 flex items-center justify-between text-sm"><span className="flex items-center gap-2 text-muted-foreground"><Wheat className="h-4 w-4 text-accent" />Grade A · example listing</span><Link href="/lots" className="font-semibold text-primary hover:text-clay">Browse this market <ArrowRight className="ml-1 inline h-4 w-4" /></Link></div>
           </div>
         </div>
       </section>
-
-      <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          {
-            icon: Sprout,
-            title: "List lots",
-            desc: "Title, produce, quantity, price, harvest date, grade.",
-            tint: "emerald",
-          },
-          {
-            icon: ShoppingBasket,
-            title: "Smart filters",
-            desc: "Search by commodity, state, district, grade.",
-            tint: "sky",
-          },
-          {
-            icon: Users,
-            title: "Direct offers",
-            desc: "Buyers send offers, farmers decide, no middleman.",
-            tint: "amber",
-          },
-          {
-            icon: TrendingUp,
-            title: "Price insights",
-            desc: "Market dashboard keeps everyone informed.",
-            tint: "violet",
-          },
-        ].map((f) => {
-          const Icon = f.icon;
-          const tintMap: Record<string, string> = {
-            emerald: "bg-emerald-100 text-emerald-700",
-            sky: "bg-sky-100 text-sky-700",
-            amber: "bg-amber-100 text-amber-700",
-            violet: "bg-violet-100 text-violet-700",
-          };
-          return (
-            <Card key={f.title}>
-              <CardHeader>
-                <div
-                  className={`inline-flex h-10 w-10 items-center justify-center rounded-lg ${tintMap[f.tint]}`}
-                >
-                  <Icon className="h-5 w-5" />
-                </div>
-                <CardTitle className="mt-3 text-base">{f.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{f.desc}</CardDescription>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </section>
-
-      <section className="rounded-3xl border bg-gradient-to-br from-emerald-50 to-amber-50 p-10 text-center">
-        <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight">
-          Ready to trade smarter?
-        </h2>
-        <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-          Join KrishiMarket in 2 minutes. Register as a farmer to sell your
-          harvest, or as a buyer to source quality produce.
-        </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Button
-            asChild
-            size="lg"
-            className="bg-emerald-600 hover:bg-emerald-700"
-          >
-            <Link href="/register">Create free account</Link>
-          </Button>
-          <Button asChild variant="outline" size="lg">
-            <Link href="/lots">Explore lots →</Link>
-          </Button>
-        </div>
-      </section>
+      <section className="border-b border-border/70 bg-secondary/40 px-4 py-16 sm:px-6 lg:px-8 lg:py-20"><div className="mx-auto max-w-7xl"><div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-end"><div><p className="text-sm font-semibold text-primary">Two sides, one clearer market</p><h2 className="mt-3 max-w-md font-display text-4xl leading-tight sm:text-5xl">A better deal starts with seeing the same picture.</h2></div><p className="max-w-xl text-lg leading-8 text-muted-foreground">Farmers can price with context. Buyers can source with confidence. Every lot carries the details that make a direct conversation productive.</p></div><div className="mt-12 grid gap-5 md:grid-cols-2"><div className="bg-primary p-7 text-primary-foreground sm:p-9"><div className="flex items-center justify-between"><h3 className="font-display text-3xl">For farmers</h3><Wheat className="h-7 w-7 text-accent" /></div><p className="mt-4 text-primary-foreground/75">Turn your harvest into a lot buyers can understand and act on.</p><ul className="mt-7 space-y-3 text-sm text-primary-foreground/90"><li className="flex gap-3"><Check className="h-5 w-5 shrink-0 text-accent" />Set a price with local market context</li><li className="flex gap-3"><Check className="h-5 w-5 shrink-0 text-accent" />Compare incoming offers in one view</li><li className="flex gap-3"><Check className="h-5 w-5 shrink-0 text-accent" />Keep the transaction trail clear</li></ul><Link href="/register" className="mt-8 inline-flex items-center gap-2 font-semibold text-accent">Start selling <ArrowRight className="h-4 w-4" /></Link></div><div className="border border-border/70 bg-card p-7 sm:p-9"><div className="flex items-center justify-between"><h3 className="font-display text-3xl">For buyers</h3><TrendingUp className="h-7 w-7 text-accent" /></div><p className="mt-4 text-muted-foreground">Compare real lots by quality, place, quantity, and price before you make an offer.</p><ul className="mt-7 space-y-3 text-sm"><li className="flex gap-3"><Check className="h-5 w-5 shrink-0 text-primary" />Filter by crop, district, and grade</li><li className="flex gap-3"><Check className="h-5 w-5 shrink-0 text-primary" />Make a direct, considered offer</li><li className="flex gap-3"><Check className="h-5 w-5 shrink-0 text-primary" />Track terms through delivery</li></ul><Link href="/lots" className="mt-8 inline-flex items-center gap-2 font-semibold text-primary">Source a lot <ArrowRight className="h-4 w-4" /></Link></div></div></div></section>
+      <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-20"><div className="mx-auto max-w-7xl"><p className="text-sm font-semibold text-primary">How direct trade works</p><div className="mt-8 grid gap-0 border-y border-border/70 md:grid-cols-3">{steps.map((step) => <div key={step.number} className="border-b border-border/70 py-7 last:border-0 md:border-b-0 md:border-r md:px-8 md:first:pl-0 md:last:border-0 md:last:pr-0"><span className="font-display text-4xl text-accent">{step.number}</span><h3 className="mt-5 text-lg font-bold">{step.title}</h3><p className="mt-2 max-w-xs leading-7 text-muted-foreground">{step.description}</p></div>)}</div></div></section>
+      <section className="bg-primary px-4 py-14 text-primary-foreground sm:px-6 lg:px-8 lg:py-18"><div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-end md:justify-between"><div><p className="text-sm font-semibold text-accent">The next fair trade can start here.</p><h2 className="mt-3 max-w-2xl font-display text-4xl leading-tight sm:text-5xl">Bring the harvest closer to the people who need it.</h2></div><div className="flex shrink-0 flex-wrap gap-3"><Link href="/register" className="inline-flex h-11 items-center gap-2 rounded-sm bg-accent px-5 text-sm font-bold text-foreground hover:bg-accent/90">Join the market <ArrowRight className="h-4 w-4" /></Link><Link href="/prices" className="inline-flex h-11 items-center rounded-sm border border-primary-foreground/30 px-5 text-sm font-semibold hover:bg-primary-foreground/10">See price insights</Link></div></div></section>
     </div>
   );
 }

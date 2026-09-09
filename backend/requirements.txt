@@ -13,3 +13,7 @@ alembic
 requests
 apscheduler
 pydantic[email]
+httpx
+python-multipart
+firebase-admin
+Pillow
