@@ -6,8 +6,9 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
 from pathlib import Path
+from sqlalchemy import text
 
-from app.database import engine, Base
+from app.database import engine, Base, SessionLocal, ensure_sqlite_schema
 from app import models  # noqa: F401
 from app.auth import get_current_user
 from app.models import User, UserRole
@@ -29,6 +30,7 @@ from app.routers import voice as voice_router
 load_dotenv()
 
 Base.metadata.create_all(bind=engine)
+ensure_sqlite_schema()
 
 
 # ── Security Middleware ──────────────────────────────────────────────
@@ -92,7 +94,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=[
         "Authorization",
         "Content-Type",
@@ -137,6 +139,12 @@ scheduler.add_job(sync_prices, "interval", days=1, id="daily_price_sync")
 @app.on_event("startup")
 def start_scheduler():
     try:
+        from app.demo_accounts import seed
+
+        seed()
+    except Exception:
+        pass
+    try:
         scheduler.start()
     except Exception:
         pass
@@ -162,7 +170,15 @@ def read_root():
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    try:
+        db = SessionLocal()
+        try:
+            db.execute(text("SELECT 1"))
+        finally:
+            db.close()
+        return {"status": "ok", "database": "connected"}
+    except Exception as exc:
+        return {"status": "degraded", "database": str(exc)}
 
 
 # ── Admin endpoints ─────────────────────────────────────────────────

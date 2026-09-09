@@ -1,3 +1,4 @@
+import os
 import re
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -229,7 +230,15 @@ async def request_otp(
         sent = await send_otp_sms(payload.phone, otp_plain)
         if not sent:
             raise HTTPException(status_code=502, detail="Failed to send OTP. Please try again.")
-        return {"message": "OTP sent successfully", "expires_in_seconds": 300}
+        response = {"message": "OTP sent successfully", "expires_in_seconds": 300}
+        # Prototype / local: SMS is not configured, so return the code to the client.
+        if os.getenv("ENVIRONMENT", "development") != "production":
+            from app.services.otp_service import SMS_API_KEY
+
+            if not SMS_API_KEY:
+                response["dev_otp"] = otp_plain
+                response["message"] = f"OTP sent (dev mode). Code: {otp_plain}"
+        return response
     except ValueError as e:
         raise HTTPException(status_code=429, detail=str(e))
 
@@ -297,6 +306,14 @@ async def forgot_password(
     try:
         record, otp_plain = create_otp_record(db, payload.phone, OtpPurpose.password_reset)
         await send_otp_sms(payload.phone, otp_plain)
+        if os.getenv("ENVIRONMENT", "development") != "production":
+            from app.services.otp_service import SMS_API_KEY
+
+            if not SMS_API_KEY:
+                return {
+                    "message": f"If this phone is registered, an OTP has been sent. Dev code: {otp_plain}",
+                    "dev_otp": otp_plain,
+                }
     except ValueError as e:
         raise HTTPException(status_code=429, detail=str(e))
 
