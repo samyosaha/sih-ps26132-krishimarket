@@ -126,8 +126,27 @@ def list_my_disputes(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    disputes = db.query(Dispute).filter(Dispute.raised_by_id == current_user.id).all()
-    return [_to_response(d) for d in disputes]
+    """List disputes the current user raised or is a party to."""
+    disputes = (
+        db.query(Dispute)
+        .join(Transaction, Dispute.transaction_id == Transaction.id)
+        .join(Offer, Transaction.offer_id == Offer.id)
+        .join(Lot, Offer.lot_id == Lot.id)
+        .filter(
+            (Dispute.raised_by_id == current_user.id)
+            | (Offer.buyer_id == current_user.id)
+            | (Lot.farmer_id == current_user.id)
+        )
+        .order_by(Dispute.created_at.desc())
+        .all()
+    )
+    seen: set[int] = set()
+    unique: list[Dispute] = []
+    for d in disputes:
+        if d.id not in seen:
+            seen.add(d.id)
+            unique.append(d)
+    return [_to_response(d) for d in unique]
 
 
 @router.patch("/{dispute_id}/resolve", response_model=DisputeResponse)

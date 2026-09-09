@@ -33,6 +33,13 @@ class RegisterRequest(BaseModel):
     password: str = Field(..., min_length=8, max_length=128)
     role: UserRole
 
+    @field_validator("role")
+    @classmethod
+    def prevent_admin_self_registration(cls, value: UserRole) -> UserRole:
+        if value == UserRole.admin:
+            raise ValueError("Admin accounts cannot be created through public registration")
+        return value
+
     @field_validator("name")
     @classmethod
     def sanitize_name(cls, v: str) -> str:

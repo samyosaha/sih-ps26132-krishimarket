@@ -2,7 +2,7 @@ export type QualityGrade = "A" | "B" | "C";
 export type LotStatus = "available" | "reserved" | "sold";
 export type OfferStatus = "pending" | "accepted" | "rejected";
 export type PaymentStatus = "pending" | "paid" | "delivered";
-export type UserRole = "farmer" | "buyer";
+export type UserRole = "farmer" | "buyer" | "admin";
 
 export interface UserStub {
   id: string | number;

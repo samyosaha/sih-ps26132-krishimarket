@@ -1,11 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { NotificationBell } from "@/components/notification-bell";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { Sprout, LogOut, Menu, X, ArrowUpRight } from "lucide-react";
 
 function NavLink({
@@ -35,6 +37,7 @@ function NavLink({
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const t = useTranslations("nav");
   const { user, isAuthenticated, logout, isLoading } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -52,14 +55,29 @@ export function Navbar() {
       <>
         <NavLink
           href="/farmer/lots"
-          label="My Lots"
+          label={t("myLots")}
           active={pathname?.startsWith("/farmer/lots")}
           onClick={closeMobile}
         />
         <NavLink
           href="/farmer/offers"
-          label="Offers Received"
+          label={t("offersReceived")}
           active={pathname?.startsWith("/farmer/offers")}
+          onClick={closeMobile}
+        />
+      </>
+    ) : user.role === "admin" ? (
+      <>
+        <NavLink
+          href="/admin/verification"
+          label={t("reviewBuyers")}
+          active={pathname?.startsWith("/admin/verification")}
+          onClick={closeMobile}
+        />
+        <NavLink
+          href="/admin/disputes"
+          label={t("disputes")}
+          active={pathname?.startsWith("/admin/disputes")}
           onClick={closeMobile}
         />
       </>
@@ -67,13 +85,13 @@ export function Navbar() {
       <>
         <NavLink
           href="/lots"
-          label="Browse Lots"
+          label={t("browseLots")}
           active={pathname?.startsWith("/lots")}
           onClick={closeMobile}
         />
         <NavLink
           href="/buyer/offers"
-          label="My Offers"
+          label={t("myOffers")}
           active={pathname?.startsWith("/buyer/offers")}
           onClick={closeMobile}
         />
@@ -84,14 +102,20 @@ export function Navbar() {
   const commonLinks = isAuthenticated && !isLoading && user ? (
     <>
       <NavLink
+        href="/price-alerts"
+        label={t("priceAlerts")}
+        active={pathname === "/price-alerts"}
+        onClick={closeMobile}
+      />
+      <NavLink
         href="/transactions"
-        label="Transactions"
+        label={t("transactions")}
         active={pathname === "/transactions"}
         onClick={closeMobile}
       />
       <NavLink
         href="/prices"
-        label="Price Dashboard"
+        label={t("priceDashboard")}
         active={pathname === "/prices"}
         onClick={closeMobile}
       />
@@ -117,25 +141,33 @@ export function Navbar() {
             </nav>
           ) : (
             <nav className="hidden items-center gap-6 md:flex" aria-label="Public navigation">
-              <NavLink href="/prices" label="Market prices" active={pathname === "/prices"} />
-              <NavLink href="/lots" label="Browse lots" active={pathname?.startsWith("/lots")} />
+              <NavLink href="/prices" label={t("marketPrices")} active={pathname === "/prices"} />
+              <NavLink href="/lots" label={t("browseLots")} active={pathname?.startsWith("/lots")} />
             </nav>
           )}
         </div>
 
         <div className="flex items-center gap-3">
+          <LanguageSwitcher />
           <ThemeToggle />
+          {isAuthenticated && !isLoading && (
+            <span className="hidden sm:block">
+              <NotificationBell />
+            </span>
+          )}
           {/* Desktop auth buttons */}
           {isLoading ? null : isAuthenticated && user ? (
             <>
               <div className="hidden items-center gap-2 sm:flex">
                 <span className="text-sm text-muted-foreground">
-                  Hi, <span className="font-medium text-foreground">{user.name}</span>
+                  {t("hi", { name: user.name as string })}
                 </span>
                 <span
                   className={`border border-border px-2 py-0.5 text-xs font-semibold uppercase ${
                     user.role === "farmer"
                       ? "text-primary"
+                      : user.role === "admin"
+                      ? "text-amber-700"
                       : "text-clay"
                   }`}
                 >
@@ -149,16 +181,16 @@ export function Navbar() {
                 className="hidden gap-1.5 sm:inline-flex"
               >
                 <LogOut className="h-4 w-4" aria-hidden="true" />
-                <span>Logout</span>
+                <span>{t("logout")}</span>
               </Button>
             </>
           ) : (
             <div className="hidden sm:flex items-center gap-2">
               <Link href="/login" className="hidden text-sm font-medium text-muted-foreground hover:text-primary sm:inline-flex">
-                Sign in
+                {t("signIn")}
               </Link>
               <Button asChild size="sm" className="hidden gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 sm:inline-flex">
-                <Link href="/register">Join the market <ArrowUpRight className="h-4 w-4" /></Link>
+                <Link href="/register">{t("join")} <ArrowUpRight className="h-4 w-4" /></Link>
               </Button>
             </div>
           )}
@@ -168,7 +200,7 @@ export function Navbar() {
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
             className="inline-flex h-9 w-9 items-center justify-center rounded-md border text-muted-foreground transition-colors hover:bg-muted md:hidden"
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-label={mobileOpen ? t("closeMenu") : t("openMenu")}
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? (
@@ -188,12 +220,14 @@ export function Navbar() {
               <>
                 <div className="flex items-center gap-2 pb-3 mb-3 border-b">
                   <span className="text-sm text-muted-foreground">
-                    Hi, <span className="font-medium text-foreground">{user.name}</span>
+                    {t("hi", { name: user.name as string })}
                   </span>
                   <span
                     className={`border border-border px-2 py-0.5 text-xs font-semibold uppercase ${
                       user.role === "farmer"
                       ? "text-primary"
+                      : user.role === "admin"
+                      ? "text-amber-700"
                       : "text-clay"
                     }`}
                   >
@@ -203,6 +237,26 @@ export function Navbar() {
                 <div className="flex flex-col gap-3">
                   {navLinks}
                   {commonLinks}
+                  <NavLink
+                    href="/notifications"
+                    label={t("notifications")}
+                    active={pathname === "/notifications"}
+                    onClick={closeMobile}
+                  />
+                  <NavLink
+                    href={`/profile/${user.id}`}
+                    label={t("profile")}
+                    active={pathname?.startsWith("/profile/")}
+                    onClick={closeMobile}
+                  />
+                  {user.role === "buyer" ? (
+                    <NavLink
+                      href="/verification"
+                      label={t("verification")}
+                      active={pathname?.startsWith("/verification")}
+                      onClick={closeMobile}
+                    />
+                  ) : null}
                 </div>
                 <div className="border-t mt-3 pt-3">
                   <Button
@@ -212,17 +266,17 @@ export function Navbar() {
                     className="w-full gap-1.5"
                   >
                     <LogOut className="h-4 w-4" aria-hidden="true" />
-                    Logout
+                    {t("logout")}
                   </Button>
                 </div>
               </>
             ) : (
               <div className="flex flex-col gap-2">
-                <Link href="/prices" onClick={closeMobile} className="py-2 text-sm font-medium text-muted-foreground">Market prices</Link>
-                <Link href="/lots" onClick={closeMobile} className="py-2 text-sm font-medium text-muted-foreground">Browse lots</Link>
-                <Link href="/login" onClick={closeMobile} className="py-2 text-sm font-medium text-muted-foreground">Sign in</Link>
+                <Link href="/prices" onClick={closeMobile} className="py-2 text-sm font-medium text-muted-foreground">{t("marketPrices")}</Link>
+                <Link href="/lots" onClick={closeMobile} className="py-2 text-sm font-medium text-muted-foreground">{t("browseLots")}</Link>
+                <Link href="/login" onClick={closeMobile} className="py-2 text-sm font-medium text-muted-foreground">{t("signIn")}</Link>
                 <Button asChild size="sm" className="justify-start bg-primary text-primary-foreground hover:bg-primary/90">
-                  <Link href="/register" onClick={closeMobile}>Join the market <ArrowUpRight className="h-4 w-4" /></Link>
+                  <Link href="/register" onClick={closeMobile}>{t("join")} <ArrowUpRight className="h-4 w-4" /></Link>
                 </Button>
               </div>
             )}

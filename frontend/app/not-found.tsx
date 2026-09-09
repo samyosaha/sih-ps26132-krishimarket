@@ -6,6 +6,8 @@ import { Sprout, Home, Search, ArrowLeft } from "lucide-react";
 
 export default function NotFoundPage() {
   return (
+    <html lang="en">
+      <body>
     <div className="flex min-h-[calc(100vh-14rem)] flex-col items-center justify-center px-4 text-center">
       {/* Decorative background */}
       <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
@@ -60,5 +62,7 @@ export default function NotFoundPage() {
         Go back to previous page
       </button>
     </div>
+      </body>
+    </html>
   );
 }

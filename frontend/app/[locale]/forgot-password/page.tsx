@@ -45,9 +45,6 @@ export default function ForgotPasswordPage() {
         method: "POST",
         body: JSON.stringify({ phone: phone.trim() }),
       });
-        method: "POST",
-        body: JSON.stringify({ phone: phone.trim() }),
-      });
       setStep("code");
       setResendIn(60);
       toast.success(t("sentToast"));

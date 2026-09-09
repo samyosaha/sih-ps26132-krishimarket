@@ -21,6 +21,20 @@ export interface FetchOptions extends RequestInit {
 }
 
 const TOKEN_KEY = "auth_token";
+const DEFAULT_API_URL = "http://localhost:8000";
+
+/**
+ * Resolve a backend-relative URL against the configured API origin.
+ * Files returned by FastAPI (for example, /uploads/...) must be loaded
+ * from the backend rather than from the Next.js origin.
+ */
+export function resolveApiUrl(path: string): string {
+  if (/^[a-z][a-z\d+.-]*:/i.test(path)) return path;
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL;
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${baseUrl}${normalizedPath}`;
+}
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -61,10 +75,20 @@ function extractErrorMessage(status: number, data: ApiErrorData): string {
     if (typeof data.detail === "string") return data.detail;
     if (Array.isArray(data.detail)) {
       const first = data.detail[0];
-      if (first && typeof first === "object" && "message" in first) {
-        return String(first.message);
+      if (first && typeof first === "object") {
+        const item = first as { message?: string; msg?: string };
+        if (item.msg) return String(item.msg);
+        if (item.message) return String(item.message);
       }
-      return data.detail.map((d) => (typeof d === "object" && d ? d : String(d))).join(", ");
+      return data.detail
+        .map((d) => {
+          if (d && typeof d === "object") {
+            const item = d as { message?: string; msg?: string };
+            return item.msg || item.message || String(d);
+          }
+          return String(d);
+        })
+        .join(", ");
     }
   }
   if (data.message && typeof data.message === "string") return data.message;
@@ -92,11 +116,9 @@ export async function apiFetch<T = unknown>(
   path: string,
   options: FetchOptions = {}
 ): Promise<T> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
   const { params, headers: customHeaders, ...rest } = options;
 
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const url = buildUrlWithParams(`${baseUrl}${normalizedPath}`, params);
+  const url = buildUrlWithParams(resolveApiUrl(path), params);
 
   const headers: Record<string, string> = {
     Accept: "application/json",

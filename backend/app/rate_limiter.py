@@ -61,7 +61,7 @@ _limiter = _SlidingWindowLimiter()
 def create_rate_limiter(
     max_calls: int = 10,
     window_seconds: int = 60,
-    key_func: str = "ip",
+    key_func: str = "ip+path",
 ):
     """
     Create a FastAPI dependency that rate-limits requests.
@@ -70,9 +70,9 @@ def create_rate_limiter(
         max_calls: Maximum number of requests allowed in the window.
         window_seconds: Time window in seconds.
         key_func: How to identify the client.
-            - "ip": Use client IP (for public/auth endpoints)
+            - "ip": Use client IP across all protected routes
             - "user": Use authenticated user ID from JWT (for protected endpoints)
-            - "ip+path": Use IP + request path (per-route limiting)
+            - "ip+path": Use IP + request path (per-route limiting; default)
 
     Raises:
         HTTPException 429 if rate limit is exceeded.

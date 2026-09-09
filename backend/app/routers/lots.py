@@ -1,6 +1,7 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from pydantic import BaseModel, Field, field_validator
 
 from app.database import get_db
@@ -134,11 +135,11 @@ def list_lots(
 ):
     query = db.query(Lot)
     if commodity:
-        query = query.filter(Lot.commodity == commodity)
+        query = query.filter(func.lower(Lot.commodity) == commodity.lower())
     if state:
-        query = query.filter(Lot.state == state)
+        query = query.filter(func.lower(Lot.state) == state.lower())
     if district:
-        query = query.filter(Lot.district == district)
+        query = query.filter(func.lower(Lot.district) == district.lower())
     if quality_grade:
         query = query.filter(Lot.quality_grade == quality_grade)
     if status:

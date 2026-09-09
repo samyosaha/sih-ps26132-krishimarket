@@ -41,6 +41,7 @@ class TransactionResponse(BaseModel):
     total_amount: Optional[float] = None
     farmer: Optional[UserStub] = None
     buyer: Optional[UserStub] = None
+    created_at: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -76,6 +77,7 @@ def _enrich_transaction(t: Transaction, db: Session) -> TransactionResponse:
         buyer=UserStub(
             id=buyer.id, name=buyer.name, email=buyer.email, phone=buyer.phone
         ) if buyer else None,
+        created_at=t.created_at.isoformat() if t.created_at else None,
     )
 
 

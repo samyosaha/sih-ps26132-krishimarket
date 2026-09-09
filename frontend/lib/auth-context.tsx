@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { apiFetch, setToken as persistToken, clearToken as removeToken } from "./api";
 
-export type UserRole = "farmer" | "buyer";
+export type UserRole = "farmer" | "buyer" | "admin";
 
 export interface User {
   id?: string | number;
@@ -41,6 +41,7 @@ interface AuthContextValue {
   isLoading: boolean;
   login: (payload: LoginPayload) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
+  setSession: (accessToken: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -113,6 +114,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
+  const setSession = useCallback(async (accessToken: string): Promise<void> => {
+    persistToken(accessToken);
+    setTokenState(accessToken);
+    const me = await apiFetch<User>("/auth/me");
+    setUser(me);
+  }, []);
+
   const logout = useCallback((): void => {
     removeToken();
     setTokenState(null);
@@ -127,10 +135,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isLoading,
       login,
       register,
+      setSession,
       logout,
       refreshUser: fetchCurrentUser,
     }),
-    [user, token, isLoading, login, register, logout, fetchCurrentUser]
+    [user, token, isLoading, login, register, setSession, logout, fetchCurrentUser]
   );
 
   return (
