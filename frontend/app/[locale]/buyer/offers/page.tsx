@@ -94,7 +94,7 @@ function BuyerOffersInner() {
           <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
+        <Button asChild>
           <Link href="/lots">
             <Sprout className="mr-2 h-4 w-4" />
             {t("browseMore")}
@@ -126,7 +126,7 @@ function BuyerOffersInner() {
             <CardDescription className="text-xs uppercase tracking-wide">
               {tOffers("statusAccepted")}
             </CardDescription>
-            <CardTitle className="text-3xl text-emerald-600">
+            <CardTitle className="text-3xl text-primary">
               {counts.accepted}
             </CardTitle>
           </CardHeader>
@@ -153,16 +153,16 @@ function BuyerOffersInner() {
               onClick={() => setFilter(tab.key)}
               className={`-mb-px border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
                 active
-                  ? "border-emerald-600 text-emerald-700"
-                  : "border-transparent text-muted-foreground hover:text-emerald-700"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-primary"
               }`}
             >
               {tabLabel(tab.key)}
               <span
                 className={`ml-2 rounded-full px-2 py-0.5 text-xs ${
                   active
-                    ? "bg-emerald-100 text-emerald-800"
-                    : "bg-slate-100 text-slate-600"
+                    ? "bg-primary/15 text-primary font-semibold"
+                    : "bg-muted text-muted-foreground"
                 }`}
               >
                 {counts[tab.key]}
@@ -193,7 +193,7 @@ function BuyerOffersInner() {
             </p>
             <Button
               asChild
-              className="mt-6 bg-emerald-600 hover:bg-emerald-700"
+              className="mt-6"
             >
               <Link href="/lots">
                 <Sprout className="mr-2 h-4 w-4" />
@@ -214,8 +214,8 @@ function BuyerOffersInner() {
               offer.status === "pending"
                 ? "border-l-4 border-l-amber-400"
                 : offer.status === "accepted"
-                ? "border-l-4 border-l-emerald-400"
-                : "border-l-4 border-l-slate-200";
+                ? "border-l-4 border-l-primary"
+                : "border-l-4 border-l-muted";
             return (
               <Card
                 key={offer.id}
@@ -229,10 +229,10 @@ function BuyerOffersInner() {
                           href={`/lots/${lot.id}`}
                           className="group inline-flex items-center gap-1.5"
                         >
-                          <CardTitle className="truncate text-lg group-hover:text-emerald-700">
+                          <CardTitle className="truncate text-lg group-hover:text-primary">
                             {lot.commodity}
                           </CardTitle>
-                          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-emerald-600" />
+                          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
                         </Link>
                       ) : (
                         <CardTitle className="truncate text-lg">

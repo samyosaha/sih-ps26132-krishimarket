@@ -138,7 +138,7 @@ function PriceAlertsInner() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <BellPlus className="h-5 w-5 text-emerald-600" aria-hidden="true" />
+                <BellPlus className="h-5 w-5 text-primary" aria-hidden="true" />
                 {t("createTitle")}
               </CardTitle>
               <CardDescription>{t("subtitle")}</CardDescription>
@@ -254,7 +254,7 @@ function PriceAlertsInner() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-emerald-600 hover:bg-emerald-700"
+                  className="w-full"
                   disabled={busy}
                 >
                   {busy ? (
@@ -309,8 +309,8 @@ function PriceAlertsInner() {
                             variant="outline"
                             className={
                               a.condition === "at_or_above"
-                                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                                : "border-sky-200 bg-sky-50 text-sky-700"
+                                ? "border-primary/30 bg-primary/10 text-primary"
+                                : "border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400"
                             }
                           >
                             {a.condition === "at_or_above" ? t("atOrAbove") : t("atOrBelow")}

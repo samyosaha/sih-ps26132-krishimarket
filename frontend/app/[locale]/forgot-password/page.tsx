@@ -95,7 +95,7 @@ export default function ForgotPasswordPage() {
             <CardTitle className="text-2xl font-bold">{t("success")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
+            <Button asChild>
               <Link href="/login">{t("goToLogin")}</Link>
             </Button>
           </CardContent>
@@ -140,7 +140,7 @@ export default function ForgotPasswordPage() {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
+                className="w-full"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -201,7 +201,7 @@ export default function ForgotPasswordPage() {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
+                className="w-full"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -217,7 +217,7 @@ export default function ForgotPasswordPage() {
                 type="button"
                 onClick={requestReset}
                 disabled={resendIn > 0 || isSubmitting}
-                className="w-full text-center text-sm text-emerald-600 hover:underline disabled:text-muted-foreground disabled:no-underline"
+                className="w-full text-center text-sm text-primary hover:underline disabled:text-muted-foreground disabled:no-underline"
               >
                 {resendIn > 0 ? otpT("resendIn", { seconds: resendIn }) : otpT("resend")}
               </button>

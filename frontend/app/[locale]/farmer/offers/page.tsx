@@ -306,12 +306,12 @@ function FarmerOffersInner() {
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-4 pt-0">
-                        <div className="flex flex-wrap items-baseline gap-3 rounded-md bg-slate-50 px-3 py-2.5 dark:bg-slate-900">
+                        <div className="flex flex-wrap items-baseline gap-3 rounded-lg bg-secondary/50 px-3 py-2.5">
                           <div>
                             <span className="text-xs uppercase tracking-wide text-muted-foreground">
                               {t("offeredLabel")}
                             </span>
-                            <div className="text-lg font-bold text-emerald-700">
+                            <div className="text-lg font-bold text-primary">
                               {formatINR(offer.offered_price_per_kg)}{tCommon("perKg")}
                             </div>
                           </div>
@@ -343,7 +343,7 @@ function FarmerOffersInner() {
                             <Button
                               onClick={() => handleAccept(offer.id)}
                               disabled={isActing}
-                              className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                              className="flex-1"
                               size="sm"
                             >
                               {isActing ? (

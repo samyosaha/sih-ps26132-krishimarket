@@ -222,7 +222,7 @@ export default function LotDetailPage() {
                         {lot.commodity}
                       </CardTitle>
                       <CardDescription className="mt-2 inline-flex items-center gap-1.5 text-base">
-                        <Sprout className="h-4 w-4 text-emerald-600" />
+                        <Sprout className="h-4 w-4 text-primary" />
                         {lot.commodity}
                         {lot.variety ? (
                           <span className="text-muted-foreground">
@@ -234,19 +234,19 @@ export default function LotDetailPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid gap-4 rounded-lg bg-slate-50 p-5 sm:grid-cols-3 dark:bg-slate-900/50">
-                    <div className="space-y-1">
+                  <div className="grid gap-px rounded-lg border border-border/60 bg-border/60 sm:grid-cols-3 overflow-hidden">
+                    <div className="space-y-1 bg-card px-5 py-4">
                       <div className="text-xs uppercase tracking-wide text-muted-foreground">
                         {t("askingPrice")}
                       </div>
-                      <div className="text-2xl font-bold text-emerald-700">
+                      <div className="text-2xl font-bold text-primary">
                         {formatINR(lot.asking_price_per_kg)}
                         <span className="ml-1 text-sm font-medium text-muted-foreground">
                           {tCommon("perKg")}
                         </span>
                       </div>
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-1 bg-card px-5 py-4">
                       <div className="flex items-center gap-1.5 text-xs uppercase tracking-wide text-muted-foreground">
                         <Scale className="h-3 w-3" />
                         {t("availableQty")}
@@ -258,7 +258,7 @@ export default function LotDetailPage() {
                         </span>
                       </div>
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-1 bg-card px-5 py-4">
                       <div className="text-xs uppercase tracking-wide text-muted-foreground">
                         {t("totalValue")}
                       </div>
@@ -292,21 +292,21 @@ export default function LotDetailPage() {
             </div>
 
             <aside className="space-y-6">
-              <Card className="border-l-4 border-l-emerald-400">
+              <Card className="border-l-4 border-l-primary">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">{t("farmer")}</CardTitle>
+                  <CardTitle className="text-base">{t("farmer")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                      <User className="h-5 w-5" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <User className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
-                      <div className="truncate font-semibold">
+                      <div className="truncate font-semibold text-sm">
                         {lot.farmer_name || t("farmer")}
                       </div>
                       <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                        <ShieldCheck className="h-3 w-3 text-emerald-600" />
+                        <ShieldCheck className="h-3 w-3 text-primary" />
                         {t("verifiedSeller")}
                       </div>
                     </div>
@@ -326,8 +326,8 @@ export default function LotDetailPage() {
                 <CardContent>
                   {!isAuthenticated ? (
                     <div className="space-y-4 text-sm">
-                      <div className="rounded-lg border border-emerald-200 bg-gradient-to-br from-emerald-50 to-amber-50 p-4 text-center">
-                        <Sprout className="mx-auto mb-2 h-8 w-8 text-emerald-600" />
+                      <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-center">
+                        <Sprout className="mx-auto mb-2 h-7 w-7 text-primary" />
                         <p className="font-semibold text-foreground">
                           {t("joinToTrade")}
                         </p>
@@ -335,19 +335,15 @@ export default function LotDetailPage() {
                           {t("joinToTradeDesc")}
                         </p>
                       </div>
-                      <Button
-                        asChild
-                        size="lg"
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-base font-semibold"
-                      >
+                      <Button asChild size="default" className="w-full font-semibold">
                         <Link href="/register">
                           {t("getStarted")}
-                          <ArrowRight className="ml-2 h-4 w-4" />
+                          <ArrowRight className="h-4 w-4" />
                         </Link>
                       </Button>
                       <p className="text-center text-xs text-muted-foreground">
                         {t("alreadyMember")}{" "}
-                        <Link href="/login" className="font-medium text-emerald-600 underline-offset-2 hover:underline">Sign in</Link>
+                        <Link href="/login" className="font-medium text-primary underline-offset-2 hover:underline">Sign in</Link>
                       </p>
                     </div>
                   ) : !isBuyer ? (
@@ -370,8 +366,8 @@ export default function LotDetailPage() {
                   ) : (
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                       <DialogTrigger asChild>
-                        <Button className="w-full bg-amber-600 hover:bg-amber-700">
-                          <Tag className="mr-2 h-4 w-4" />
+                        <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/85">
+                          <Tag className="h-4 w-4" />
                           {t("makeOffer")}
                         </Button>
                       </DialogTrigger>
@@ -384,7 +380,7 @@ export default function LotDetailPage() {
                         </DialogHeader>
                         <form onSubmit={handleSubmitOffer} className="space-y-5" noValidate>
                           <HoneypotField {...honeypot.fieldProps} />
-                          <div className="grid gap-3 rounded-md bg-slate-50 p-3 text-xs dark:bg-slate-900/50 sm:grid-cols-2">
+                          <div className="grid gap-3 rounded-lg border border-border/60 bg-secondary/40 p-3 text-xs sm:grid-cols-2">
                             <div>
                               <div className="text-muted-foreground">
                                 {t("asking")}
@@ -439,7 +435,7 @@ export default function LotDetailPage() {
                           </div>
 
                           {/* ── Delivery District & Fulfillment Recommendation ── */}
-                          <div className="space-y-3 rounded-lg border border-border bg-slate-50/60 p-3.5 dark:bg-slate-900/40">
+                          <div className="space-y-3 rounded-lg border border-border/60 bg-secondary/30 p-3.5">
                             <div className="flex flex-wrap items-center justify-between gap-2">
                               <Label htmlFor="delivery-district" className="font-semibold text-xs uppercase tracking-wider text-foreground">
                                 Delivery District & Fulfillment Options
@@ -449,7 +445,7 @@ export default function LotDetailPage() {
                                   type="checkbox"
                                   checked={isPerishable}
                                   onChange={(e) => setIsPerishable(e.target.checked)}
-                                  className="h-3.5 w-3.5 rounded border-border text-emerald-600 focus:ring-emerald-500"
+                                  className="h-3.5 w-3.5 rounded border-border text-primary focus:ring-primary"
                                 />
                                 <span>Perishable produce (Cold-chain priority)</span>
                               </label>
@@ -511,7 +507,7 @@ export default function LotDetailPage() {
                             </Button>
                             <Button
                               type="submit"
-                              className="bg-amber-600 hover:bg-amber-700"
+                              className="bg-accent text-accent-foreground hover:bg-accent/85"
                               disabled={isSubmitting}
                             >
                               {isSubmitting ? (

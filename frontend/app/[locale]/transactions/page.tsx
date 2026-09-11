@@ -301,7 +301,7 @@ function TransactionsInner() {
   const canMarkDelivered = (row: Transaction) => {
     // The "Mark Delivered" button in this section is redundant now that
     // delivery_status drives the delivered state. Keep it hidden.
-    return false;
+    return Boolean(row.id && false);
   };
 
   // Scoped to current user — only returns a dispute the logged-in user themselves raised
@@ -349,7 +349,7 @@ function TransactionsInner() {
             <CardDescription className="text-xs uppercase tracking-wide">
               {t("pendingPayment")}
             </CardDescription>
-            <CardTitle className="text-3xl text-amber-600">
+            <CardTitle className="text-3xl text-accent">
               {counts.pending}
             </CardTitle>
           </CardHeader>
@@ -359,14 +359,14 @@ function TransactionsInner() {
             <CardDescription className="text-xs uppercase tracking-wide">
               {t("completed")}
             </CardDescription>
-            <CardTitle className="text-3xl text-emerald-600">
+            <CardTitle className="text-3xl text-primary">
               {counts.paid}
             </CardTitle>
           </CardHeader>
         </Card>
       </div>
 
-      <div className="flex gap-2 border-b overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+      <div className="flex gap-0 border-b border-border/50 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
         {FILTER_TABS.map((tab) => {
           const active = filter === tab.key;
           return (
@@ -376,16 +376,16 @@ function TransactionsInner() {
               onClick={() => setFilter(tab.key)}
               className={`-mb-px whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
                 active
-                  ? "border-emerald-600 text-emerald-700"
-                  : "border-transparent text-muted-foreground hover:text-emerald-700"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
               {tabLabel(tab.key)}
               <span
-                className={`ml-2 rounded-full px-2 py-0.5 text-xs ${
+                className={`ml-2 rounded-full px-1.5 py-0.5 text-xs ${
                   active
-                    ? "bg-emerald-100 text-emerald-800"
-                    : "bg-slate-100 text-slate-600"
+                    ? "bg-primary/15 text-primary"
+                    : "bg-muted text-muted-foreground"
                 }`}
               >
                 {counts[tab.key]}
@@ -404,9 +404,11 @@ function TransactionsInner() {
         </div>
       ) : filtered.length === 0 ? (
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <Receipt className="mb-4 h-12 w-12 text-slate-300" />
-            <h3 className="text-lg font-semibold">
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-muted">
+              <Receipt className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <h3 className="text-base font-semibold">
               {filter === "all"
                 ? t("emptyTitle")
                 : t("emptyTitleFiltered")}
@@ -435,14 +437,14 @@ function TransactionsInner() {
                   isPending
                     ? "border-l-4 border-l-amber-400"
                     : item.payment_status === "paid"
-                    ? "border-l-4 border-l-emerald-400"
-                    : "border-l-4 border-l-red-400"
+                    ? "border-l-4 border-l-primary"
+                    : "border-l-4 border-l-destructive"
                 }
               >
                 <CardContent className="p-5">
                   {/* ── Delivery Status Tracker ─────────────────── */}
                   {item.delivery_status && (
-                    <div className="mb-4 rounded-lg border border-border bg-slate-50/50 px-3 py-2 dark:bg-slate-900/30">
+                    <div className="mb-4 rounded-lg border border-border bg-secondary/40 px-3 py-2">
                       <DeliveryStatusTracker
                         status={item.delivery_status as DeliveryStatus}
                         deliveryMethod={item.delivery_method as string}
@@ -523,11 +525,11 @@ function TransactionsInner() {
                       </div>
                     </div>
 
-                    <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-900/50">
+                    <div className="rounded-lg bg-secondary/50 p-4">
                       <div className="text-xs uppercase tracking-wide text-muted-foreground">
                         {t("finalAmount")}
                       </div>
-                      <div className="mt-1 text-3xl font-bold text-emerald-700">
+                      <div className="mt-1 text-3xl font-bold text-primary">
                         {item.total_amount ? formatINR(item.total_amount) : "—"}
                       </div>
                     </div>
@@ -537,7 +539,6 @@ function TransactionsInner() {
                         <Button
                           onClick={() => handleMarkPaid(item.id)}
                           disabled={actingId === item.id}
-                          className="bg-emerald-600 hover:bg-emerald-700"
                         >
                           {actingId === item.id ? (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -556,7 +557,7 @@ function TransactionsInner() {
                         <Button
                           onClick={() => handleMarkDelivered(item.id)}
                           disabled={actingId === item.id}
-                          className="bg-sky-600 hover:bg-sky-700"
+                          variant="secondary"
                         >
                           {actingId === item.id ? (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -566,12 +567,12 @@ function TransactionsInner() {
                           {t("markDelivered")}
                         </Button>
                       ) : item.payment_status === "paid" ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary">
                           <CheckCircle2 className="h-4 w-4" />
                           {t("paymentComplete")}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-destructive">
                           <AlertTriangle className="h-4 w-4" />
                           {tOffers("statusFailed")}
                         </span>
@@ -670,7 +671,6 @@ function TransactionsInner() {
                       {item.delivery_status === "in_transit" && (
                         <Button
                           size="sm"
-                          className="bg-emerald-600 hover:bg-emerald-700"
                           onClick={() => handleDeliveryTransition(item.id, "delivered", t("markedAsDelivered"))}
                           disabled={actingId === item.id}
                         >

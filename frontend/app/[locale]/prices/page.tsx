@@ -223,7 +223,7 @@ function InsufficientDataState() {
   return (
     <Card className="border-dashed">
       <CardContent className="flex flex-col items-center justify-center py-16 px-6 text-center">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/15 text-accent ring-1 ring-accent/20">
           <AlertCircle className="h-8 w-8" />
         </div>
         <h3 className="text-lg font-semibold tracking-tight">
@@ -260,7 +260,7 @@ function PredictionBlock({
 }) {
   const isUp = delta >= 0;
   return (
-    <div className="flex flex-col items-start gap-1 rounded-xl border bg-card/60 backdrop-blur-sm px-4 py-3 min-w-[140px] transition-shadow hover:shadow-md">
+    <div className="flex flex-col items-start gap-1 rounded-xl border border-border/70 bg-card/80 backdrop-blur-sm px-4 py-3 min-w-[140px] transition-all hover:shadow-sm">
       <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
         <Icon className="h-3 w-3" />
         {label}
@@ -271,7 +271,7 @@ function PredictionBlock({
       <span
         className={cn(
           "flex items-center gap-0.5 text-xs font-semibold",
-          isUp ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"
+          isUp ? "text-primary" : "text-destructive"
         )}
       >
         {isUp ? (
@@ -518,18 +518,18 @@ export default function PriceDiscoveryPage() {
   const recStyles =
     forecast?.recommendation === "sell_now"
       ? {
-          gradient: "from-emerald-500/15 via-emerald-500/5 to-transparent",
-          badge: "bg-emerald-500 text-white shadow-emerald-500/30",
-          glow: "shadow-emerald-500/10",
-          ring: "ring-emerald-500/20",
+          gradient: "from-primary/15 via-primary/5 to-transparent",
+          badge: "bg-primary text-primary-foreground shadow-primary/20",
+          glow: "shadow-primary/5",
+          ring: "ring-primary/25",
           label: "SELL NOW",
           icon: <TrendingUp className="h-5 w-5" />,
         }
       : {
-          gradient: "from-amber-500/15 via-amber-500/5 to-transparent",
-          badge: "bg-amber-500 text-white shadow-amber-500/30",
-          glow: "shadow-amber-500/10",
-          ring: "ring-amber-500/20",
+          gradient: "from-accent/20 via-accent/5 to-transparent",
+          badge: "bg-accent text-accent-foreground shadow-accent/20",
+          glow: "shadow-accent/5",
+          ring: "ring-accent/25",
           label: "HOLD",
           icon: <Clock className="h-5 w-5" />,
         };
@@ -679,7 +679,7 @@ export default function PriceDiscoveryPage() {
                       <div className="flex items-center gap-3">
                         <span
                           className={cn(
-                            "inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold shadow-lg tracking-wide",
+                            "inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold shadow-sm tracking-wide",
                             recStyles.badge
                           )}
                         >
@@ -796,7 +796,7 @@ export default function PriceDiscoveryPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="h-80 w-full">
+                <div className="h-80 w-full min-w-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={chartData}

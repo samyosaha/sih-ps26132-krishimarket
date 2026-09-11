@@ -164,7 +164,7 @@ export function NearbyLogistics({ district, state }: Props) {
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
-          <Truck className="h-4 w-4 text-emerald-600" aria-hidden />
+          <Truck className="h-4 w-4 text-primary" aria-hidden />
           Nearby Storage &amp; Mandis
         </CardTitle>
       </CardHeader>
@@ -172,7 +172,7 @@ export function NearbyLogistics({ district, state }: Props) {
       <CardContent className="pt-0">
         {sorted.length === 0 ? (
           /* ── Empty / unknown district ─────────────────────────── */
-          <div className="flex flex-col items-center gap-2 rounded-md border border-dashed py-6 text-center">
+          <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed py-6 text-center">
             <Info className="h-5 w-5 text-muted-foreground/60" aria-hidden />
             <p className="text-xs text-muted-foreground">
               Logistics info not yet available for this district.
@@ -182,9 +182,9 @@ export function NearbyLogistics({ district, state }: Props) {
           /* ── Entry list ───────────────────────────────────────── */
           <>
             {isRegional && (
-              <div className="mb-3 rounded-md border border-amber-200 bg-amber-50/80 p-2 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300">
-                <div className="flex items-center gap-1.5 font-semibold text-amber-800 dark:text-amber-200">
-                  <MapPin className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" aria-hidden />
+              <div className="mb-3 rounded-lg border border-accent/20 bg-accent/10 p-2.5 text-xs text-foreground">
+                <div className="flex items-center gap-1.5 font-semibold text-accent">
+                  <MapPin className="h-3.5 w-3.5" aria-hidden />
                   Regional / State facilities
                 </div>
                 <p className="mt-0.5 text-[11px] text-muted-foreground">
@@ -192,7 +192,7 @@ export function NearbyLogistics({ district, state }: Props) {
                 </p>
               </div>
             )}
-            <ul className="divide-y" role="list" aria-label="Nearby logistics facilities">
+            <ul className="divide-y divide-border/60" role="list" aria-label="Nearby logistics facilities">
               {sorted.map((entry, idx) => (
                 <li
                   key={idx}
@@ -221,7 +221,7 @@ export function NearbyLogistics({ district, state }: Props) {
 
         {/* Legend */}
         {sorted.length > 0 && (
-          <div className="mt-3 flex flex-wrap items-center gap-3 border-t pt-3 text-[11px] text-muted-foreground">
+          <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-border/60 pt-3 text-[11px] text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <Snowflake className="h-3 w-3 text-sky-500" aria-hidden />
               Cold Storage

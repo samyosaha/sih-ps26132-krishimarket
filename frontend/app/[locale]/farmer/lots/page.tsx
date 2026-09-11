@@ -222,7 +222,7 @@ function FarmerLotsInner() {
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+            <Button className="gap-2">
               <Plus className="h-4 w-4" />
               {t("createLot")}
             </Button>
@@ -385,8 +385,8 @@ function FarmerLotsInner() {
                 {(form.district || form.state || form.pincode || isLoadingHub) && (
                   <div className="sm:col-span-2 pt-1" aria-live="polite">
                     {isLoadingHub ? (
-                      <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50/50 p-3 text-xs text-muted-foreground dark:border-slate-800 dark:bg-slate-900/30">
-                        <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />
+                      <div className="flex items-center gap-2 rounded-lg border border-border bg-secondary/40 p-3 text-xs text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin text-primary" />
                         <span>{t("checkingHub")}</span>
                       </div>
                     ) : suggestedHub?.matched ? (
@@ -394,16 +394,16 @@ function FarmerLotsInner() {
                         id="suggested-hub-card"
                         className={`rounded-lg border p-3.5 text-sm transition-all ${
                           suggestedHub.is_regional_fallback
-                            ? "border-amber-200 bg-amber-50/80 text-amber-950 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-200"
-                            : "border-emerald-200 bg-emerald-50/80 text-emerald-950 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-200"
+                            ? "border-accent/30 bg-accent/10 text-foreground"
+                            : "border-primary/30 bg-primary/10 text-foreground"
                         }`}
                       >
                         <div className="flex items-start gap-2.5">
                           <div
                             className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
                               suggestedHub.is_regional_fallback
-                                ? "bg-amber-100 text-amber-700 dark:bg-amber-900/60 dark:text-amber-300"
-                                : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300"
+                                ? "bg-accent/20 text-accent"
+                                : "bg-primary/20 text-primary"
                             }`}
                           >
                             <Truck className="h-4 w-4" aria-hidden="true" />
@@ -418,8 +418,8 @@ function FarmerLotsInner() {
                                 variant="secondary"
                                 className={`text-[10px] uppercase tracking-wider ${
                                   suggestedHub.is_regional_fallback
-                                    ? "bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/50 dark:text-amber-300"
-                                    : "bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-900/50 dark:text-emerald-300"
+                                    ? "bg-accent/20 text-accent hover:bg-accent/20"
+                                    : "bg-primary/20 text-primary hover:bg-primary/20"
                                 }`}
                               >
                                 {t("autoAssigned")}
@@ -429,7 +429,7 @@ function FarmerLotsInner() {
                               {suggestedHub.message}
                             </p>
                             <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-muted-foreground/80">
-                              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                              <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
                               <span>{t("dropOffNote")}</span>
                             </div>
                           </div>
@@ -463,7 +463,6 @@ function FarmerLotsInner() {
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-emerald-600 hover:bg-emerald-700"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -491,14 +490,14 @@ function FarmerLotsInner() {
       ) : lots.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <Sprout className="mb-4 h-12 w-12 text-emerald-300" />
+            <Sprout className="mb-4 h-12 w-12 text-primary/40" />
             <h3 className="text-lg font-semibold">{t("emptyTitle")}</h3>
             <p className="mt-1 max-w-sm text-sm text-muted-foreground">
               {t("emptyDesc")}
             </p>
             <Button
               onClick={() => setDialogOpen(true)}
-              className="mt-6 bg-emerald-600 hover:bg-emerald-700"
+              className="mt-6"
             >
               <Plus className="mr-2 h-4 w-4" />
               {t("createFirst")}
@@ -558,7 +557,7 @@ function FarmerLotsInner() {
                     <div className="flex items-center gap-1.5 text-muted-foreground">
                       <Tag className="h-4 w-4" />
                       <span>
-                        <span className="font-semibold text-emerald-700">
+                        <span className="font-semibold text-primary">
                           {formatINR(lot.asking_price_per_kg)}
                         </span>
                         {tCommon("perKg")}
@@ -582,8 +581,8 @@ function FarmerLotsInner() {
                   </div>
 
                   {lot.hub_name ? (
-                    <div className="flex items-center gap-1.5 rounded-md bg-emerald-50/80 px-2 py-1 text-xs font-medium text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300">
-                      <Truck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <div className="flex items-center gap-1.5 rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                      <Truck className="h-3.5 w-3.5" />
                       <span className="truncate">
                         {t("hubLabel")}: {lot.hub_name}
                       </span>

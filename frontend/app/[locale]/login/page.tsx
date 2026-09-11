@@ -133,7 +133,7 @@ export default function LoginPage() {
             {step === "credentials" && <HoneypotField {...honeypot.fieldProps} />}
 
             {error && (
-              <div className="flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>{error}</span>
               </div>
@@ -166,7 +166,7 @@ export default function LoginPage() {
                     <Label htmlFor="password">{t("password")}</Label>
                     <Link
                       href="/forgot-password"
-                      className="text-xs font-medium text-emerald-600 hover:text-emerald-700 hover:underline"
+                      className="text-xs font-medium text-primary hover:underline"
                     >
                       {t("forgotPassword")}
                     </Link>
@@ -217,7 +217,7 @@ export default function LoginPage() {
               <>
                 <Button
                   type="submit"
-                  className="w-full bg-emerald-600 hover:bg-emerald-700"
+                  className="w-full"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -234,21 +234,21 @@ export default function LoginPage() {
 
                 <div className="border-t pt-4 text-center text-sm text-muted-foreground">
                   {t("noAccount")} {" "}
-                  <Link href="/register" className="font-medium text-emerald-600 underline-offset-4 hover:text-emerald-700 hover:underline">
+                  <Link href="/register" className="font-medium text-primary underline-offset-4 hover:underline">
                     {t("createAccount")}
                   </Link>
                 </div>
               </>
             ) : (
               <>
-                <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700" disabled={isSubmitting}>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
                   {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{otpT("verifying")}</> : otpT("verify")}
                 </Button>
                 <button
                   type="button"
                   onClick={() => void requestLoginOtp(false)}
                   disabled={resendIn > 0 || isSubmitting}
-                  className="w-full text-center text-sm text-emerald-600 hover:underline disabled:text-muted-foreground disabled:no-underline"
+                  className="w-full text-center text-sm text-primary hover:underline disabled:text-muted-foreground disabled:no-underline"
                 >
                   {resendIn > 0 ? otpT("resendIn", { seconds: resendIn }) : otpT("resend")}
                 </button>

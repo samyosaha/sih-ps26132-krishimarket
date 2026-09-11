@@ -31,9 +31,9 @@ interface VerificationStatus {
 }
 
 const STATUS_BADGE: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-800 hover:bg-amber-100",
-  approved: "bg-emerald-100 text-emerald-800 hover:bg-emerald-100",
-  rejected: "bg-red-100 text-red-800 hover:bg-red-100",
+  pending: "border-accent/30 bg-accent/10 text-accent hover:bg-accent/10",
+  approved: "border-primary/30 bg-primary/10 text-primary hover:bg-primary/10",
+  rejected: "border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/10",
 };
 
 function VerificationInner() {
@@ -98,7 +98,7 @@ function VerificationInner() {
           <CardContent className="py-10 text-center">
             <ShieldAlert className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
-            <Button asChild className="mt-4 bg-emerald-600 hover:bg-emerald-700">
+            <Button asChild className="mt-4">
               <Link href="/login">{t("submit")}</Link>
             </Button>
           </CardContent>
@@ -113,8 +113,8 @@ function VerificationInner() {
       ) : user?.is_verified_buyer ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
-            <BadgeCheck className="h-12 w-12 text-emerald-600" />
-            <p className="font-semibold text-emerald-700">{t("statusApproved")}</p>
+            <BadgeCheck className="h-12 w-12 text-primary" />
+            <p className="font-semibold text-primary">{t("statusApproved")}</p>
           </CardContent>
         </Card>
       ) : (
@@ -177,7 +177,7 @@ function VerificationInner() {
                     <Label htmlFor="doc">{t("document")}</Label>
                     <label
                       htmlFor="doc"
-                      className="flex cursor-pointer flex-col items-center gap-2 rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground hover:border-emerald-300 hover:bg-emerald-50/40"
+                      className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground hover:border-primary/40 hover:bg-primary/5 transition-colors"
                     >
                       <UploadCloud className="h-6 w-6" aria-hidden="true" />
                       {documentFile ? documentFile.name : t("documentHint")}
@@ -195,7 +195,7 @@ function VerificationInner() {
                 <CardContent className="pt-0">
                   <Button
                     type="submit"
-                    className="w-full bg-emerald-600 hover:bg-emerald-700"
+                    className="w-full"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

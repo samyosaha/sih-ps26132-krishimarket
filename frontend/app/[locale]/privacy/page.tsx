@@ -15,13 +15,13 @@ export default function PrivacyPolicyPage() {
       <div className="space-y-3">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-emerald-700"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to Home
         </Link>
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <Shield className="h-6 w-6" />
           </div>
           <div>
@@ -227,7 +227,7 @@ export default function PrivacyPolicyPage() {
       <div className="border-t pt-6 text-center">
         <Link
           href="/terms"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 hover:underline"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
         >
           <FileText className="h-3.5 w-3.5" />
           Read our Terms & Conditions

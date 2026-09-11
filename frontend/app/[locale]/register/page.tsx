@@ -142,7 +142,7 @@ export default function RegisterPage() {
             {step === "details" && <HoneypotField {...honeypot.fieldProps} />}
 
             {error && (
-              <div className="flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>{error}</span>
               </div>
@@ -238,15 +238,15 @@ export default function RegisterPage() {
                   >
                     <Label
                       htmlFor="role-farmer"
-                      className={`flex cursor-pointer items-start gap-3 rounded-md border p-4 transition-all ${
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-all ${
                         role === "farmer"
-                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
-                          : "border-border hover:border-emerald-300 hover:bg-emerald-50/30"
+                          ? "border-primary bg-primary/10 ring-1 ring-primary"
+                          : "border-border hover:border-primary/40 hover:bg-primary/5"
                       } ${isSubmitting ? "opacity-60" : ""}`}
                     >
                       <RadioGroupItem value="farmer" id="role-farmer" className="mt-1" />
                       <div className="flex-1 space-y-1">
-                        <div className="flex items-center gap-2 font-semibold text-emerald-800">
+                        <div className="flex items-center gap-2 font-semibold text-primary">
                           <Sprout className="h-4 w-4" />{t("farmer")}
                         </div>
                         <p className="text-xs text-muted-foreground">{t("farmerDesc")}</p>
@@ -255,15 +255,15 @@ export default function RegisterPage() {
 
                     <Label
                       htmlFor="role-buyer"
-                      className={`flex cursor-pointer items-start gap-3 rounded-md border p-4 transition-all ${
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-all ${
                         role === "buyer"
-                          ? "border-amber-500 bg-amber-50 ring-1 ring-amber-500"
-                          : "border-border hover:border-amber-300 hover:bg-amber-50/30"
+                          ? "border-accent bg-accent/10 ring-1 ring-accent"
+                          : "border-border hover:border-accent/40 hover:bg-accent/5"
                       } ${isSubmitting ? "opacity-60" : ""}`}
                     >
                       <RadioGroupItem value="buyer" id="role-buyer" className="mt-1" />
                       <div className="flex-1 space-y-1">
-                        <div className="flex items-center gap-2 font-semibold text-amber-800">
+                        <div className="flex items-center gap-2 font-semibold text-accent">
                           <ShoppingBasket className="h-4 w-4" />{t("buyer")}
                         </div>
                         <p className="text-xs text-muted-foreground">{t("buyerDesc")}</p>
@@ -298,26 +298,26 @@ export default function RegisterPage() {
           <CardFooter className="flex-col gap-4">
             {step === "details" ? (
               <>
-                <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700" disabled={isSubmitting}>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
                   {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{otpT("sending")}</> : t("create")}
                 </Button>
                 <div className="text-center text-sm text-muted-foreground">
                   {t("alreadyHave")} {" "}
-                  <Link href="/login" className="font-medium text-emerald-600 underline-offset-4 hover:text-emerald-700 hover:underline">
+                  <Link href="/login" className="font-medium text-primary underline-offset-4 hover:underline">
                     {t("signIn")}
                   </Link>
                 </div>
               </>
             ) : (
               <>
-                <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700" disabled={isSubmitting}>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
                   {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{otpT("verifying")}</> : otpT("verify")}
                 </Button>
                 <button
                   type="button"
                   onClick={() => void requestSignupOtp(false)}
                   disabled={resendIn > 0 || isSubmitting}
-                  className="w-full text-center text-sm text-emerald-600 hover:underline disabled:text-muted-foreground disabled:no-underline"
+                  className="w-full text-center text-sm text-primary hover:underline disabled:text-muted-foreground disabled:no-underline"
                 >
                   {resendIn > 0 ? otpT("resendIn", { seconds: resendIn }) : otpT("resend")}
                 </button>

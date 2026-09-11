@@ -6,26 +6,26 @@ export async function Footer() {
   const t = await getTranslations("footer");
 
   return (
-    <footer className="border-t border-border/70 bg-primary text-primary-foreground">
-      <div className="container mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-8 sm:flex-row sm:justify-between">
+    <footer className="border-t border-border/50 bg-card/50">
+      <div className="container mx-auto flex max-w-7xl flex-col items-center gap-3 px-4 py-6 sm:flex-row sm:justify-between sm:px-6">
         {/* Brand */}
-        <div className="flex items-center gap-2 text-sm text-primary-foreground/75">
-          <Sprout className="h-4 w-4 text-accent" />
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Sprout className="h-3.5 w-3.5 text-primary/70" />
           <span>{t("rights", { year: new Date().getFullYear() })}</span>
         </div>
 
         {/* Legal links */}
-        <nav className="flex items-center gap-4 text-sm" aria-label="Footer navigation">
+        <nav className="flex items-center gap-4 text-xs" aria-label="Footer navigation">
           <Link
             href="/privacy"
-            className="text-primary-foreground/75 transition-colors hover:text-accent"
+            className="text-muted-foreground transition-colors hover:text-foreground"
           >
             {t("privacy")}
           </Link>
-          <span className="text-primary-foreground/30">·</span>
+          <span className="text-border" aria-hidden="true">·</span>
           <Link
             href="/terms"
-            className="text-primary-foreground/75 transition-colors hover:text-accent"
+            className="text-muted-foreground transition-colors hover:text-foreground"
           >
             {t("terms")}
           </Link>

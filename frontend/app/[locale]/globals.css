@@ -2,112 +2,235 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   KRISHIMARKET — Design Token System
+   
+   Spacing scale: 4 / 8 / 12 / 16 / 24 / 32 / 48 px
+   Radius scale:  2 / 4 / 6 / 8 / 12 px  (base --radius = 0.5rem)
+   ───────────────────────────────────────────────────────────────────────────── */
+
 @layer base {
+  /* ── Light Mode ─────────────────────────────────────────────────────────── */
   :root {
-    --background: 40 44% 96%;
-    --foreground: 23 26% 15%;
-    --card: 42 50% 98%;
-    --card-foreground: 23 26% 15%;
-    --popover: 42 50% 98%;
-    --popover-foreground: 23 26% 15%;
-    --primary: 151 37% 23%;
-    --primary-foreground: 40 44% 96%;
-    --secondary: 40 42% 89%;
-    --secondary-foreground: 23 26% 15%;
-    --muted: 40 28% 91%;
-    --muted-foreground: 23 10% 43%;
-    --accent: 39 65% 54%;
-    --accent-foreground: 23 26% 15%;
-    --destructive: 10 48% 52%;
-    --destructive-foreground: 40 44% 96%;
-    --border: 35 24% 78%;
-    --input: 35 24% 78%;
-    --ring: 39 65% 54%;
-    --radius: 0.35rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    /* Background & surfaces */
+    --background:       45 18% 95%;       /* warm off-white #F5F2EC */
+    --foreground:       160 12% 12%;      /* near-black with green tint */
+    --card:             0 0% 100%;        /* pure white cards */
+    --card-foreground:  160 12% 12%;
+    --popover:          0 0% 100%;
+    --popover-foreground: 160 12% 12%;
+
+    /* Primary — agricultural green */
+    --primary:          163 72% 32%;      /* #18A476 deep green */
+    --primary-foreground: 45 18% 97%;
+
+    /* Secondary surface */
+    --secondary:        150 16% 91%;      /* light green-grey */
+    --secondary-foreground: 160 12% 20%;
+
+    /* Muted */
+    --muted:            150 14% 92%;
+    --muted-foreground: 160 8% 46%;
+
+    /* Accent — warm amber/gold */
+    --accent:           38 75% 50%;       /* #D4921A warm amber */
+    --accent-foreground: 160 12% 12%;
+
+    /* Semantic */
+    --destructive:      3 72% 48%;        /* clean red */
+    --destructive-foreground: 45 18% 97%;
+
+    /* Borders & inputs */
+    --border:           150 14% 82%;
+    --input:            150 14% 85%;
+    --ring:             163 72% 38%;
+
+    /* Border radius base */
+    --radius:           0.5rem;
+
+    /* Chart palette */
+    --chart-1:          163 72% 40%;      /* green */
+    --chart-2:          38 75% 55%;       /* amber */
+    --chart-3:          200 65% 48%;      /* blue */
+    --chart-4:          280 55% 56%;      /* purple */
+    --chart-5:          12 72% 52%;       /* clay/red */
   }
 
+  /* ── Dark Mode ──────────────────────────────────────────────────────────── */
   .dark {
-    --background: 23 26% 15%;
-    --foreground: 40 44% 96%;
-    --card: 23 24% 19%;
-    --card-foreground: 40 44% 96%;
-    --popover: 23 24% 19%;
-    --popover-foreground: 40 44% 96%;
-    --primary: 39 65% 54%;
-    --primary-foreground: 23 26% 15%;
-    --secondary: 23 18% 25%;
-    --secondary-foreground: 40 44% 96%;
-    --muted: 23 18% 25%;
-    --muted-foreground: 40 16% 72%;
-    --accent: 151 37% 42%;
-    --accent-foreground: 40 44% 96%;
-    --destructive: 10 48% 52%;
-    --destructive-foreground: 40 44% 96%;
-    --border: 23 15% 32%;
-    --input: 23 15% 32%;
-    --ring: 39 65% 54%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    /* Background layers — green-black family */
+    --background:       153 18% 7%;       /* #0D1411 very dark */
+    --foreground:       60 9% 93%;        /* #F3F2EC warm white */
+
+    /* Card surfaces — layered elevation */
+    --card:             155 14% 11%;      /* #141D19 primary surface */
+    --card-foreground:  60 9% 93%;
+    --popover:          155 14% 11%;
+    --popover-foreground: 60 9% 93%;
+
+    /* Primary — modern agricultural green */
+    --primary:          163 68% 41%;      /* #22B488 vivid green */
+    --primary-foreground: 153 18% 7%;     /* dark bg on green */
+
+    /* Secondary surface — slightly lifted */
+    --secondary:        157 12% 16%;      /* #1B2520 */
+    --secondary-foreground: 60 9% 88%;
+
+    /* Muted — for subdued text / backgrounds */
+    --muted:            155 10% 16%;      /* #1A2420 */
+    --muted-foreground: 155 6% 58%;       /* #8EA89F */
+
+    /* Accent — warm amber/gold, used sparingly */
+    --accent:           38 68% 54%;       /* #D9A83D */
+    --accent-foreground: 153 18% 7%;
+
+    /* Semantic */
+    --destructive:      3 65% 52%;
+    --destructive-foreground: 60 9% 97%;
+
+    /* Borders — very subtle */
+    --border:           155 14% 20%;      /* rgba-like subtle */
+    --input:            155 12% 19%;
+    --ring:             163 68% 45%;
+
+    /* Chart palette */
+    --chart-1:          163 68% 48%;      /* green */
+    --chart-2:          38 68% 58%;       /* amber */
+    --chart-3:          200 65% 55%;      /* blue */
+    --chart-4:          280 55% 62%;      /* purple */
+    --chart-5:          12 65% 58%;       /* clay */
   }
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   BASE RESETS
+   Fix: overflow, box-sizing, min-width on flex children, word wrapping
+   ───────────────────────────────────────────────────────────────────────────── */
+
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    background-image: linear-gradient(115deg, hsl(var(--background)), hsl(39 46% 94%));
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    border-color: hsl(var(--border));
   }
 
-  .dark body {
-    background-image: linear-gradient(115deg, hsl(var(--background)), hsl(23 24% 19%));
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    /* No gradient — flat background for premium feel */
   }
+
+  /* Prevent horizontal overflow at root level */
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
   }
+
+  /* Critical: min-width: 0 on flex children prevents text overflow */
+  .flex > * {
+    min-width: 0;
+  }
+
+  /* Correct text wrapping in constrained containers */
+  p, h1, h2, h3, h4, h5, h6, span, div {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Devanagari (Hindi / Marathi) UI renders with a matching typeface */
+  html[lang="hi"] body,
+  html[lang="mr"] body {
+    font-family: var(--font-noto-devanagari), var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  }
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   COMPONENT CLASSES
+   ───────────────────────────────────────────────────────────────────────────── */
+
 @layer components {
+  /* Market Board — hero widget on home page */
   .market-board {
-    box-shadow: 12px 14px 0 hsl(35 24% 78% / 0.55);
+    box-shadow:
+      0 1px 3px hsl(0 0% 0% / 0.05),
+      0 4px 12px hsl(0 0% 0% / 0.08);
   }
 
   .dark .market-board {
-    box-shadow: 12px 14px 0 hsl(23 15% 10% / 0.55);
+    box-shadow:
+      0 1px 3px hsl(0 0% 0% / 0.25),
+      0 4px 20px hsl(0 0% 0% / 0.35);
   }
 
+  /* Subtle grid texture — lighter than before */
   .market-grid {
-    background-image: linear-gradient(hsl(35 24% 78% / 0.35) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(35 24% 78% / 0.35) 1px, transparent 1px);
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
     background-size: 24px 24px;
   }
 
-  .dark .market-grid {
-    background-image: linear-gradient(hsl(23 15% 32% / 0.45) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(23 15% 32% / 0.45) 1px, transparent 1px);
-  }
-
+  /* Price animation */
   .price-reveal {
     animation: price-reveal 700ms ease-out both;
   }
+
+  /* Stat card numbers — large dashboard metrics */
+  .stat-number {
+    @apply text-3xl font-bold tabular-nums leading-none;
+  }
+
+  /* Page title pattern */
+  .page-title {
+    @apply text-2xl font-bold tracking-tight;
+  }
+
+  /* Section heading pattern */
+  .section-title {
+    @apply text-lg font-semibold tracking-tight;
+  }
+
+  /* Muted label above values */
+  .field-label {
+    @apply text-xs uppercase tracking-wide text-muted-foreground;
+  }
+
+  /* Empty state container — don't make it too tall */
+  .empty-state {
+    @apply flex flex-col items-center justify-center gap-3 py-12 text-center;
+  }
+
+  /* Tab underline pattern used across pages */
+  .tab-active {
+    @apply border-b-2 border-primary text-primary;
+  }
+
+  .tab-inactive {
+    @apply border-b-2 border-transparent text-muted-foreground hover:text-foreground;
+  }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ANIMATIONS
+   ───────────────────────────────────────────────────────────────────────────── */
 
 @keyframes price-reveal {
   from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Ensure minimum touch target sizes on mobile */
+/* ─────────────────────────────────────────────────────────────────────────────
+   ACCESSIBILITY
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Minimum touch targets on mobile */
 @media (pointer: coarse) {
   button,
   a,
@@ -118,16 +241,22 @@
     min-height: 44px;
   }
   /* Exception for inline text links */
-  p a, span a, li a {
+  p a,
+  span a,
+  li a {
     min-height: unset;
   }
 }
 
-/* Better focus visibility for keyboard navigation */
+/* Focus visibility for keyboard navigation */
 *:focus-visible {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   UTILITIES
+   ───────────────────────────────────────────────────────────────────────────── */
 
 /* Hide scrollbar but keep scrolling */
 .scrollbar-hide {
@@ -136,10 +265,4 @@
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
-}
-
-/* Devanagari (Hindi / Marathi) UI renders with a matching typeface */
-html[lang="hi"] body,
-html[lang="mr"] body {
-  font-family: var(--font-noto-devanagari), var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
 }

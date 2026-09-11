@@ -119,7 +119,7 @@ export default function OtpLoginPage() {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
+                className="w-full"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -151,7 +151,7 @@ export default function OtpLoginPage() {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
+                className="w-full"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -167,7 +167,7 @@ export default function OtpLoginPage() {
                 type="button"
                 onClick={requestOtp}
                 disabled={resendIn > 0 || isSubmitting}
-                className="w-full text-center text-sm text-emerald-600 hover:underline disabled:text-muted-foreground disabled:no-underline"
+                className="w-full text-center text-sm text-primary hover:underline disabled:text-muted-foreground disabled:no-underline"
               >
                 {resendIn > 0 ? t("resendIn", { seconds: resendIn }) : t("resend")}
               </button>

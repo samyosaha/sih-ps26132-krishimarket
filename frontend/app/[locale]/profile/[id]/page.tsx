@@ -66,7 +66,7 @@ export default function ProfilePage() {
     <div className="mx-auto max-w-2xl space-y-6 py-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
             <UserIcon className="h-6 w-6" aria-hidden="true" />
           </div>
           <div>
@@ -96,8 +96,8 @@ export default function ProfilePage() {
               <CardContent className="flex items-center gap-2 py-4">
                 {user?.is_verified_buyer || user?.is_verified_farmer ? (
                   <>
-                    <BadgeCheck className="h-5 w-5 text-emerald-600" aria-hidden="true" />
-                    <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700">
+                    <BadgeCheck className="h-5 w-5 text-primary" aria-hidden="true" />
+                    <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">
                       {user?.role === "buyer" ? t("verifiedBuyer") : t("verifiedSeller")}
                     </Badge>
                   </>
