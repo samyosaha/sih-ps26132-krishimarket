@@ -1,4 +1,5 @@
 import os
+import logging
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,6 +30,7 @@ from app.routers import voice as voice_router
 from app.routers import tts as tts_router
 
 load_dotenv()
+logger = logging.getLogger(__name__)
 
 Base.metadata.create_all(bind=engine)
 ensure_sqlite_schema()
@@ -140,12 +142,13 @@ scheduler.add_job(sync_prices, "interval", days=1, id="daily_price_sync")
 
 @app.on_event("startup")
 def start_scheduler():
-    try:
-        from app.demo_accounts import seed
+    if os.getenv("ENVIRONMENT", "development").lower() != "production":
+        try:
+            from app.demo_accounts import seed
 
-        seed()
-    except Exception:
-        pass
+            seed()
+        except Exception:
+            pass
     try:
         scheduler.start()
     except Exception:
@@ -180,7 +183,8 @@ def health_check():
             db.close()
         return {"status": "ok", "database": "connected"}
     except Exception as exc:
-        return {"status": "degraded", "database": str(exc)}
+        logger.error("Health check database probe failed: %s", exc)
+        return {"status": "degraded", "database": "unavailable"}
 
 
 # ── Admin endpoints ─────────────────────────────────────────────────
@@ -193,7 +197,7 @@ def trigger_price_sync(current_user: User = Depends(get_current_user)):
         count = sync_prices()
         return {"status": "ok", "records_processed": count}
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        raise HTTPException(status_code=503, detail="Price synchronization failed") from e
 
 
 @app.post("/admin/backfill-prices")
@@ -204,4 +208,4 @@ def trigger_backfill(current_user: User = Depends(get_current_user)):
         count = backfill_prices()
         return {"status": "ok", "records_processed": count}
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        raise HTTPException(status_code=503, detail="Price backfill failed") from e

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Cookie, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

@@ -12,7 +12,12 @@ from app.models import User
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY") or "dev-secret-key-change-me"
+_environment = os.getenv("ENVIRONMENT", "development").lower()
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    if _environment == "production":
+        raise RuntimeError("SECRET_KEY must be configured in production")
+    SECRET_KEY = "dev-secret-key-change-me"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 12  # 12 hours
 REFRESH_TOKEN_EXPIRE_DAYS = 30
