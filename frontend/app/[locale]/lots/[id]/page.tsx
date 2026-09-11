@@ -49,6 +49,8 @@ import {
 import { FieldError } from "@/components/field-error";
 import { validatePositiveNumber } from "@/lib/validation";
 import { useHoneypot, HoneypotField, isRateLimited } from "@/lib/anti-spam";
+import { NearbyLogistics } from "@/components/nearby-logistics";
+import { DeliveryOptionsPicker } from "@/components/delivery-options-picker";
 
 export default function LotDetailPage() {
   const t = useTranslations("lots.detail");
@@ -66,6 +68,9 @@ export default function LotDetailPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [offeredPrice, setOfferedPrice] = useState<number | "">("");
   const [message, setMessage] = useState("");
+  const [buyerDistrict, setBuyerDistrict] = useState("");
+  const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState("buyer_pickup");
+  const [isPerishable, setIsPerishable] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
 
@@ -77,6 +82,11 @@ export default function LotDetailPage() {
       const data = await apiFetch<Lot>(`/lots/${lotId}`);
       setLot(data);
       setOfferedPrice(data.asking_price_per_kg ?? "");
+      setBuyerDistrict(data.district ?? "");
+      const perishableCheck = /tomato|onion|potato|fruit|vegetable|mango|banana|apple|grape|orange|chilli|ginger|spinach|cabbage/i.test(
+        data.commodity || ""
+      );
+      setIsPerishable(perishableCheck);
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : t("loadFailed");
@@ -126,8 +136,18 @@ export default function LotDetailPage() {
           lot_id: lot.id,
           offered_price_per_kg: Number(offeredPrice),
           message: message.trim() || undefined,
+          delivery_district: buyerDistrict.trim() || undefined,
         }),
       });
+
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem(`delivery_pref_lot_${lot.id}`, selectedDeliveryMethod);
+        } catch {
+          // ignore storage errors
+        }
+      }
+
       toast.success(t("offerSent"));
       setDialogOpen(false);
       setMessage("");
@@ -294,6 +314,8 @@ export default function LotDetailPage() {
                 </CardContent>
               </Card>
 
+              <NearbyLogistics district={lot.district} state={lot.state} />
+
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg">{t("interested")}</CardTitle>
@@ -353,7 +375,7 @@ export default function LotDetailPage() {
                           {t("makeOffer")}
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-lg">
+                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle>{t("makeOfferTitle")}</DialogTitle>
                           <DialogDescription>
@@ -416,6 +438,47 @@ export default function LotDetailPage() {
                             ) : null}
                           </div>
 
+                          {/* ── Delivery District & Fulfillment Recommendation ── */}
+                          <div className="space-y-3 rounded-lg border border-border bg-slate-50/60 p-3.5 dark:bg-slate-900/40">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <Label htmlFor="delivery-district" className="font-semibold text-xs uppercase tracking-wider text-foreground">
+                                Delivery District & Fulfillment Options
+                              </Label>
+                              <label className="flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground hover:text-foreground">
+                                <input
+                                  type="checkbox"
+                                  checked={isPerishable}
+                                  onChange={(e) => setIsPerishable(e.target.checked)}
+                                  className="h-3.5 w-3.5 rounded border-border text-emerald-600 focus:ring-emerald-500"
+                                />
+                                <span>Perishable produce (Cold-chain priority)</span>
+                              </label>
+                            </div>
+
+                            <div className="space-y-1">
+                              <Input
+                                id="delivery-district"
+                                placeholder="Enter delivery district (e.g. Pune, Nagpur, Nashik)"
+                                value={buyerDistrict}
+                                onChange={(e) => setBuyerDistrict(e.target.value)}
+                                className="bg-card"
+                              />
+                              <p className="text-[11px] text-muted-foreground">
+                                Nearest Agri-Logistics Hub is resolved automatically from this district.
+                              </p>
+                            </div>
+
+                            {buyerDistrict.trim() && (
+                              <DeliveryOptionsPicker
+                                lotId={lot.id}
+                                buyerDistrict={buyerDistrict}
+                                perishable={isPerishable}
+                                selectedMethod={selectedDeliveryMethod}
+                                onSelectMethod={setSelectedDeliveryMethod}
+                              />
+                            )}
+                          </div>
+
                           <div className="space-y-2">
                             <Label htmlFor="offer-msg">
                               {t("messageLabel")}{" "}
@@ -425,7 +488,7 @@ export default function LotDetailPage() {
                             </Label>
                             <Textarea
                               id="offer-msg"
-                              rows={3}
+                              rows={2}
                               placeholder={t("messagePlaceholder")}
                               value={message}
                               onChange={(e) => setMessage(e.target.value)}

@@ -1,8 +1,16 @@
 export type QualityGrade = "A" | "B" | "C";
 export type LotStatus = "available" | "reserved" | "sold";
 export type OfferStatus = "pending" | "accepted" | "rejected";
-export type PaymentStatus = "pending" | "paid" | "delivered";
+export type PaymentStatus = "pending" | "paid" | "failed";
 export type UserRole = "farmer" | "buyer" | "admin";
+export type DeliveryStatus =
+  | "listed"
+  | "hub_checkin_pending"
+  | "verified_at_hub"
+  | "dispatched"
+  | "in_transit"
+  | "delivered"
+  | "disputed";
 
 export interface UserStub {
   id: string | number;
@@ -10,6 +18,7 @@ export interface UserStub {
   email?: string;
   phone?: string;
   role?: UserRole;
+  is_verified_buyer?: boolean;
   [key: string]: unknown;
 }
 
@@ -25,8 +34,20 @@ export interface Lot {
   state: string;
   status: LotStatus;
   farmer_name?: string;
+  hub_id?: number | null;
+  hub_name?: string | null;
   created_at?: string;
   [key: string]: unknown;
+}
+
+export interface HubSuggestion {
+  matched: boolean;
+  hub_id?: number | null;
+  hub_name?: string | null;
+  district?: string | null;
+  state?: string | null;
+  is_regional_fallback?: boolean;
+  message: string;
 }
 
 export interface SentOffer {
@@ -42,11 +63,63 @@ export interface SentOffer {
   [key: string]: unknown;
 }
 
+export type DeliveryMethodKey =
+  | "buyer_pickup"
+  | "local_transporter"
+  | "kisan_rail"
+  | "consolidated_truck";
+
+export interface FulfillmentRecommendation {
+  method: string;
+  reason: string;
+  estimated_cost?: number | null;
+  estimated_hours?: number | null;
+}
+
+export interface DeliveryMethodOption {
+  key: DeliveryMethodKey;
+  label: string;
+  description: string;
+  icon: string;
+  badge?: string;
+}
+
+export const DELIVERY_METHOD_OPTIONS: DeliveryMethodOption[] = [
+  {
+    key: "buyer_pickup",
+    label: "Buyer Pickup at Hub",
+    description: "Pick up directly from the nearest verified Agri-Logistics Hub.",
+    icon: "PackageCheck",
+  },
+  {
+    key: "local_transporter",
+    label: "Local Transporter",
+    description: "Verified regional transporter matched to harvest load capacity.",
+    icon: "Truck",
+  },
+  {
+    key: "kisan_rail",
+    label: "Kisan Rail Freight",
+    description: "Government-subsidized fast rail transit for perishable produce.",
+    icon: "Train",
+    badge: "50% Subsidy Eligible",
+  },
+  {
+    key: "consolidated_truck",
+    label: "Consolidated Hub Truck",
+    description: "Shared freight consolidated with other same-state shipments.",
+    icon: "Boxes",
+    badge: "Cost Saver",
+  },
+];
+
 export interface Transaction {
   id: string | number;
   offer_id?: string | number;
   final_price_per_kg: number;
   payment_status: PaymentStatus;
+  delivery_status?: DeliveryStatus;
+  delivery_method?: string;
   lot_id?: string | number;
   lot_title?: string;
   quantity?: number;
@@ -55,6 +128,13 @@ export interface Transaction {
   farmer?: UserStub;
   buyer?: UserStub;
   created_at?: string;
+  hub_checkin_photo_url?: string | null;
+  hub_checkin_weight_kg?: number | null;
+  hub_checkin_grade?: string | null;
+  estimated_delivery_cost?: number | null;
+  lot_grade?: string | null;
+  lot_quantity_kg?: number | null;
+  delivery_district?: string | null;
   [key: string]: unknown;
 }
 
@@ -73,7 +153,7 @@ export const OFFER_STATUS_STYLES: Record<OfferStatus, string> = {
 export const PAYMENT_STATUS_STYLES: Record<PaymentStatus, string> = {
   pending: "bg-amber-100 text-amber-800 hover:bg-amber-100",
   paid: "bg-emerald-100 text-emerald-800 hover:bg-emerald-100",
-  delivered: "bg-sky-100 text-sky-800 hover:bg-sky-100",
+  failed: "bg-red-100 text-red-800 hover:bg-red-100",
 };
 
 export function gradeBadgeClass(grade: QualityGrade): string {
@@ -790,5 +870,142 @@ export const DISTRICTS_BY_STATE: Record<string, string[]> = {
     "South East Delhi",
     "South West Delhi",
     "West Delhi",
+  ],
+  "Jammu and Kashmir": [
+    "Anantnag",
+    "Bandipora",
+    "Baramulla",
+    "Budgam",
+    "Doda",
+    "Ganderbal",
+    "Jammu",
+    "Kathua",
+    "Kishtwar",
+    "Kulgam",
+    "Kupwara",
+    "Poonch",
+    "Pulwama",
+    "Rajouri",
+    "Ramban",
+    "Reasi",
+    "Samba",
+    "Shopian",
+    "Srinagar",
+    "Udhampur",
+  ],
+  "Ladakh": ["Kargil", "Leh"],
+  "Chandigarh": ["Chandigarh"],
+  "Puducherry": ["Karaikal", "Mahe", "Puducherry", "Yanam"],
+  "Arunachal Pradesh": [
+    "Anjaw",
+    "Changlang",
+    "Dibang Valley",
+    "East Kameng",
+    "East Siang",
+    "Kamle",
+    "Kra Daadi",
+    "Kurung Kumey",
+    "Lepa Rada",
+    "Lohit",
+    "Longding",
+    "Lower Dibang Valley",
+    "Lower Siang",
+    "Lower Subansiri",
+    "Namsai",
+    "Pakke Kessang",
+    "Papum Pare",
+    "Shi Yomi",
+    "Siang",
+    "Tawang",
+    "Tirap",
+    "Upper Siang",
+    "Upper Subansiri",
+    "West Kameng",
+    "West Siang",
+  ],
+  "Meghalaya": [
+    "East Garo Hills",
+    "East Jaintia Hills",
+    "East Khasi Hills",
+    "North Garo Hills",
+    "Ri-Bhoi",
+    "South Garo Hills",
+    "South West Garo Hills",
+    "South West Khasi Hills",
+    "West Garo Hills",
+    "West Jaintia Hills",
+    "West Khasi Hills",
+  ],
+  "Manipur": [
+    "Bishnupur",
+    "Chandel",
+    "Churachandpur",
+    "Imphal East",
+    "Imphal West",
+    "Jiribam",
+    "Kakching",
+    "Kamjong",
+    "Kangpokpi",
+    "Noney",
+    "Pherzawl",
+    "Senapati",
+    "Tamenglong",
+    "Tengnoupal",
+    "Thoubal",
+    "Ukhrul",
+  ],
+  "Mizoram": [
+    "Aizawl",
+    "Champhai",
+    "Hnahthial",
+    "Khawzawl",
+    "Kolasib",
+    "Lawngtlai",
+    "Lunglei",
+    "Mamit",
+    "Saiha",
+    "Saitual",
+    "Serchhip",
+  ],
+  "Nagaland": [
+    "Chumoukedima",
+    "Dimapur",
+    "Kiphire",
+    "Kohima",
+    "Longleng",
+    "Mokokchung",
+    "Mon",
+    "Niuland",
+    "Noklak",
+    "Peren",
+    "Phek",
+    "Shamator",
+    "Tseminyu",
+    "Tuensang",
+    "Wokha",
+    "Zunheboto",
+  ],
+  "Tripura": [
+    "Dhalai",
+    "Gomati",
+    "Khowai",
+    "North Tripura",
+    "Sepahijala",
+    "South Tripura",
+    "Unakoti",
+    "West Tripura",
+  ],
+  "Sikkim": [
+    "Gangtok",
+    "Gyalshing",
+    "Mangan",
+    "Namchi",
+    "Pakyong",
+    "Soreng",
+  ],
+  "Andaman and Nicobar": [
+    "Nicobar",
+    "North and Middle Andaman",
+    "South Andaman",
   ],
 };

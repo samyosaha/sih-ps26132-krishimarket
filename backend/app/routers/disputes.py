@@ -226,6 +226,36 @@ def list_all_disputes(
     return [_to_response(d) for d in disputes]
 
 
+# ── Admin: open disputes (canonical admin-panel endpoint) ─────────────
+
+@router.get("/admin/disputes", response_model=list[DisputeResponse], tags=["admin"])
+def list_open_disputes_admin(
+    status_filter: Optional[DisputeStatus] = Query(default=DisputeStatus.open, alias="status"),
+    limit: int = Query(default=50, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    List disputes for the admin panel (admin only).
+    Defaults to open disputes; pass ?status=resolved for resolved ones.
+    """
+    if current_user.role != UserRole.admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    query = db.query(Dispute)
+    if status_filter:
+        query = query.filter(Dispute.status == status_filter)
+
+    disputes = (
+        query.order_by(Dispute.created_at.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+    return [_to_response(d) for d in disputes]
+
+
 # ── Public user dispute summary ──────────────────────────────────────
 
 @router.get("/user/{user_id}/summary", response_model=DisputeSummary)

@@ -35,7 +35,7 @@ class OfferStatus(str, enum.Enum):
 class PaymentStatus(str, enum.Enum):
     pending = "pending"
     paid = "paid"
-    delivered = "delivered"
+    failed = "failed"
 
 
 class DisputeStatus(str, enum.Enum):
@@ -85,6 +85,34 @@ class VerificationStatus(str, enum.Enum):
     rejected = "rejected"
 
 
+# ── Phase 7 enums — Hub-Assisted Fulfillment ──────────────────────────────────
+
+
+class DeliveryMethod(str, enum.Enum):
+    pending = "pending"
+    buyer_pickup = "buyer_pickup"
+    local_transporter = "local_transporter"
+    kisan_rail = "kisan_rail"
+    consolidated_truck = "consolidated_truck"
+
+
+class DeliveryStatus(str, enum.Enum):
+    listed = "listed"
+    hub_checkin_pending = "hub_checkin_pending"
+    verified_at_hub = "verified_at_hub"
+    dispatched = "dispatched"
+    in_transit = "in_transit"
+    delivered = "delivered"
+    rejected = "rejected"
+    disputed = "disputed"
+
+
+class VehicleType(str, enum.Enum):
+    mini_truck = "mini_truck"
+    medium_truck = "medium_truck"
+    large_truck = "large_truck"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -128,8 +156,12 @@ class Lot(Base):
     status = Column(Enum(LotStatus), default=LotStatus.available)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+    # Phase 7 — Hub-Assisted Fulfillment
+    hub_id = Column(Integer, ForeignKey("hubs.id"), nullable=True)
+
     farmer = relationship("User", back_populates="lots")
     offers = relationship("Offer", back_populates="lot")
+    hub = relationship("Hub", back_populates="lots")
 
 
 class Offer(Base):
@@ -142,6 +174,11 @@ class Offer(Base):
     message = Column(Text, nullable=True)
     status = Column(Enum(OfferStatus), default=OfferStatus.pending)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Phase 8 — Fulfillment Recommender
+    # Buyer's delivery district captured as a plain string at offer/recommendation
+    # time.  Resolved to the nearest Hub on-demand by hub_service.match_hub().
+    delivery_district = Column(String, nullable=True)
 
     lot = relationship("Lot", back_populates="offers")
     buyer = relationship("User", back_populates="offers")
@@ -156,6 +193,22 @@ class Transaction(Base):
     final_price_per_kg = Column(Float, nullable=False)
     payment_status = Column(Enum(PaymentStatus), default=PaymentStatus.pending)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Phase 7 — Hub-Assisted Fulfillment delivery tracking
+    # Plain string so the state machine can store free-form labels like
+    # "Dispatched via Kisan Rail" without enum constraints.
+    delivery_method = Column(
+        String, default="pending", nullable=False,
+        server_default="pending",
+    )
+    delivery_status = Column(
+        Enum(DeliveryStatus), default=DeliveryStatus.listed, nullable=False,
+        server_default=DeliveryStatus.listed.value,
+    )
+    hub_checkin_photo_url = Column(String, nullable=True)
+    hub_checkin_weight_kg = Column(Float, nullable=True)
+    hub_checkin_grade = Column(String, nullable=True)
+    estimated_delivery_cost = Column(Float, nullable=True)
 
     offer = relationship("Offer", back_populates="transaction")
     disputes = relationship("Dispute", back_populates="transaction")
@@ -195,6 +248,44 @@ class PriceRecord(Base):
     min_price = Column(Float, nullable=True)
     max_price = Column(Float, nullable=True)
     modal_price = Column(Float, nullable=True)
+
+
+# ── Phase 7 new tables — Hub-Assisted Fulfillment ────────────────────────────
+
+
+class Hub(Base):
+    """A logistics hub derived from mandi/market data in price_records.
+
+    Every distinct (market, district, state) triple in the Agmarknet feed
+    automatically becomes a hub — no new infrastructure required.
+    """
+
+    __tablename__ = "hubs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)          # market/mandi name
+    district = Column(String, nullable=False)
+    state = Column(String, nullable=False)
+    lat = Column(Float, nullable=True)             # geocoded later
+    lng = Column(Float, nullable=True)             # geocoded later
+    has_kisan_rail_station = Column(Boolean, default=False, nullable=False,
+                                    server_default="false")
+    kisan_rail_station_name = Column(String, nullable=True)
+
+    lots = relationship("Lot", back_populates="hub")
+
+
+class Transporter(Base):
+    """A registered local transporter operating out of a district."""
+
+    __tablename__ = "transporters"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    district = Column(String, nullable=False)
+    vehicle_type = Column(Enum(VehicleType), nullable=False)
+    capacity_kg = Column(Float, nullable=False)
+    verified = Column(Boolean, default=False, nullable=False, server_default="false")
 
 
 # ── Phase 6 new tables ───────────────────────────────────────────────

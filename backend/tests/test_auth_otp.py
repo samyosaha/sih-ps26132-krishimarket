@@ -12,21 +12,41 @@ class OtpAuthenticationFlowTests(unittest.TestCase):
     def setUpClass(cls):
         cls.temp_dir = tempfile.TemporaryDirectory()
         database_path = Path(cls.temp_dir.name, "otp-flow.db").as_posix()
-        os.environ["DATABASE_URL"] = f"sqlite:///{database_path}"
         os.environ["ENVIRONMENT"] = "development"
         os.environ["SMS_API_KEY"] = ""
 
         backend_dir = Path(__file__).resolve().parents[1]
         sys.path.insert(0, str(backend_dir))
         from fastapi.testclient import TestClient
-        from app.database import engine
+        from sqlalchemy import create_engine
+        from sqlalchemy.orm import sessionmaker
+        from app.database import Base, get_db
         from app.main import app
 
+        cls.engine = create_engine(
+            f"sqlite:///{database_path}",
+            connect_args={"check_same_thread": False},
+        )
+        Base.metadata.create_all(bind=cls.engine)
+        cls.TestingSessionLocal = sessionmaker(
+            autocommit=False, autoflush=False, bind=cls.engine
+        )
+
+        def _get_test_db():
+            db = cls.TestingSessionLocal()
+            try:
+                yield db
+            finally:
+                db.close()
+
+        app.dependency_overrides[get_db] = _get_test_db
+        cls.app = app
         cls.client = TestClient(app)
-        cls.engine = engine
 
     @classmethod
     def tearDownClass(cls):
+        from app.database import get_db
+        cls.app.dependency_overrides.pop(get_db, None)
         cls.client.close()
         cls.engine.dispose()
         cls.temp_dir.cleanup()

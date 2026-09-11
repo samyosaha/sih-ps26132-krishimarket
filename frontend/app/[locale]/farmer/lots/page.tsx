@@ -39,6 +39,9 @@ import {
   MapPin,
   Scale,
   Tag,
+  Truck,
+  Info,
+  CheckCircle2,
 } from "lucide-react";
 import {
   Lot,
@@ -48,6 +51,7 @@ import {
   formatINR,
   INDIAN_STATES,
   DISTRICTS_BY_STATE,
+  HubSuggestion,
 } from "@/lib/market-types";
 import { FieldError } from "@/components/field-error";
 import {
@@ -64,6 +68,8 @@ interface CreateLotPayload {
   asking_price_per_kg: number;
   district: string;
   state: string;
+  pincode?: string;
+  hub_id?: number;
 }
 
 const emptyForm = (): CreateLotPayload => ({
@@ -74,6 +80,7 @@ const emptyForm = (): CreateLotPayload => ({
   asking_price_per_kg: 0,
   district: "",
   state: "",
+  pincode: "",
 });
 
 function FarmerLotsInner() {
@@ -86,6 +93,8 @@ function FarmerLotsInner() {
   const [form, setForm] = useState<CreateLotPayload>(emptyForm());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
+  const [suggestedHub, setSuggestedHub] = useState<HubSuggestion | null>(null);
+  const [isLoadingHub, setIsLoadingHub] = useState(false);
 
   const loadLots = useCallback(async () => {
     setIsLoading(true);
@@ -103,6 +112,51 @@ function FarmerLotsInner() {
   useEffect(() => {
     loadLots();
   }, [loadLots]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    if (!form.district && !form.state && !form.pincode) {
+      setSuggestedHub(null);
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (form.district) params.set("district", form.district);
+    if (form.state) params.set("state", form.state);
+    if (form.pincode) params.set("pincode", form.pincode);
+
+    setIsLoadingHub(true);
+    apiFetch<HubSuggestion>(`/lots/suggest-hub?${params.toString()}`)
+      .then((data) => {
+        if (!isCancelled) {
+          setSuggestedHub(data);
+          if (data.matched && data.hub_id) {
+            setForm((prev) => ({ ...prev, hub_id: data.hub_id! }));
+          } else {
+            setForm((prev) => {
+              const next = { ...prev };
+              delete next.hub_id;
+              return next;
+            });
+          }
+        }
+      })
+      .catch(() => {
+        if (!isCancelled) {
+          setSuggestedHub(null);
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) {
+          setIsLoadingHub(false);
+        }
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [form.district, form.state, form.pincode]);
 
   const updateField = <K extends keyof CreateLotPayload>(
     key: K,
@@ -309,6 +363,94 @@ function FarmerLotsInner() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="pincode">
+                    {t("pincode")}{" "}
+                    <span className="text-muted-foreground font-normal">
+                      ({tCommon("optional")} — {t("pincodeHint")})
+                    </span>
+                  </Label>
+                  <Input
+                    id="pincode"
+                    placeholder={t("pincodePlaceholder")}
+                    maxLength={6}
+                    value={form.pincode || ""}
+                    onChange={(e) => updateField("pincode", e.target.value)}
+                    disabled={isSubmitting}
+                  />
+                </div>
+
+                {/* Hub-Assisted Logistics Suggestion */}
+                {(form.district || form.state || form.pincode || isLoadingHub) && (
+                  <div className="sm:col-span-2 pt-1" aria-live="polite">
+                    {isLoadingHub ? (
+                      <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50/50 p-3 text-xs text-muted-foreground dark:border-slate-800 dark:bg-slate-900/30">
+                        <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />
+                        <span>{t("checkingHub")}</span>
+                      </div>
+                    ) : suggestedHub?.matched ? (
+                      <div
+                        id="suggested-hub-card"
+                        className={`rounded-lg border p-3.5 text-sm transition-all ${
+                          suggestedHub.is_regional_fallback
+                            ? "border-amber-200 bg-amber-50/80 text-amber-950 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-200"
+                            : "border-emerald-200 bg-emerald-50/80 text-emerald-950 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-200"
+                        }`}
+                      >
+                        <div className="flex items-start gap-2.5">
+                          <div
+                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
+                              suggestedHub.is_regional_fallback
+                                ? "bg-amber-100 text-amber-700 dark:bg-amber-900/60 dark:text-amber-300"
+                                : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300"
+                            }`}
+                          >
+                            <Truck className="h-4 w-4" aria-hidden="true" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2 font-medium">
+                              <span>
+                                {suggestedHub.is_regional_fallback ? t("regionalHub") : t("nearestHub")}:{" "}
+                                <span className="font-semibold">{suggestedHub.hub_name}</span>
+                              </span>
+                              <Badge
+                                variant="secondary"
+                                className={`text-[10px] uppercase tracking-wider ${
+                                  suggestedHub.is_regional_fallback
+                                    ? "bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/50 dark:text-amber-300"
+                                    : "bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-900/50 dark:text-emerald-300"
+                                }`}
+                              >
+                                {t("autoAssigned")}
+                              </Badge>
+                            </div>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              {suggestedHub.message}
+                            </p>
+                            <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-muted-foreground/80">
+                              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                              <span>{t("dropOffNote")}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : suggestedHub && !suggestedHub.matched ? (
+                      <div
+                        id="suggested-hub-fallback"
+                        className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-xs text-muted-foreground dark:border-slate-800 dark:bg-slate-900/30"
+                      >
+                        <div className="flex items-center gap-2 font-medium text-foreground">
+                          <Info className="h-4 w-4 text-muted-foreground" />
+                          <span>{t("directFulfillment")}</span>
+                        </div>
+                        <p className="mt-1">
+                          {suggestedHub.message}
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
               </div>
               <DialogFooter>
                 <Button
@@ -438,6 +580,15 @@ function FarmerLotsInner() {
                       </span>
                     ) : null}
                   </div>
+
+                  {lot.hub_name ? (
+                    <div className="flex items-center gap-1.5 rounded-md bg-emerald-50/80 px-2 py-1 text-xs font-medium text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300">
+                      <Truck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                      <span className="truncate">
+                        {t("hubLabel")}: {lot.hub_name}
+                      </span>
+                    </div>
+                  ) : null}
                 </CardContent>
               </Card>
             );

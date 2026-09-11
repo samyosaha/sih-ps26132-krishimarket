@@ -202,6 +202,49 @@ def review_verification_request(
     return _to_response(request)
 
 
+# ── Admin: manually verify a buyer ────────────────────────────────────
+
+class VerifyBuyerResponse(BaseModel):
+    id: int
+    name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    is_verified_buyer: bool
+
+    class Config:
+        from_attributes = True
+
+
+@router.patch("/admin/users/{user_id}/verify", response_model=VerifyBuyerResponse)
+def verify_buyer_manual(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Manually verify a buyer (admin only). Sets is_verified_buyer = true."""
+    if current_user.role != UserRole.admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user.role != UserRole.buyer:
+        raise HTTPException(status_code=400, detail="Only buyers can be verified")
+
+    user.is_verified_buyer = True
+    db.commit()
+    db.refresh(user)
+
+    return VerifyBuyerResponse(
+        id=user.id,
+        name=user.name,
+        email=user.email,
+        phone=user.phone,
+        is_verified_buyer=user.is_verified_buyer,
+    )
+
+
 # ── Helpers ──────────────────────────────────────────────────────────
 
 def _to_response(r: VerificationRequest) -> VerificationResponse:

@@ -1,0 +1,2987 @@
+{
+  "Agra": [
+    {
+      "name": "Agra APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Firozabad Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 38
+    },
+    {
+      "name": "Shamsabad Potato Market",
+      "type": "mandi",
+      "distance_km": 12
+    },
+    {
+      "name": "Bichpuri Cold Store",
+      "type": "cold_storage",
+      "distance_km": 16
+    }
+  ],
+  "Ahmedabad": [
+    {
+      "name": "Jamalpur APMC Mandi",
+      "type": "mandi",
+      "distance_km": 8
+    },
+    {
+      "name": "Naroda Cold Chain Park",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Vatva Agri Hub",
+      "type": "mandi",
+      "distance_km": 16
+    },
+    {
+      "name": "Odhav Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 12
+    }
+  ],
+  "Ahmednagar": [
+    {
+      "name": "Ahmednagar APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Rahuri Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Sangamner Onion Mandi",
+      "type": "mandi",
+      "distance_km": 22
+    },
+    {
+      "name": "Kopargaon Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 35
+    }
+  ],
+  "Aizawl": [
+    {
+      "name": "Aizawl New Market APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Thuampui Cold Chain Hub",
+      "type": "cold_storage",
+      "distance_km": 9
+    },
+    {
+      "name": "Bawngkawn Produce Market",
+      "type": "mandi",
+      "distance_km": 6
+    }
+  ],
+  "Ajmer": [
+    {
+      "name": "Ajmer Agri Market",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Beawar Cold Store",
+      "type": "cold_storage",
+      "distance_km": 22
+    },
+    {
+      "name": "Kishangarh Marble Mandi",
+      "type": "mandi",
+      "distance_km": 14
+    }
+  ],
+  "Alipurduar": [
+    {
+      "name": "Alipurduar APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Falakata Cold Store",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Birpara Agri Market",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Ambala": [
+    {
+      "name": "Ambala Cantt Grain Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Saha Cold Chain Park",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Ambala City Vegetable APMC",
+      "type": "mandi",
+      "distance_km": 8
+    }
+  ],
+  "Amravati": [
+    {
+      "name": "Amravati APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Daryapur Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 22
+    },
+    {
+      "name": "Achalpur Agri Mandi",
+      "type": "mandi",
+      "distance_km": 30
+    }
+  ],
+  "Amritsar": [
+    {
+      "name": "Amritsar Grain Market",
+      "type": "mandi",
+      "distance_km": 3
+    },
+    {
+      "name": "Fatehgarh Churian Cold Store",
+      "type": "cold_storage",
+      "distance_km": 17
+    },
+    {
+      "name": "Majitha APMC",
+      "type": "mandi",
+      "distance_km": 21
+    }
+  ],
+  "Anand": [
+    {
+      "name": "Anand APMC Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Borsad Cold Store",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Khambhat Agri Market",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "Anantnag": [
+    {
+      "name": "Anantnag Apple APMC Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Bijbehara Cold Chain CA Store",
+      "type": "cold_storage",
+      "distance_km": 9
+    },
+    {
+      "name": "Dooru Produce Market",
+      "type": "mandi",
+      "distance_km": 21
+    }
+  ],
+  "Aurangabad": [
+    {
+      "name": "Aurangabad APMC Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Waluj Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 12
+    },
+    {
+      "name": "Paithan Agri Mandi",
+      "type": "mandi",
+      "distance_km": 35
+    }
+  ],
+  "Balasore": [
+    {
+      "name": "Balasore APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Remuna Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 11
+    },
+    {
+      "name": "Soro Agri Hub",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Ballari": [
+    {
+      "name": "Ballari APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Hospet Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 13
+    },
+    {
+      "name": "Siruguppa Cotton Market",
+      "type": "mandi",
+      "distance_km": 26
+    }
+  ],
+  "Bankura": [
+    {
+      "name": "Bankura Regulated Market APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Kotulpur Cold Storage Hub",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Bishnupur Agri Mandi",
+      "type": "mandi",
+      "distance_km": 28
+    },
+    {
+      "name": "Sonamukhi Cold Chain Facility",
+      "type": "cold_storage",
+      "distance_km": 22
+    }
+  ],
+  "Baramulla": [
+    {
+      "name": "Sopore Apple Mega Mandi",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Kanispora Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 11
+    },
+    {
+      "name": "Pattan Agri Hub",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "Bastar": [
+    {
+      "name": "Jagdalpur APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Geedam Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 35
+    },
+    {
+      "name": "Tokapal Agri Market",
+      "type": "mandi",
+      "distance_km": 18
+    }
+  ],
+  "Bathinda": [
+    {
+      "name": "Bathinda Grain Market",
+      "type": "mandi",
+      "distance_km": 3
+    },
+    {
+      "name": "Goniana Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Rampura Phul APMC",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "Bengaluru Urban": [
+    {
+      "name": "Yeshwanthpur APMC",
+      "type": "mandi",
+      "distance_km": 9
+    },
+    {
+      "name": "Anekal Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 32
+    },
+    {
+      "name": "KR Market Vegetables",
+      "type": "mandi",
+      "distance_km": 7
+    },
+    {
+      "name": "Hosakote Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 26
+    }
+  ],
+  "Bhopal": [
+    {
+      "name": "Karond APMC Mandi",
+      "type": "mandi",
+      "distance_km": 12
+    },
+    {
+      "name": "Mandideep Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 20
+    },
+    {
+      "name": "Misrod Agri Market",
+      "type": "mandi",
+      "distance_km": 8
+    }
+  ],
+  "Bhubaneswar": [
+    {
+      "name": "Unit-1 APMC Market",
+      "type": "mandi",
+      "distance_km": 7
+    },
+    {
+      "name": "Mancheswar Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 13
+    },
+    {
+      "name": "Cuttack Agri Market",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Bikaner": [
+    {
+      "name": "Bikaner APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Nokha Cold Store",
+      "type": "cold_storage",
+      "distance_km": 28
+    },
+    {
+      "name": "Dungargarh Agri Market",
+      "type": "mandi",
+      "distance_km": 40
+    }
+  ],
+  "Bilaspur": [
+    {
+      "name": "Bilaspur APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Mungeli Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 30
+    },
+    {
+      "name": "Ratanpur Agri Market",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "Birbhum": [
+    {
+      "name": "Suri APMC Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Bolpur Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 15
+    },
+    {
+      "name": "Sainthia Grain Market",
+      "type": "mandi",
+      "distance_km": 20
+    }
+  ],
+  "Bishnupur": [
+    {
+      "name": "Bishnupur Produce Market Yard",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Moirang Agri Mandi",
+      "type": "mandi",
+      "distance_km": 12
+    },
+    {
+      "name": "Nambol Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 15
+    }
+  ],
+  "Bokaro": [
+    {
+      "name": "Bokaro Steel City APMC",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Chas Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 10
+    },
+    {
+      "name": "Bermo Agri Mandi",
+      "type": "mandi",
+      "distance_km": 30
+    }
+  ],
+  "Cachar": [
+    {
+      "name": "Silchar APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Meherpur Cold Store",
+      "type": "cold_storage",
+      "distance_km": 10
+    },
+    {
+      "name": "Lakhipur Agri Market",
+      "type": "mandi",
+      "distance_km": 26
+    }
+  ],
+  "Champhai": [
+    {
+      "name": "Champhai Grape & Agri Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Zokhawthar Border Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 26
+    },
+    {
+      "name": "Khawbung Produce Market",
+      "type": "mandi",
+      "distance_km": 20
+    }
+  ],
+  "Chandigarh": [
+    {
+      "name": "Sector 26 Grain & Vegetable APMC",
+      "type": "mandi",
+      "distance_km": 3
+    },
+    {
+      "name": "Industrial Area Cold Chain Logistics",
+      "type": "cold_storage",
+      "distance_km": 6
+    },
+    {
+      "name": "Manimajra Agri Sub Yard",
+      "type": "mandi",
+      "distance_km": 8
+    }
+  ],
+  "Chennai": [
+    {
+      "name": "Koyambedu APMC Market",
+      "type": "mandi",
+      "distance_km": 10
+    },
+    {
+      "name": "Ambattur Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Perambur Agri Hub",
+      "type": "mandi",
+      "distance_km": 12
+    },
+    {
+      "name": "Sriperumbudur Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 36
+    }
+  ],
+  "Coimbatore": [
+    {
+      "name": "Coimbatore APMC",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Tirupur Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 42
+    },
+    {
+      "name": "Annur Agri Market",
+      "type": "mandi",
+      "distance_km": 20
+    },
+    {
+      "name": "Kinathukadavu Cold Store",
+      "type": "cold_storage",
+      "distance_km": 28
+    }
+  ],
+  "Cooch Behar": [
+    {
+      "name": "Cooch Behar APMC Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Dinhata Tobacco & Agri Mandi",
+      "type": "mandi",
+      "distance_km": 22
+    },
+    {
+      "name": "Mathabhanga Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 27
+    }
+  ],
+  "Cuttack": [
+    {
+      "name": "Cuttack APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Jagatpur Cold Store",
+      "type": "cold_storage",
+      "distance_km": 9
+    },
+    {
+      "name": "Choudwar Agri Market",
+      "type": "mandi",
+      "distance_km": 16
+    }
+  ],
+  "Darjeeling": [
+    {
+      "name": "Siliguri APMC Market",
+      "type": "mandi",
+      "distance_km": 38
+    },
+    {
+      "name": "Bagdogra Cold Store",
+      "type": "cold_storage",
+      "distance_km": 35
+    },
+    {
+      "name": "Darjeeling Tea Market",
+      "type": "mandi",
+      "distance_km": 5
+    }
+  ],
+  "Dehradun": [
+    {
+      "name": "Dehradun APMC Market",
+      "type": "mandi",
+      "distance_km": 7
+    },
+    {
+      "name": "Selaqui Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 15
+    },
+    {
+      "name": "Haridwar Sabzi Mandi",
+      "type": "mandi",
+      "distance_km": 48
+    }
+  ],
+  "Dhanbad": [
+    {
+      "name": "Dhanbad APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Jharia Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 12
+    },
+    {
+      "name": "Bokaro Agri Market",
+      "type": "mandi",
+      "distance_km": 30
+    }
+  ],
+  "Dibrugarh": [
+    {
+      "name": "Dibrugarh APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Chabua Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Tinsukia Agri Market",
+      "type": "mandi",
+      "distance_km": 35
+    }
+  ],
+  "Dimapur": [
+    {
+      "name": "Dimapur APMC Super Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Purana Bazar Cold Chain Logistics",
+      "type": "cold_storage",
+      "distance_km": 8
+    },
+    {
+      "name": "Chumoukedima Produce Mandi",
+      "type": "mandi",
+      "distance_km": 14
+    }
+  ],
+  "Durg": [
+    {
+      "name": "Durg-Bhilai APMC Mandi",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Kumhari Cold Storage Hub",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Patan Agri Market",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "East Khasi Hills": [
+    {
+      "name": "Shillong Iewduh APMC Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Mawiong Cold Storage Facility",
+      "type": "cold_storage",
+      "distance_km": 10
+    },
+    {
+      "name": "Laitkor Organic Agri Mandi",
+      "type": "mandi",
+      "distance_km": 14
+    }
+  ],
+  "East Siang": [
+    {
+      "name": "Pasighat Agri Market Yard",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Rani Cold Storage Facility",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Ruksin Border Mandi",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "East Sikkim": [
+    {
+      "name": "Lal Bazar APMC Super Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Tadong Cold Chain Warehouse",
+      "type": "cold_storage",
+      "distance_km": 8
+    },
+    {
+      "name": "Ranipool Agri Market",
+      "type": "mandi",
+      "distance_km": 12
+    }
+  ],
+  "East Singhbhum": [
+    {
+      "name": "Jamshedpur Sakchi APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Gamharia Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Ghatshila Produce Mandi",
+      "type": "mandi",
+      "distance_km": 38
+    }
+  ],
+  "Ernakulam": [
+    {
+      "name": "Ernakulam APMC Market",
+      "type": "mandi",
+      "distance_km": 8
+    },
+    {
+      "name": "Kalamassery Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 15
+    },
+    {
+      "name": "Aluva Vegetable Market",
+      "type": "mandi",
+      "distance_km": 13
+    }
+  ],
+  "Erode": [
+    {
+      "name": "Erode Turmeric APMC Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Perundurai Cold Chain Park",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Bhavani Agri Mandi",
+      "type": "mandi",
+      "distance_km": 14
+    }
+  ],
+  "Gangtok": [
+    {
+      "name": "Lal Bazar APMC Super Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Tadong Cold Chain Warehouse",
+      "type": "cold_storage",
+      "distance_km": 8
+    },
+    {
+      "name": "Ranipool Agri Market",
+      "type": "mandi",
+      "distance_km": 12
+    }
+  ],
+  "Ganjam": [
+    {
+      "name": "Berhampur APMC Market",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Chhatrapur Cold Store",
+      "type": "cold_storage",
+      "distance_km": 19
+    },
+    {
+      "name": "Aska Agri Mandi",
+      "type": "mandi",
+      "distance_km": 34
+    }
+  ],
+  "Gaya": [
+    {
+      "name": "Gaya APMC Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Bodh Gaya Cold Store",
+      "type": "cold_storage",
+      "distance_km": 13
+    },
+    {
+      "name": "Jehanabad Agri Mandi",
+      "type": "mandi",
+      "distance_km": 38
+    }
+  ],
+  "Gomati": [
+    {
+      "name": "Udaipur Central APMC Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Matabari Cold Chain Hub",
+      "type": "cold_storage",
+      "distance_km": 8
+    },
+    {
+      "name": "Amarpur Produce Market",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "Gorakhpur": [
+    {
+      "name": "Gorakhpur APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Sahjanwa Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Deoria Agri Market",
+      "type": "mandi",
+      "distance_km": 32
+    }
+  ],
+  "Guntur": [
+    {
+      "name": "Guntur Mirchi APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Narasaraopet Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 30
+    },
+    {
+      "name": "Mangalagiri Agri Market",
+      "type": "mandi",
+      "distance_km": 12
+    },
+    {
+      "name": "Tenali Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 20
+    }
+  ],
+  "Gurugram": [
+    {
+      "name": "Gurugram Khandsa APMC Mandi",
+      "type": "mandi",
+      "distance_km": 7
+    },
+    {
+      "name": "Pataudi Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 24
+    },
+    {
+      "name": "Sohna Agri Hub",
+      "type": "mandi",
+      "distance_km": 18
+    }
+  ],
+  "Guwahati": [
+    {
+      "name": "Guwahati Pamohi APMC Market",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Amingaon Cold Storage Complex",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Fancy Bazar Wholesale Hub",
+      "type": "mandi",
+      "distance_km": 8
+    }
+  ],
+  "Gwalior": [
+    {
+      "name": "Gwalior APMC Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Morar Cold Store",
+      "type": "cold_storage",
+      "distance_km": 8
+    },
+    {
+      "name": "Bhind Agri Mandi",
+      "type": "mandi",
+      "distance_km": 58
+    }
+  ],
+  "Gyalshing": [
+    {
+      "name": "Gyalshing Organic Produce Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Legship Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Dentam Agri Mandi",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "Haridwar": [
+    {
+      "name": "Haridwar Jwalapur APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Roorkee Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 24
+    },
+    {
+      "name": "Laksar Grain Mandi",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Hassan": [
+    {
+      "name": "Hassan APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Channarayapatna Cold Store",
+      "type": "cold_storage",
+      "distance_km": 23
+    },
+    {
+      "name": "Sakleshpur Coffee Market",
+      "type": "mandi",
+      "distance_km": 35
+    }
+  ],
+  "Hazaribagh": [
+    {
+      "name": "Hazaribagh APMC Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Barhi Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 29
+    },
+    {
+      "name": "Barkagaon Agri Mandi",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "Hisar": [
+    {
+      "name": "Hisar Grain Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Hansi Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 22
+    },
+    {
+      "name": "Barwala Agri Hub",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Hooghly": [
+    {
+      "name": "Sheoraphuli Wholesale Vegetable Mandi",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Tarakeswar Potato Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 12
+    },
+    {
+      "name": "Arambagh APMC Market",
+      "type": "mandi",
+      "distance_km": 24
+    },
+    {
+      "name": "Singur Agri Cool Chambers",
+      "type": "cold_storage",
+      "distance_km": 16
+    }
+  ],
+  "Howrah": [
+    {
+      "name": "Howrah Wholesale Agri APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Uluberia Cold Storage Hub",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Bagnan Vegetable Mandi",
+      "type": "mandi",
+      "distance_km": 24
+    }
+  ],
+  "Hyderabad": [
+    {
+      "name": "Gudimalkapur APMC",
+      "type": "mandi",
+      "distance_km": 8
+    },
+    {
+      "name": "Jeedimetla Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Bowenpally Vegetable Market",
+      "type": "mandi",
+      "distance_km": 10
+    },
+    {
+      "name": "Patancheru Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 28
+    }
+  ],
+  "Imphal East": [
+    {
+      "name": "Lamlong Wholesale Vegetable Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Porompat Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 7
+    },
+    {
+      "name": "Sawombung Agri Hub",
+      "type": "mandi",
+      "distance_km": 14
+    }
+  ],
+  "Imphal West": [
+    {
+      "name": "Khwairamband APMC Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Lamphelpat Cold Chain Logistics",
+      "type": "cold_storage",
+      "distance_km": 8
+    },
+    {
+      "name": "Wangoi Agri Market",
+      "type": "mandi",
+      "distance_km": 15
+    }
+  ],
+  "Indore": [
+    {
+      "name": "Indore Rajwada APMC",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Pithampur Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 22
+    },
+    {
+      "name": "Sanwer Onion Market",
+      "type": "mandi",
+      "distance_km": 18
+    },
+    {
+      "name": "Lasudia Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 10
+    }
+  ],
+  "Jabalpur": [
+    {
+      "name": "Jabalpur APMC Mandi",
+      "type": "mandi",
+      "distance_km": 7
+    },
+    {
+      "name": "Katni Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 48
+    },
+    {
+      "name": "Sihora Agri Market",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Jaipur": [
+    {
+      "name": "Jaipur Muhana Mandi",
+      "type": "mandi",
+      "distance_km": 10
+    },
+    {
+      "name": "Sanganer Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Chomu APMC Market",
+      "type": "mandi",
+      "distance_km": 32
+    },
+    {
+      "name": "Bagru Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 25
+    }
+  ],
+  "Jaipur Rural": [
+    {
+      "name": "Jobner APMC",
+      "type": "mandi",
+      "distance_km": 10
+    },
+    {
+      "name": "Dudu Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 28
+    },
+    {
+      "name": "Phagi Mustard Market",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "Jalpaiguri": [
+    {
+      "name": "Jalpaiguri APMC Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Dhupguri Potato Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Malbazar Agri Mandi",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Jammu": [
+    {
+      "name": "Narwal Fruit & Grain Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Bari Brahmana Cold Storage Complex",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Akhnoor Agri Market",
+      "type": "mandi",
+      "distance_km": 26
+    }
+  ],
+  "Jodhpur": [
+    {
+      "name": "Jodhpur APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Phalodi Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 40
+    },
+    {
+      "name": "Sojat Garlic Market",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Jorhat": [
+    {
+      "name": "Jorhat Regulated Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Mariani Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 17
+    },
+    {
+      "name": "Titabar Grain Mandi",
+      "type": "mandi",
+      "distance_km": 21
+    }
+  ],
+  "Junagadh": [
+    {
+      "name": "Junagadh APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Veraval Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 60
+    },
+    {
+      "name": "Keshod Mango Mandi",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Kamrup": [
+    {
+      "name": "Guwahati Pamohi APMC Market",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Amingaon Cold Storage Complex",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Fancy Bazar Wholesale Hub",
+      "type": "mandi",
+      "distance_km": 8
+    }
+  ],
+  "Kamrup Metro": [
+    {
+      "name": "Guwahati Pamohi APMC Market",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Amingaon Cold Storage Complex",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Fancy Bazar Wholesale Hub",
+      "type": "mandi",
+      "distance_km": 8
+    }
+  ],
+  "Kamrup Metropolitan": [
+    {
+      "name": "Guwahati Pamohi APMC Market",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Amingaon Cold Storage Complex",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Fancy Bazar Wholesale Hub",
+      "type": "mandi",
+      "distance_km": 8
+    }
+  ],
+  "Kangra": [
+    {
+      "name": "Kangra APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Palampur Cold Store",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Dharamshala Agri Market",
+      "type": "mandi",
+      "distance_km": 20
+    }
+  ],
+  "Kanpur Nagar": [
+    {
+      "name": "Kanpur APMC Market",
+      "type": "mandi",
+      "distance_km": 7
+    },
+    {
+      "name": "Kidwai Nagar Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 12
+    },
+    {
+      "name": "Unnao Mandi",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Karaikal": [
+    {
+      "name": "Karaikal Regulated Market Committee",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Nedungadu Cold Store",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Kottucherry Produce Mandi",
+      "type": "mandi",
+      "distance_km": 10
+    }
+  ],
+  "Kargil": [
+    {
+      "name": "Kargil Apricot & Agri Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Bimbat Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 12
+    },
+    {
+      "name": "Drass Sub Market",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Karimnagar": [
+    {
+      "name": "Karimnagar APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Peddapalli Cold Store",
+      "type": "cold_storage",
+      "distance_km": 22
+    },
+    {
+      "name": "Jagtial Cotton Mandi",
+      "type": "mandi",
+      "distance_km": 33
+    }
+  ],
+  "Karnal": [
+    {
+      "name": "Karnal New Grain Market APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Taraori Rice & Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Gharaunda Vegetable Mandi",
+      "type": "mandi",
+      "distance_km": 19
+    }
+  ],
+  "Khammam": [
+    {
+      "name": "Khammam Mirchi APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Wyra Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 24
+    },
+    {
+      "name": "Madhira Agri Market",
+      "type": "mandi",
+      "distance_km": 30
+    }
+  ],
+  "Khordha": [
+    {
+      "name": "Bhubaneswar Unit-1 APMC Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Jatni Cold Chain Warehouse",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Khordha Town Agri Mandi",
+      "type": "mandi",
+      "distance_km": 9
+    }
+  ],
+  "Kohima": [
+    {
+      "name": "Kohima Mao Market Yard",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Jotsoma Cold Storage Facility",
+      "type": "cold_storage",
+      "distance_km": 11
+    },
+    {
+      "name": "Chiephobozou Agri Hub",
+      "type": "mandi",
+      "distance_km": 19
+    }
+  ],
+  "Kolar": [
+    {
+      "name": "Kolar APMC Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Bangarpet Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Malur Tomato Market",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "Kolhapur": [
+    {
+      "name": "Kolhapur APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Ichalkaranji Cold Store",
+      "type": "cold_storage",
+      "distance_km": 21
+    },
+    {
+      "name": "Kagal Fruit Mandi",
+      "type": "mandi",
+      "distance_km": 16
+    }
+  ],
+  "Kolkata": [
+    {
+      "name": "Howrah APMC Mandi",
+      "type": "mandi",
+      "distance_km": 8
+    },
+    {
+      "name": "Taratala Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Sealdah Vegetable Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Budge Budge Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 22
+    }
+  ],
+  "Kota": [
+    {
+      "name": "Kota APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Baran Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 30
+    },
+    {
+      "name": "Ramganj Mandi Coriander Market",
+      "type": "mandi",
+      "distance_km": 24
+    }
+  ],
+  "Kozhikode": [
+    {
+      "name": "Kozhikode APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Feroke Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 11
+    },
+    {
+      "name": "Koyilandy Agri Market",
+      "type": "mandi",
+      "distance_km": 18
+    }
+  ],
+  "Krishna": [
+    {
+      "name": "Vijayawada APMC Bhavanipuram",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Gannavaram Cold Chain Park",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Gudivada Grain Market",
+      "type": "mandi",
+      "distance_km": 34
+    }
+  ],
+  "Kullu": [
+    {
+      "name": "Kullu APMC Apple Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Bhuntar Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 10
+    },
+    {
+      "name": "Manali Agri Hub",
+      "type": "mandi",
+      "distance_km": 38
+    }
+  ],
+  "Kurnool": [
+    {
+      "name": "Kurnool APMC Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Nandyal Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 38
+    },
+    {
+      "name": "Yemmiganur Agri Mandi",
+      "type": "mandi",
+      "distance_km": 29
+    }
+  ],
+  "Leh": [
+    {
+      "name": "Leh Agri Produce Market Yard",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Choglamsar Solar Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 8
+    },
+    {
+      "name": "Thiksey Vegetable Hub",
+      "type": "mandi",
+      "distance_km": 16
+    }
+  ],
+  "Lucknow": [
+    {
+      "name": "Lucknow APMC Mandi",
+      "type": "mandi",
+      "distance_km": 8
+    },
+    {
+      "name": "Amar Shahid Park Cold Store",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Sitapur Road Mandi",
+      "type": "mandi",
+      "distance_km": 19
+    }
+  ],
+  "Ludhiana": [
+    {
+      "name": "Ludhiana Grain Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Doraha Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Khanna APMC Market",
+      "type": "mandi",
+      "distance_km": 25
+    },
+    {
+      "name": "Sahnewal Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 11
+    }
+  ],
+  "Lunglei": [
+    {
+      "name": "Lunglei Venglai Agri Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Hnahthial Road Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Serkawn Produce Yard",
+      "type": "mandi",
+      "distance_km": 8
+    }
+  ],
+  "Madurai": [
+    {
+      "name": "Madurai APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Melur Cold Store",
+      "type": "cold_storage",
+      "distance_km": 22
+    },
+    {
+      "name": "Dindigul Banana Market",
+      "type": "mandi",
+      "distance_km": 45
+    }
+  ],
+  "Malda": [
+    {
+      "name": "Malda APMC Mango Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "English Bazar Cold Store",
+      "type": "cold_storage",
+      "distance_km": 6
+    },
+    {
+      "name": "Gazole Agri Mandi",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Mathura": [
+    {
+      "name": "Mathura APMC Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Vrindavan Cold Store",
+      "type": "cold_storage",
+      "distance_km": 11
+    },
+    {
+      "name": "Farah Potato Market",
+      "type": "mandi",
+      "distance_km": 16
+    }
+  ],
+  "Mokokchung": [
+    {
+      "name": "Mokokchung Town Agri Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Changtongya Cold Store",
+      "type": "cold_storage",
+      "distance_km": 22
+    },
+    {
+      "name": "Mangkolemba Produce Yard",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Murshidabad": [
+    {
+      "name": "Berhampore APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Jiaganj Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 10
+    },
+    {
+      "name": "Lalbagh Agri Market",
+      "type": "mandi",
+      "distance_km": 16
+    }
+  ],
+  "Muzaffarpur": [
+    {
+      "name": "Muzaffarpur APMC Litchi Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Motipur Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 27
+    },
+    {
+      "name": "Sitamarhi Agri Market",
+      "type": "mandi",
+      "distance_km": 50
+    }
+  ],
+  "Mysuru": [
+    {
+      "name": "Mysuru APMC Market",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Nanjangud Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 20
+    },
+    {
+      "name": "Hunsur Agri Mandi",
+      "type": "mandi",
+      "distance_km": 30
+    }
+  ],
+  "Nadia": [
+    {
+      "name": "Ranaghat APMC Vegetable Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Krishnanagar Cold Store",
+      "type": "cold_storage",
+      "distance_km": 11
+    },
+    {
+      "name": "Kalyani Agri Logistics Hub",
+      "type": "cold_storage",
+      "distance_km": 20
+    },
+    {
+      "name": "Bethuadahari Fruit & Veg Mandi",
+      "type": "mandi",
+      "distance_km": 25
+    }
+  ],
+  "Nagpur": [
+    {
+      "name": "Nagpur APMC Mandi",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Butibori Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 19
+    },
+    {
+      "name": "Kamptee Agri Market",
+      "type": "mandi",
+      "distance_km": 13
+    },
+    {
+      "name": "Hingna Cool Store",
+      "type": "cold_storage",
+      "distance_km": 27
+    }
+  ],
+  "Nainital": [
+    {
+      "name": "Haldwani APMC Mandi",
+      "type": "mandi",
+      "distance_km": 24
+    },
+    {
+      "name": "Kathgodam Cold Store",
+      "type": "cold_storage",
+      "distance_km": 22
+    },
+    {
+      "name": "Rudrapur Agri Market",
+      "type": "mandi",
+      "distance_km": 48
+    }
+  ],
+  "Nalgonda": [
+    {
+      "name": "Nalgonda Grain Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Miryalaguda Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 28
+    },
+    {
+      "name": "Suryapet APMC Mandi",
+      "type": "mandi",
+      "distance_km": 32
+    }
+  ],
+  "Namchi": [
+    {
+      "name": "Namchi Kisan Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Jorethang Valley Cold Store",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Ravangla Agri Hub",
+      "type": "mandi",
+      "distance_km": 24
+    }
+  ],
+  "Nashik": [
+    {
+      "name": "Nashik APMC Mandi",
+      "type": "mandi",
+      "distance_km": 3
+    },
+    {
+      "name": "Niphad Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Dindori Agri Hub Mandi",
+      "type": "mandi",
+      "distance_km": 24
+    },
+    {
+      "name": "Igatpuri Cool Chambers",
+      "type": "cold_storage",
+      "distance_km": 31
+    }
+  ],
+  "Nellore": [
+    {
+      "name": "Nellore APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Kavali Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 24
+    },
+    {
+      "name": "Gudur Agri Market",
+      "type": "mandi",
+      "distance_km": 32
+    }
+  ],
+  "New Delhi": [
+    {
+      "name": "Azadpur APMC Market",
+      "type": "mandi",
+      "distance_km": 14
+    },
+    {
+      "name": "Kundli Cold Chain Park",
+      "type": "cold_storage",
+      "distance_km": 36
+    },
+    {
+      "name": "Okhla Vegetable Market",
+      "type": "mandi",
+      "distance_km": 18
+    },
+    {
+      "name": "Ghazipur Mandi",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "Nizamabad": [
+    {
+      "name": "Nizamabad Turmeric APMC Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Armoor Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 22
+    },
+    {
+      "name": "Bodhan Agri Market",
+      "type": "mandi",
+      "distance_km": 26
+    }
+  ],
+  "North 24 Parganas": [
+    {
+      "name": "Barasat Wholesale Mandi",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Basirhat Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Habra Agri Market",
+      "type": "mandi",
+      "distance_km": 12
+    }
+  ],
+  "North Delhi": [
+    {
+      "name": "Azadpur APMC North Complex",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Alipur Cold Storage Park",
+      "type": "cold_storage",
+      "distance_km": 10
+    },
+    {
+      "name": "Narela Grain Mandi",
+      "type": "mandi",
+      "distance_km": 16
+    }
+  ],
+  "North Goa": [
+    {
+      "name": "Mapusa Sub Market Yard APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Panaji Central Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 12
+    },
+    {
+      "name": "Bicholim Agri Market",
+      "type": "mandi",
+      "distance_km": 19
+    }
+  ],
+  "North and Middle Andaman": [
+    {
+      "name": "Diglipur Town Produce Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Mayabunder Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 24
+    },
+    {
+      "name": "Rangat Agri Market",
+      "type": "mandi",
+      "distance_km": 32
+    }
+  ],
+  "Palakkad": [
+    {
+      "name": "Palakkad APMC Grain Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Ottapalam Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 27
+    },
+    {
+      "name": "Alathur Agri Mandi",
+      "type": "mandi",
+      "distance_km": 20
+    }
+  ],
+  "Papum Pare": [
+    {
+      "name": "Itanagar Naharlagun APMC Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Nirjuli Agri Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 12
+    },
+    {
+      "name": "Banderdewa Produce Terminal",
+      "type": "mandi",
+      "distance_km": 24
+    }
+  ],
+  "Paschim Bardhaman": [
+    {
+      "name": "Asansol Wholesale APMC",
+      "type": "mandi",
+      "distance_km": 7
+    },
+    {
+      "name": "Durgapur Cold Chain Logistics",
+      "type": "cold_storage",
+      "distance_km": 15
+    },
+    {
+      "name": "Raniganj Grain Mandi",
+      "type": "mandi",
+      "distance_km": 18
+    }
+  ],
+  "Paschim Medinipur": [
+    {
+      "name": "Midnapore Town APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Kharagpur Cold Chain Logistics",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Ghatal Potato Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 26
+    },
+    {
+      "name": "Debra Agri Hub",
+      "type": "mandi",
+      "distance_km": 19
+    }
+  ],
+  "Patiala": [
+    {
+      "name": "Patiala Grain Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Rajpura Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 19
+    },
+    {
+      "name": "Nabha APMC Mandi",
+      "type": "mandi",
+      "distance_km": 26
+    }
+  ],
+  "Patna": [
+    {
+      "name": "Patna APMC Mandi",
+      "type": "mandi",
+      "distance_km": 9
+    },
+    {
+      "name": "Phulwari Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Danapur Sabzi Mandi",
+      "type": "mandi",
+      "distance_km": 12
+    }
+  ],
+  "Puducherry": [
+    {
+      "name": "Gorimedu APMC Regulated Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Mettupalayam Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 9
+    },
+    {
+      "name": "Villianur Agri Market",
+      "type": "mandi",
+      "distance_km": 11
+    }
+  ],
+  "Pulwama": [
+    {
+      "name": "Pulwama Saffron & Fruit Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Lassipora Industrial Cold Chain Park",
+      "type": "cold_storage",
+      "distance_km": 10
+    },
+    {
+      "name": "Awantipora Agri Mandi",
+      "type": "mandi",
+      "distance_km": 15
+    }
+  ],
+  "Pune": [
+    {
+      "name": "Pune Market Yard APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Manjri Cold Chain Park",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Hadapsar Agri Mandi",
+      "type": "mandi",
+      "distance_km": 9
+    },
+    {
+      "name": "Pimpri Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 22
+    }
+  ],
+  "Purba Bardhaman": [
+    {
+      "name": "Bardhaman APMC Rice & Agri Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Memari Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Kalna Agri Mandi",
+      "type": "mandi",
+      "distance_km": 26
+    },
+    {
+      "name": "Bhatar Cool Store",
+      "type": "cold_storage",
+      "distance_km": 19
+    }
+  ],
+  "Purba Medinipur": [
+    {
+      "name": "Tamluk Central APMC Mandi",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Kolaghat Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Contai Agri Produce Market",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Purulia": [
+    {
+      "name": "Purulia Sadar APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Raghunathpur Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 22
+    },
+    {
+      "name": "Jhalda Agri Market",
+      "type": "mandi",
+      "distance_km": 29
+    }
+  ],
+  "Raipur": [
+    {
+      "name": "Raipur APMC Mandi",
+      "type": "mandi",
+      "distance_km": 7
+    },
+    {
+      "name": "Urla Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Arang Agri Market",
+      "type": "mandi",
+      "distance_km": 25
+    }
+  ],
+  "Rajkot": [
+    {
+      "name": "Rajkot APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Gondal Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 22
+    },
+    {
+      "name": "Jasdan Groundnut Mandi",
+      "type": "mandi",
+      "distance_km": 35
+    }
+  ],
+  "Rajnandgaon": [
+    {
+      "name": "Rajnandgaon Grain Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Dongargarh Cold Store",
+      "type": "cold_storage",
+      "distance_km": 28
+    },
+    {
+      "name": "Khairagarh Produce Market",
+      "type": "mandi",
+      "distance_km": 32
+    }
+  ],
+  "Ranchi": [
+    {
+      "name": "Ranchi APMC Mandi",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Namkum Cold Store",
+      "type": "cold_storage",
+      "distance_km": 11
+    },
+    {
+      "name": "Hatia Agri Market",
+      "type": "mandi",
+      "distance_km": 18
+    }
+  ],
+  "Ri-Bhoi": [
+    {
+      "name": "Nongpoh Highway Agri Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Byrnihat Industrial Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Umling Produce Terminal",
+      "type": "mandi",
+      "distance_km": 12
+    }
+  ],
+  "Salem": [
+    {
+      "name": "Salem APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Attur Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 27
+    },
+    {
+      "name": "Namakkal Agri Market",
+      "type": "mandi",
+      "distance_km": 35
+    }
+  ],
+  "Sambalpur": [
+    {
+      "name": "Sambalpur Regulated Market APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Bargarh Road Cold Store",
+      "type": "cold_storage",
+      "distance_km": 20
+    },
+    {
+      "name": "Kuchinda Agri Mandi",
+      "type": "mandi",
+      "distance_km": 36
+    }
+  ],
+  "Sangrur": [
+    {
+      "name": "Sangrur APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Barnala Cold Store",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Sunam Mandi",
+      "type": "mandi",
+      "distance_km": 20
+    }
+  ],
+  "Satara": [
+    {
+      "name": "Satara APMC",
+      "type": "mandi",
+      "distance_km": 3
+    },
+    {
+      "name": "Karad Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Phaltan Mandi",
+      "type": "mandi",
+      "distance_km": 26
+    }
+  ],
+  "Shimla": [
+    {
+      "name": "Shimla APMC Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Parwanoo Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 50
+    },
+    {
+      "name": "Solan Apple Mandi",
+      "type": "mandi",
+      "distance_km": 45
+    }
+  ],
+  "Sikar": [
+    {
+      "name": "Sikar APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Fatehpur Cold Store",
+      "type": "cold_storage",
+      "distance_km": 32
+    },
+    {
+      "name": "Laxmangarh Agri Market",
+      "type": "mandi",
+      "distance_km": 20
+    }
+  ],
+  "Sirsa": [
+    {
+      "name": "Sirsa Grain Market APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Rania Cold Store",
+      "type": "cold_storage",
+      "distance_km": 21
+    },
+    {
+      "name": "Dabwali Cotton & Agri Mandi",
+      "type": "mandi",
+      "distance_km": 32
+    }
+  ],
+  "Solapur": [
+    {
+      "name": "Solapur APMC Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Akkalkot Cold Store",
+      "type": "cold_storage",
+      "distance_km": 20
+    },
+    {
+      "name": "Barshi Grapes Mandi",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Sonipat": [
+    {
+      "name": "Sonipat APMC Mandi",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Rai Mega Food Park & Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 12
+    },
+    {
+      "name": "Ganaur International Agri Mandi",
+      "type": "mandi",
+      "distance_km": 18
+    }
+  ],
+  "Sonitpur": [
+    {
+      "name": "Tezpur APMC Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Dhekiajuli Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 28
+    },
+    {
+      "name": "Biswanath Agri Mandi",
+      "type": "mandi",
+      "distance_km": 35
+    }
+  ],
+  "South 24 Parganas": [
+    {
+      "name": "Baruipur Fruit & Vegetable Mandi",
+      "type": "mandi",
+      "distance_km": 7
+    },
+    {
+      "name": "Diamond Harbour Cold Store",
+      "type": "cold_storage",
+      "distance_km": 24
+    },
+    {
+      "name": "Canning Agri APMC",
+      "type": "mandi",
+      "distance_km": 19
+    }
+  ],
+  "South Andaman": [
+    {
+      "name": "Port Blair Mohanpura APMC Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Dollygunj Cold Chain Logistics",
+      "type": "cold_storage",
+      "distance_km": 7
+    },
+    {
+      "name": "Garacharma Vegetable Hub",
+      "type": "mandi",
+      "distance_km": 9
+    }
+  ],
+  "South Delhi": [
+    {
+      "name": "Okhla APMC Vegetable Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Badarpur Cool Chambers",
+      "type": "cold_storage",
+      "distance_km": 11
+    }
+  ],
+  "South Goa": [
+    {
+      "name": "Margao APMC Main Market",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Ponda Cold Chain Logistics",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Curchorem Produce Mandi",
+      "type": "mandi",
+      "distance_km": 23
+    }
+  ],
+  "South Sikkim": [
+    {
+      "name": "Namchi Kisan Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Jorethang Valley Cold Store",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Ravangla Agri Hub",
+      "type": "mandi",
+      "distance_km": 24
+    }
+  ],
+  "South Tripura": [
+    {
+      "name": "Belonia Agri Produce Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Santirbazar Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Sabroom Border Market",
+      "type": "mandi",
+      "distance_km": 28
+    }
+  ],
+  "Srinagar": [
+    {
+      "name": "Parimpora Fruit Mandi APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Lasjan Controlled Atmosphere Cold Store",
+      "type": "cold_storage",
+      "distance_km": 12
+    },
+    {
+      "name": "Zakura Agri Terminal",
+      "type": "mandi",
+      "distance_km": 16
+    }
+  ],
+  "Surat": [
+    {
+      "name": "Surat APMC Mandi",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Kim Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 24
+    },
+    {
+      "name": "Navsari Agri Market",
+      "type": "mandi",
+      "distance_km": 38
+    }
+  ],
+  "Thanjavur": [
+    {
+      "name": "Thanjavur Paddy Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Kumbakonam Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 32
+    },
+    {
+      "name": "Pattukkottai Agri Market",
+      "type": "mandi",
+      "distance_km": 26
+    }
+  ],
+  "Thiruvananthapuram": [
+    {
+      "name": "Thiruvananthapuram APMC",
+      "type": "mandi",
+      "distance_km": 7
+    },
+    {
+      "name": "Nedumangad Cold Store",
+      "type": "cold_storage",
+      "distance_km": 19
+    },
+    {
+      "name": "Kazhakoottam Agri Hub",
+      "type": "mandi",
+      "distance_km": 12
+    }
+  ],
+  "Thrissur": [
+    {
+      "name": "Thrissur Wholesale Urban Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Chalakudy Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 24
+    },
+    {
+      "name": "Kunnamkulam Produce Market",
+      "type": "mandi",
+      "distance_km": 21
+    }
+  ],
+  "Tiruchirapalli": [
+    {
+      "name": "Tiruchirappalli APMC",
+      "type": "mandi",
+      "distance_km": 7
+    },
+    {
+      "name": "Srirangam Cold Store",
+      "type": "cold_storage",
+      "distance_km": 10
+    },
+    {
+      "name": "Lalgudi Agri Mandi",
+      "type": "mandi",
+      "distance_km": 24
+    }
+  ],
+  "Tiruchirappalli": [
+    {
+      "name": "Tiruchirappalli APMC Market",
+      "type": "mandi",
+      "distance_km": 7
+    },
+    {
+      "name": "Srirangam Cold Store",
+      "type": "cold_storage",
+      "distance_km": 10
+    },
+    {
+      "name": "Lalgudi Agri Mandi",
+      "type": "mandi",
+      "distance_km": 24
+    }
+  ],
+  "Tumakuru": [
+    {
+      "name": "Tumkur APMC Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Tiptur Cold Store",
+      "type": "cold_storage",
+      "distance_km": 27
+    },
+    {
+      "name": "Madhugiri Agri Market",
+      "type": "mandi",
+      "distance_km": 40
+    }
+  ],
+  "Udaipur": [
+    {
+      "name": "Udaipur APMC",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Nathdwara Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 35
+    },
+    {
+      "name": "Mavli Agri Market",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "Udham Singh Nagar": [
+    {
+      "name": "Rudrapur APMC Mandi",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Kashipur Cold Chain Hub",
+      "type": "cold_storage",
+      "distance_km": 26
+    },
+    {
+      "name": "Kichha Rice & Grain Market",
+      "type": "mandi",
+      "distance_km": 14
+    }
+  ],
+  "Vadodara": [
+    {
+      "name": "Vadodara APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Makarpura Cold Store",
+      "type": "cold_storage",
+      "distance_km": 12
+    },
+    {
+      "name": "Anand Dairy Mandi",
+      "type": "mandi",
+      "distance_km": 40
+    }
+  ],
+  "Varanasi": [
+    {
+      "name": "Varanasi APMC",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Mughal Sarai Cold Store",
+      "type": "cold_storage",
+      "distance_km": 12
+    },
+    {
+      "name": "Ramnagar Sabzi Mandi",
+      "type": "mandi",
+      "distance_km": 9
+    }
+  ],
+  "Visakhapatnam": [
+    {
+      "name": "Visakhapatnam APMC",
+      "type": "mandi",
+      "distance_km": 8
+    },
+    {
+      "name": "Gopalapatnam Cold Store",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Vizianagaram Agri Market",
+      "type": "mandi",
+      "distance_km": 56
+    }
+  ],
+  "Warangal Urban": [
+    {
+      "name": "Warangal APMC",
+      "type": "mandi",
+      "distance_km": 6
+    },
+    {
+      "name": "Kazipet Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 9
+    },
+    {
+      "name": "Jangaon Agri Market",
+      "type": "mandi",
+      "distance_km": 35
+    }
+  ],
+  "Wayanad": [
+    {
+      "name": "Kalpetta Spices & Produce Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Mananthavady Cold Store",
+      "type": "cold_storage",
+      "distance_km": 28
+    },
+    {
+      "name": "Sulthan Bathery Agri Hub",
+      "type": "mandi",
+      "distance_km": 24
+    }
+  ],
+  "West Delhi": [
+    {
+      "name": "Keshopur APMC Fruit & Veg Mandi",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Tikri Cold Chain Hub",
+      "type": "cold_storage",
+      "distance_km": 15
+    }
+  ],
+  "West Garo Hills": [
+    {
+      "name": "Tura Super Market APMC",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Garobadha Cold Store",
+      "type": "cold_storage",
+      "distance_km": 22
+    },
+    {
+      "name": "Phulbari Agri Mandi",
+      "type": "mandi",
+      "distance_km": 34
+    }
+  ],
+  "West Kameng": [
+    {
+      "name": "Bomdila Fruit & Apple Mandi",
+      "type": "mandi",
+      "distance_km": 5
+    },
+    {
+      "name": "Dirang Cold Storage",
+      "type": "cold_storage",
+      "distance_km": 18
+    },
+    {
+      "name": "Rupa Agri Produce Hub",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "West Sikkim": [
+    {
+      "name": "Gyalshing Organic Produce Market",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Legship Cold Chain",
+      "type": "cold_storage",
+      "distance_km": 16
+    },
+    {
+      "name": "Dentam Agri Mandi",
+      "type": "mandi",
+      "distance_km": 22
+    }
+  ],
+  "West Tripura": [
+    {
+      "name": "Agartala Gol Bazar APMC",
+      "type": "mandi",
+      "distance_km": 4
+    },
+    {
+      "name": "Bodhjungnagar Mega Food Park Cold Store",
+      "type": "cold_storage",
+      "distance_km": 14
+    },
+    {
+      "name": "Ranirbazar Agri Market",
+      "type": "mandi",
+      "distance_km": 10
+    }
+  ]
+}

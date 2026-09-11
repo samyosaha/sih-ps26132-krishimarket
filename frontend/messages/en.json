@@ -19,6 +19,7 @@
     "verification": "Verify Business",
     "reviewBuyers": "Review buyers",
     "disputes": "Disputes",
+    "myDisputes": "My Disputes",
     "language": "Language"
   },
   "footer": {
@@ -265,6 +266,7 @@
     "statusRejected": "Rejected",
     "statusPaid": "Paid",
     "statusDelivered": "Delivered",
+    "statusFailed": "Payment Failed",
     "buyer": {
       "title": "My Offers",
       "subtitle": "Offers you've sent on farmer lots.",
@@ -334,7 +336,17 @@
     "created": "Lot listed successfully!",
     "tooMany": "Too many attempts. Please wait a minute and try again.",
     "createFailed": "Failed to create lot",
-    "loadFailed": "Failed to load lots"
+    "loadFailed": "Failed to load lots",
+    "pincode": "Pincode",
+    "pincodePlaceholder": "e.g. 422001",
+    "pincodeHint": "Auto-detects nearest hub",
+    "checkingHub": "Checking nearest logistics hub...",
+    "nearestHub": "Nearest Hub",
+    "regionalHub": "Regional Hub",
+    "autoAssigned": "Auto-Assigned",
+    "dropOffNote": "Drop-off location automatically set — no manual logistics required",
+    "directFulfillment": "Direct Fulfillment",
+    "hubLabel": "Hub"
   },
   "tx": {
     "title": "Transactions",
@@ -354,6 +366,7 @@
     "awaitingConfirmation": "Awaiting your confirmation",
     "paymentComplete": "Payment complete",
     "delivered": "Delivered",
+    "failed": "Failed",
     "finalAmount": "Final amount",
     "created": "Created {date}",
     "counterparty": "Counterparty",
@@ -373,7 +386,29 @@
     "updateFailed": "Failed to update status",
     "loadFailed": "Failed to load transactions",
     "rateDeal": "Rate this deal",
-    "loadingPickup": "Loading…"
+    "loadingPickup": "Loading…",
+    "deliveryMethodRequired": "Please enter a delivery method.",
+    "dispatched": "Dispatched successfully.",
+    "dispatchFailed": "Dispatch failed.",
+    "actionFailed": "Action failed.",
+    "rejectReasonRequired": "Please provide a reason (at least 10 characters).",
+    "disputeRaised": "Dispute raised successfully.",
+    "rejectFailed": "Reject failed.",
+    "dispatch": "Dispatch",
+    "dispatchShipmentTitle": "Dispatch Shipment",
+    "dispatchShipmentDesc": "Enter the delivery method (e.g. \"Kisan Rail\", \"Local Transporter\")",
+    "deliveryMethodLabel": "Delivery Method",
+    "deliveryMethodPlaceholder": "e.g. Dispatched via Kisan Rail",
+    "confirmDispatch": "Confirm Dispatch",
+    "markedInTransit": "Marked as In Transit.",
+    "markInTransit": "Mark In Transit",
+    "markedAsDelivered": "Marked as Delivered.",
+    "confirmDelivery": "Confirm Delivery",
+    "raiseDisputeBtn": "Raise Dispute",
+    "raiseDisputeDesc": "Describe the issue. This will transition the order to Disputed status.",
+    "counterpartyDisputeOpen": "Counterparty disputed",
+    "reasonLabel": "Reason",
+    "rejectReasonPlaceholder": "Describe the issue (min 10 characters)..."
   },
   "notif": {
     "title": "Notifications",
@@ -544,6 +579,13 @@
     "noFault": "Closed, no fault",
     "resolvedToast": "Dispute resolved.",
     "failToast": "Failed to update dispute",
-    "loadFailed": "Failed to load disputes"
+    "loadFailed": "Failed to load disputes",
+    "myDisputesTitle": "My Disputes",
+    "myDisputesSubtitle": "Track and manage grievances on your transactions.",
+    "youRaisedThis": "You raised this",
+    "otherRaisedThis": "{name} raised this",
+    "counterpartyRaisedThis": "Counterparty raised this",
+    "viewTransaction": "View transaction",
+    "emptyMyDisputes": "No disputes found in this filter."
   }
 }

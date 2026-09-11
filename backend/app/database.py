@@ -41,6 +41,22 @@ _SQLITE_COLUMN_PATCHES: dict[str, list[tuple[str, str]]] = {
         ("resolved_at", "DATETIME"),
         ("outcome", "VARCHAR"),
     ],
+    # Phase 7 — Hub-Assisted Fulfillment
+    "lots": [
+        ("hub_id", "INTEGER REFERENCES hubs(id)"),
+    ],
+    "transactions": [
+        ("delivery_method", "VARCHAR NOT NULL DEFAULT 'pending'"),
+        ("delivery_status", "VARCHAR NOT NULL DEFAULT 'listed'"),
+        ("hub_checkin_photo_url", "VARCHAR"),
+        ("hub_checkin_weight_kg", "FLOAT"),
+        ("hub_checkin_grade", "VARCHAR"),
+        ("estimated_delivery_cost", "FLOAT"),
+    ],
+    # Phase 8 -- Fulfillment Recommender
+    "offers": [
+        ("delivery_district", "VARCHAR"),
+    ],
 }
 
 

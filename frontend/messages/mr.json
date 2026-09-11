@@ -19,6 +19,7 @@
     "verification": "व्यवसाय सत्यापित करा",
     "reviewBuyers": "खरेदीदार तपासणी",
     "disputes": "वाद",
+    "myDisputes": "माझे वाद",
     "language": "भाषा"
   },
   "footer": {
@@ -265,6 +266,7 @@
     "statusRejected": "नाकारली",
     "statusPaid": "पैसे दिले",
     "statusDelivered": "वितरित",
+    "statusFailed": "पेमेंट अयशस्वी",
     "buyer": {
       "title": "माझ्या ऑफर",
       "subtitle": "शेतकऱ्यांच्या लॉटवर पाठवलेल्या ऑफर.",
@@ -334,7 +336,17 @@
     "created": "लॉट यशस्वीरित्या सूचीबद्ध!",
     "tooMany": "खूप जास्त प्रयत्न. एक मिनिट थांबून पुन्हा प्रयत्न करा.",
     "createFailed": "लॉट तयार करण्यात अयशस्वी",
-    "loadFailed": "लॉट लोड करण्यात अयशस्वी"
+    "loadFailed": "लॉट लोड करण्यात अयशस्वी",
+    "pincode": "पिनकोड",
+    "pincodePlaceholder": "उदा. 422001",
+    "pincodeHint": "जवळचे हब आपोआप शोधतो",
+    "checkingHub": "जवळचे लॉजिस्टिक्स हब तपासत आहे...",
+    "nearestHub": "जवळचे हब",
+    "regionalHub": "प्रादेशिक हब",
+    "autoAssigned": "आपोआप निवडलेले",
+    "dropOffNote": "ड्रॉप-ऑफ ठिकाण आपोआप सेट झाले — मॅन्युअल लॉजिस्टिक्सची गरज नाही",
+    "directFulfillment": "थेट पूर्तता",
+    "hubLabel": "हब"
   },
   "tx": {
     "title": "व्यवहार",
@@ -354,6 +366,7 @@
     "awaitingConfirmation": "तुमच्या पुष्टीची वाट",
     "paymentComplete": "पेमेंट पूर्ण",
     "delivered": "वितरित",
+    "failed": "अयशस्वी",
     "finalAmount": "अंतिम रक्कम",
     "created": "तयार {date}",
     "counterparty": "सोबत पक्ष",
@@ -373,7 +386,29 @@
     "updateFailed": "स्थिती अपडेट करण्यात अयशस्वी",
     "loadFailed": "व्यवहार लोड करण्यात अयशस्वी",
     "rateDeal": "या सौद्याला रेट करा",
-    "loadingPickup": "लोड होत आहे…"
+    "loadingPickup": "लोड होत आहे…",
+    "deliveryMethodRequired": "कृपया डिलिव्हरीची पद्धत योजा।",
+    "dispatched": "यशस्वीरित्या डिस्पॅच केले.",
+    "dispatchFailed": "डिस्पॅच अयशस्वी.",
+    "actionFailed": "क्रिया अयशस्वी.",
+    "rejectReasonRequired": "कृपया किमान १० अक्षरांमध्ये कारण द्या.",
+    "disputeRaised": "वाद यशस्वीरित्या नोंदवला.",
+    "rejectFailed": "नकार अयशस्वी.",
+    "dispatch": "डिस्पॅच",
+    "dispatchShipmentTitle": "शिपमेंट डिस्पॅच करा",
+    "dispatchShipmentDesc": "डिलिव्हरीची पद्धत नोंदवा (उदा. \"किसान रेल\", \"स्थानिक वाहतूकदार\")",
+    "deliveryMethodLabel": "डिलिव्हरीची पद्धत",
+    "deliveryMethodPlaceholder": "उदा. किसान रेलद्वारे डिस्पॅच",
+    "confirmDispatch": "डिस्पॅच पुष्टी करा",
+    "markedInTransit": "ट्रांझिट म्हणून चिन्हांकित केले.",
+    "markInTransit": "ट्रांझिट म्हणून चिन्हांकित करा",
+    "markedAsDelivered": "डिलिव्हर केले म्हणून चिन्हांकित केले.",
+    "confirmDelivery": "डिलिव्हरी पुष्टी करा",
+    "raiseDisputeBtn": "वाद नोंदवा",
+    "raiseDisputeDesc": "समस्या सांगा. यामुळे ऑर्डर वादग्रस्त स्थितीत जाईल.",
+    "counterpartyDisputeOpen": "दुसऱ्या पक्षाने वाद नोंदवला",
+    "reasonLabel": "कारण",
+    "rejectReasonPlaceholder": "समस्या सांगा (किमान १० अक्षरे)..."
   },
   "notif": {
     "title": "सूचना",
@@ -544,6 +579,13 @@
     "noFault": "दोष न लावता बंद",
     "resolvedToast": "वाद निकाली काढला.",
     "failToast": "वाद अपडेट करण्यात अयशस्वी",
-    "loadFailed": "वाद लोड करण्यात अयशस्वी"
+    "loadFailed": "वाद लोड करण्यात अयशस्वी",
+    "myDisputesTitle": "माझे वाद",
+    "myDisputesSubtitle": "आपल्या व्यवहारांवरील वादांचा मागोवा घ्या.",
+    "youRaisedThis": "तुम्ही हा वाद नोंदवला",
+    "otherRaisedThis": "{name} यांनी हा वाद नोंदवला",
+    "counterpartyRaisedThis": "दुसऱ्या पक्षाने वाद नोंदवला",
+    "viewTransaction": "व्यवहार पहा",
+    "emptyMyDisputes": "या फिल्टरमध्ये वाद नाहीत."
   }
 }

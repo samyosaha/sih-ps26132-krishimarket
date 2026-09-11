@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import {
   LineChart,
@@ -36,6 +36,9 @@ import {
   CalendarDays,
   ArrowRight,
   Sparkles,
+  Volume2,
+  Square,
+  Languages,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -302,6 +305,27 @@ export default function PriceDiscoveryPage() {
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /* ---------- speech state ---------- */
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voiceNotice, setVoiceNotice] = useState<string | null>(null);
+  const [ttsLang, setTtsLang] = useState<string>("hi");
+  const speechSessionRef = useRef(0);
+
+  useEffect(() => {
+    // Restore language preference from localStorage
+    try {
+      const saved = localStorage.getItem("krishimarket_tts_lang");
+      if (saved && ["en", "hi", "mr", "bn"].includes(saved)) {
+        setTtsLang(saved);
+      }
+    } catch {}
+    return () => {
+      if (typeof window !== "undefined" && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
   const districts = useMemo(
     () => (state ? DISTRICTS_BY_STATE[state] ?? [] : []),
     [state]
@@ -310,6 +334,13 @@ export default function PriceDiscoveryPage() {
   /* ---------- fetch handler ---------- */
   const handleSearch = useCallback(async () => {
     if (!commodity || !state || !district) return;
+
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    speechSessionRef.current += 1;
+    setIsSpeaking(false);
+
     setLoading(true);
     setError(null);
     setPrices(null);
@@ -344,6 +375,96 @@ export default function PriceDiscoveryPage() {
       setLoading(false);
     }
   }, [commodity, state, district, t]);
+
+  /* ---------- speech helpers ---------- */
+  const stopSpeaking = useCallback(() => {
+    speechSessionRef.current += 1;
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setIsSpeaking(false);
+  }, []);
+
+  const speakWebSpeech = useCallback((textToSpeak: string) => {
+    if (typeof window === "undefined" || !window.speechSynthesis) {
+      setIsSpeaking(false);
+      return;
+    }
+
+    const session = ++speechSessionRef.current;
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      const voices = window.speechSynthesis.getVoices();
+      const targetLanguage = `${ttsLang}-IN`.toLowerCase();
+      const targetVoice =
+        voices.find((voice) => voice.lang.toLowerCase() === targetLanguage) ||
+        voices.find((voice) =>
+          voice.lang.toLowerCase().startsWith(`${ttsLang.toLowerCase()}-`)
+        );
+      const isIndianLanguage = ttsLang === "hi" || ttsLang === "mr";
+      const englishVoice =
+        voices.find((voice) => voice.lang.toLowerCase() === "en-in") ||
+        voices.find((voice) => voice.lang.toLowerCase().startsWith("en-"));
+      const selectedVoice = targetVoice || (isIndianLanguage ? englishVoice : targetVoice);
+
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+        utterance.lang = selectedVoice.lang;
+      } else {
+        utterance.lang = isIndianLanguage ? "en-US" : targetLanguage;
+      }
+
+      if (isIndianLanguage && !targetVoice) {
+        const languageName = ttsLang === "hi" ? "Hindi" : "Marathi";
+        setVoiceNotice(
+          `${languageName} voice not available on this browser/device, using English`
+        );
+      } else {
+        setVoiceNotice(null);
+      }
+
+      utterance.onend = () => {
+        if (speechSessionRef.current === session) setIsSpeaking(false);
+      };
+      utterance.onerror = () => {
+        if (speechSessionRef.current === session) setIsSpeaking(false);
+      };
+      setIsSpeaking(true);
+      console.info("[tts] Web Speech path fired", {
+        requestedLanguage: ttsLang,
+        selectedVoice: selectedVoice?.lang || "browser default",
+        translated: false,
+      });
+      window.speechSynthesis.speak(utterance);
+    } catch {
+      setIsSpeaking(false);
+    }
+  }, [ttsLang]);
+
+  /* ---------- speech handler ---------- */
+  const handleSpeak = useCallback(() => {
+    if (!forecast) return;
+
+    if (isSpeaking) {
+      stopSpeaking();
+      return;
+    }
+
+    const action = forecast.recommendation === "sell_now" ? "sell now" : "hold";
+    const text = `The current price for ${commodity} is ${forecast.current_price} rupees per quintal. Our recommendation is to ${action} because ${forecast.reason}`;
+    speakWebSpeech(text);
+  }, [commodity, forecast, isSpeaking, speakWebSpeech, stopSpeaking]);
+
+  /* ---------- language change handler ---------- */
+  const handleLangChange = useCallback((lang: string) => {
+    stopSpeaking();
+    setVoiceNotice(null);
+    setTtsLang(lang);
+    try {
+      localStorage.setItem("krishimarket_tts_lang", lang);
+    } catch {}
+  }, [stopSpeaking]);
 
   /* ---------- chart data: merge actual + predicted ---------- */
   const chartData = useMemo(() => {
@@ -510,7 +631,7 @@ export default function PriceDiscoveryPage() {
               )}
               {t("search")}
             </Button>
-          </div>
+            </div>
         </CardContent>
       </Card>
 
@@ -568,6 +689,44 @@ export default function PriceDiscoveryPage() {
                         <span className="rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
                           AI Recommendation
                         </span>
+                        {/* Language picker */}
+                        <Select value={ttsLang} onValueChange={handleLangChange}>
+                          <SelectTrigger
+                            id="tts-lang-picker"
+                            className="h-8 w-auto gap-1 rounded-full border px-2.5 text-xs text-muted-foreground hover:text-foreground"
+                            aria-label="Select audio language"
+                          >
+                            <Languages className="h-3.5 w-3.5" />
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="en">English</SelectItem>
+                            <SelectItem value="hi">हिन्दी</SelectItem>
+                            <SelectItem value="mr">मराठी</SelectItem>
+                            <SelectItem value="bn">বাংলা</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        {/* Speaker button */}
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground"
+                          onClick={handleSpeak}
+                          title={isSpeaking ? "Stop speaking" : "Read aloud"}
+                          aria-label={isSpeaking ? "Stop speaking" : "Read aloud"}
+                        >
+                          {isSpeaking ? (
+                            <Square className="h-4 w-4 fill-current text-destructive" />
+                          ) : (
+                            <Volume2 className="h-4 w-4" />
+                          )}
+                        </Button>
+                        {voiceNotice && (
+                          <span className="text-[11px] text-muted-foreground">
+                            {voiceNotice}
+                          </span>
+                        )}
                       </div>
 
                       <div className="space-y-0.5">

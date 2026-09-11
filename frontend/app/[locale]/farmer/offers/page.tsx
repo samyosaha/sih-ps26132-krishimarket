@@ -44,6 +44,7 @@ import {
   Sprout,
   MessageSquare,
 } from "lucide-react";
+import { VerifiedBadge } from "@/components/verified-badge";
 
 /* ── Types matching enriched backend response ── */
 
@@ -52,6 +53,7 @@ interface BuyerInfo {
   name: string;
   email?: string;
   phone?: string;
+  is_verified_buyer?: boolean;
 }
 
 interface OfferItem {
@@ -274,6 +276,7 @@ function FarmerOffersInner() {
                             <div className="flex items-center gap-2 text-sm font-medium">
                               <User className="h-4 w-4 text-muted-foreground" />
                               {offer.buyer.name}
+                              <VerifiedBadge verified={!!offer.buyer.is_verified_buyer} compact />
                             </div>
                             <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
                               {offer.buyer.email ? (

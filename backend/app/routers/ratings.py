@@ -75,10 +75,10 @@ def create_rating(
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")
 
-    if transaction.payment_status != PaymentStatus.delivered:
+    if transaction.payment_status != PaymentStatus.paid:
         raise HTTPException(
             status_code=400,
-            detail="Ratings can only be submitted after delivery is confirmed",
+            detail="Ratings can only be submitted after payment is confirmed",
         )
 
     # Determine the two parties

@@ -7,9 +7,13 @@ import { useAuth } from "@/lib/auth-context";
 import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import { RatingPrompt } from "@/components/rating-prompt";
+import { DeliveryStatusTracker } from "@/components/delivery-status-tracker";
+import { HubCheckinEvidence } from "@/components/hub-checkin-evidence";
+import { DeliveryOptionsPicker } from "@/components/delivery-options-picker";
 import {
   Transaction,
   PaymentStatus,
+  DeliveryStatus,
   PAYMENT_STATUS_STYLES,
   formatINR,
   UserRole,
@@ -17,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
@@ -44,13 +49,17 @@ import {
   CheckCircle2,
   Sprout,
   ShoppingBasket,
+  Truck,
+  AlertTriangle,
 } from "lucide-react";
+import { VerifiedBadge } from "@/components/verified-badge";
 
 type Filter = "all" | PaymentStatus;
 
 interface DisputeRecord {
   id: number;
   transaction_id: number;
+  raised_by_id: number;
   status: "open" | "resolved";
   reason: string;
 }
@@ -59,7 +68,7 @@ const FILTER_TABS: { key: Filter }[] = [
   { key: "all" },
   { key: "pending" },
   { key: "paid" },
-  { key: "delivered" },
+  { key: "failed" },
 ];
 
 function TransactionsInner() {
@@ -74,6 +83,10 @@ function TransactionsInner() {
   const [actingId, setActingId] = useState<string | number | null>(null);
   const [disputeFor, setDisputeFor] = useState<string | number | null>(null);
   const [disputeReason, setDisputeReason] = useState("");
+  const [dispatchFor, setDispatchFor] = useState<string | number | null>(null);
+  const [deliveryMethodInput, setDeliveryMethodInput] = useState("");
+  const [rejectFor, setRejectFor] = useState<string | number | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   const tabLabel = (key: Filter) =>
     key === "all"
@@ -82,7 +95,7 @@ function TransactionsInner() {
       ? t("pendingPayment")
       : key === "paid"
       ? t("completed")
-      : t("delivered");
+      : t("failed");
 
   const loadTransactions = useCallback(async () => {
     setIsLoading(true);
@@ -111,7 +124,7 @@ function TransactionsInner() {
       all: transactions.length,
       pending: 0,
       paid: 0,
-      delivered: 0,
+      failed: 0,
     };
     let volume = 0;
     for (const t of transactions) {
@@ -154,16 +167,15 @@ function TransactionsInner() {
   const handleMarkDelivered = async (id: string | number) => {
     setActingId(id);
     try {
-      await apiFetch(`/transactions/${id}/payment-status`, {
-        method: "PATCH",
-        body: JSON.stringify({ payment_status: "delivered" }),
+      const updated = await apiFetch<Transaction>(`/transactions/${id}/delivered`, {
+        method: "POST",
       });
       setTransactions((prev) =>
         prev.map((row) =>
-          row.id === id ? { ...row, payment_status: "delivered" as PaymentStatus } : row
+          row.id === id ? { ...row, ...updated } : row
         )
       );
-      toast.success(t("markedDelivered"));
+      toast.success(t("markedAsDelivered"));
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : t("updateFailed");
@@ -198,6 +210,74 @@ function TransactionsInner() {
     }
   };
 
+  // ── Delivery state machine actions ───────────────────────────────
+
+  const handleDispatch = async (id: string | number) => {
+    if (!deliveryMethodInput.trim()) {
+      toast.error(t("deliveryMethodRequired"));
+      return;
+    }
+    setActingId(id);
+    try {
+      const updated = await apiFetch<Transaction>(`/transactions/${id}/dispatch`, {
+        method: "POST",
+        body: JSON.stringify({ delivery_method: deliveryMethodInput.trim() }),
+      });
+      setTransactions((prev) => prev.map((r) => (r.id === id ? { ...r, ...updated } : r)));
+      setDispatchFor(null);
+      setDeliveryMethodInput("");
+      toast.success(t("dispatched"));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("dispatchFailed"));
+    } finally {
+      setActingId(null);
+    }
+  };
+
+  const handleDeliveryTransition = async (
+    id: string | number,
+    endpoint: string,
+    successMsg: string,
+  ) => {
+    setActingId(id);
+    try {
+      const updated = await apiFetch<Transaction>(`/transactions/${id}/${endpoint}`, {
+        method: "POST",
+      });
+      setTransactions((prev) => prev.map((r) => (r.id === id ? { ...r, ...updated } : r)));
+      toast.success(successMsg);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("actionFailed"));
+    } finally {
+      setActingId(null);
+    }
+  };
+
+  const handleReject = async (id: string | number) => {
+    if (rejectReason.trim().length < 10) {
+      toast.error(t("rejectReasonRequired"));
+      return;
+    }
+    setActingId(id);
+    try {
+      const updated = await apiFetch<Transaction>(`/transactions/${id}/reject`, {
+        method: "POST",
+        body: JSON.stringify({ reason: rejectReason.trim() }),
+      });
+      setTransactions((prev) => prev.map((r) => (r.id === id ? { ...r, ...updated } : r)));
+      apiFetch<DisputeRecord[]>("/disputes")
+        .then((data) => setDisputes(Array.isArray(data) ? data : []))
+        .catch(() => {});
+      setRejectFor(null);
+      setRejectReason("");
+      toast.success(t("disputeRaised"));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("rejectFailed"));
+    } finally {
+      setActingId(null);
+    }
+  };
+
   const getCounterparty = (t: Transaction) => {
     const role = user?.role as UserRole | undefined;
     if (role === "buyer") return t.farmer;
@@ -219,12 +299,22 @@ function TransactionsInner() {
   };
 
   const canMarkDelivered = (row: Transaction) => {
-    if (row.payment_status !== "paid") return false;
-    return user?.role === "farmer";
+    // The "Mark Delivered" button in this section is redundant now that
+    // delivery_status drives the delivered state. Keep it hidden.
+    return false;
   };
 
-  const disputeForTxn = (id: string | number) =>
-    disputes.find((d) => String(d.transaction_id) === String(id));
+  // Scoped to current user — only returns a dispute the logged-in user themselves raised
+  const myDisputeForTxn = (id: string | number) =>
+    disputes.find(
+      (d) => String(d.transaction_id) === String(id) && d.raised_by_id === (user?.id as number),
+    );
+
+  // Returns any dispute raised by the OTHER party on this transaction
+  const counterpartyDisputeForTxn = (id: string | number) =>
+    disputes.find(
+      (d) => String(d.transaction_id) === String(id) && d.raised_by_id !== (user?.id as number),
+    );
 
   return (
     <div className="space-y-8">
@@ -335,18 +425,43 @@ function TransactionsInner() {
             const unit = item.unit ?? "kg";
             const lotTitle = item.lot_title ?? `Lot #${item.lot_id ?? ""}`;
             const isPending = item.payment_status === "pending";
+            const myDispute = myDisputeForTxn(item.id);
+            const cpDispute = counterpartyDisputeForTxn(item.id);
             return (
               <Card
                 key={item.id}
+                id={`txn-${item.id}`}
                 className={
                   isPending
                     ? "border-l-4 border-l-amber-400"
                     : item.payment_status === "paid"
                     ? "border-l-4 border-l-emerald-400"
-                    : "border-l-4 border-l-sky-400"
+                    : "border-l-4 border-l-red-400"
                 }
               >
                 <CardContent className="p-5">
+                  {/* ── Delivery Status Tracker ─────────────────── */}
+                  {item.delivery_status && (
+                    <div className="mb-4 rounded-lg border border-border bg-slate-50/50 px-3 py-2 dark:bg-slate-900/30">
+                      <DeliveryStatusTracker
+                        status={item.delivery_status as DeliveryStatus}
+                        deliveryMethod={item.delivery_method as string}
+                      />
+                    </div>
+                  )}
+
+                  {/* ── Hub Check-in Evidence (Verification & Mismatch) ── */}
+                  <HubCheckinEvidence
+                    transaction={item}
+                    onOpenDispute={() => {
+                      setRejectFor(item.id);
+                      setRejectReason(
+                        "Discrepancy observed in Hub intake verification (weight/grade mismatch)."
+                      );
+                    }}
+                    className="mb-4"
+                  />
+
                   <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr_auto] lg:items-center">
                     <div className="space-y-3">
                       <div className="flex flex-wrap items-center gap-2">
@@ -359,7 +474,7 @@ function TransactionsInner() {
                             ? tOffers("statusPending")
                             : item.payment_status === "paid"
                             ? tOffers("statusPaid")
-                            : tOffers("statusDelivered")}
+                            : tOffers("statusFailed")}
                         </Badge>
                       </div>
                       <div className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
@@ -371,9 +486,10 @@ function TransactionsInner() {
                           )}
                           <span>
                             {getCounterpartyLabel()}:{" "}
-                            <span className="inline-flex items-center gap-1 font-medium text-foreground">
+                           <span className="inline-flex items-center gap-1 font-medium text-foreground">
                               <User className="h-3.5 w-3.5" />
                               {counterparty?.name || tCommon("unknown")}
+                              <VerifiedBadge verified={!!counterparty?.is_verified_buyer} compact />
                             </span>
                           </span>
                         </div>
@@ -450,17 +566,18 @@ function TransactionsInner() {
                           {t("markDelivered")}
                         </Button>
                       ) : item.payment_status === "paid" ? (
-                        <span className="text-xs italic text-muted-foreground">
-                          {t("waitingDelivery")}
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700">
+                          <CheckCircle2 className="h-4 w-4" />
+                          {t("paymentComplete")}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-sky-700">
-                          <CheckCircle2 className="h-4 w-4" />
-                          {t("delivered")}
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600">
+                          <AlertTriangle className="h-4 w-4" />
+                          {tOffers("statusFailed")}
                         </span>
                       )}
 
-                      {item.payment_status === "delivered" ? (
+                      {item.delivery_status === "delivered" ? (
                         <RatingPrompt
                           transactionId={item.id}
                           rateeName={
@@ -471,9 +588,149 @@ function TransactionsInner() {
                         />
                       ) : null}
 
-                      {disputeForTxn(item.id) ? (
+                      {/* ── Delivery action buttons ───────────── */}
+                      {item.delivery_status === "verified_at_hub" && (
+                        <Dialog
+                          open={dispatchFor === item.id}
+                          onOpenChange={(open) => {
+                            setDispatchFor(open ? item.id : null);
+                            if (open) {
+                              const savedPref =
+                                typeof window !== "undefined" && item.lot_id
+                                  ? localStorage.getItem(`delivery_pref_lot_${item.lot_id}`)
+                                  : null;
+                              setDeliveryMethodInput(savedPref || item.delivery_method && item.delivery_method !== "pending" ? (savedPref || item.delivery_method || "buyer_pickup") : "buyer_pickup");
+                            } else {
+                              setDeliveryMethodInput("");
+                            }
+                          }}
+                        >
+                          <DialogTrigger asChild>
+                            <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 font-semibold text-white">
+                              <Truck className="mr-1.5 h-3.5 w-3.5" />
+                              {t("dispatch")}
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle>{t("dispatchShipmentTitle")}</DialogTitle>
+                              <DialogDescription>
+                                {t("dispatchShipmentDesc")}
+                              </DialogDescription>
+                            </DialogHeader>
+
+                            {/* Fulfillment recommendation + selectable alternatives */}
+                            {item.lot_id && (
+                              <div className="py-2">
+                                <DeliveryOptionsPicker
+                                  lotId={item.lot_id}
+                                  buyerDistrict={item.delivery_district || "Pune"}
+                                  selectedMethod={deliveryMethodInput}
+                                  onSelectMethod={(method) => setDeliveryMethodInput(method)}
+                                />
+                              </div>
+                            )}
+
+                            <div className="space-y-1.5 pt-1">
+                              <Label htmlFor={`dm-${item.id}`}>{t("deliveryMethodLabel")}</Label>
+                              <Input
+                                id={`dm-${item.id}`}
+                                value={deliveryMethodInput}
+                                onChange={(e) => setDeliveryMethodInput(e.target.value)}
+                                placeholder={t("deliveryMethodPlaceholder")}
+                                className="bg-card"
+                              />
+                            </div>
+                            <DialogFooter>
+                              <Button
+                                onClick={() => handleDispatch(item.id)}
+                                disabled={actingId === item.id || !deliveryMethodInput.trim()}
+                                className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold"
+                              >
+                                {actingId === item.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {t("confirmDispatch")}
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      )}
+
+                      {item.delivery_status === "dispatched" && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDeliveryTransition(item.id, "in-transit", t("markedInTransit"))}
+                          disabled={actingId === item.id}
+                        >
+                          {actingId === item.id ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Truck className="mr-1.5 h-3.5 w-3.5" />}
+                          {t("markInTransit")}
+                        </Button>
+                      )}
+
+                      {item.delivery_status === "in_transit" && (
+                        <Button
+                          size="sm"
+                          className="bg-emerald-600 hover:bg-emerald-700"
+                          onClick={() => handleDeliveryTransition(item.id, "delivered", t("markedAsDelivered"))}
+                          disabled={actingId === item.id}
+                        >
+                          {actingId === item.id ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />}
+                          {t("confirmDelivery")}
+                        </Button>
+                      )}
+
+                      {/* Reject / Dispute — available from verified, dispatched, or in_transit */}
+                      {(item.delivery_status === "verified_at_hub" ||
+                        item.delivery_status === "dispatched" ||
+                        item.delivery_status === "in_transit") && (
+                        <Dialog
+                          open={rejectFor === item.id}
+                          onOpenChange={(open) => {
+                            setRejectFor(open ? item.id : null);
+                            if (!open) setRejectReason("");
+                          }}
+                        >
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="border-red-200 text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400">
+                              <AlertTriangle className="mr-1.5 h-3.5 w-3.5" />
+                              {t("raiseDisputeBtn")}
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-md">
+                            <DialogHeader>
+                              <DialogTitle>{t("raiseDispute")}</DialogTitle>
+                              <DialogDescription>
+                                {t("raiseDisputeDesc")}
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-2">
+                              <Label htmlFor={`reject-${item.id}`}>{t("reasonLabel")}</Label>
+                              <Textarea
+                                id={`reject-${item.id}`}
+                                value={rejectReason}
+                                onChange={(e) => setRejectReason(e.target.value)}
+                                placeholder={t("rejectReasonPlaceholder")}
+                                rows={4}
+                              />
+                            </div>
+                            <DialogFooter>
+                              <Button
+                                variant="destructive"
+                                onClick={() => handleReject(item.id)}
+                                disabled={actingId === item.id || rejectReason.trim().length < 10}
+                              >
+                                {actingId === item.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {t("submitDispute")}
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      )}
+
+                      {/* My dispute badge — only for disputes THIS user raised */}
+                      {myDispute ? (
                         <Badge variant="secondary">
-                          {disputeForTxn(item.id)?.status === "resolved"
+                          {myDispute.status === "resolved"
                             ? t("disputeResolved")
                             : t("disputeOpen")}
                         </Badge>
@@ -516,6 +773,12 @@ function TransactionsInner() {
                           </DialogContent>
                         </Dialog>
                       ) : null}
+                      {/* Counterparty dispute indicator — shown in addition to the above */}
+                      {cpDispute && (
+                        <Badge variant="outline" className="text-amber-700 border-amber-300">
+                          {t("counterpartyDisputeOpen") ?? "Counterparty disputed"}
+                        </Badge>
+                      )}
                     </div>
                   </div>
                 </CardContent>

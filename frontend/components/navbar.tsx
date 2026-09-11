@@ -113,6 +113,14 @@ export function Navbar() {
         active={pathname === "/transactions"}
         onClick={closeMobile}
       />
+      {(user.role === "farmer" || user.role === "buyer") && (
+        <NavLink
+          href="/disputes"
+          label={t("myDisputes")}
+          active={pathname?.startsWith("/disputes")}
+          onClick={closeMobile}
+        />
+      )}
       <NavLink
         href="/prices"
         label={t("priceDashboard")}

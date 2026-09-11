@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, field_validator
 from app.database import get_db
 from app.models import Offer, Lot, Transaction, User, UserRole, OfferStatus, LotStatus
 from app.auth import get_current_user
-from app.sanitize import sanitize_text
+from app.sanitize import sanitize_text, sanitize_string
 from app.rate_limiter import create_rate_limiter
 from app.services.notification_service import (
     notify_new_offer, notify_offer_accepted, notify_offer_rejected,
@@ -21,6 +21,7 @@ class OfferCreate(BaseModel):
     lot_id: int
     offered_price_per_kg: float = Field(..., gt=0, le=100_000)
     message: Optional[str] = Field(default=None, max_length=500)
+    delivery_district: Optional[str] = Field(default=None, max_length=100)
 
     @field_validator("message")
     @classmethod
@@ -28,6 +29,13 @@ class OfferCreate(BaseModel):
         if v is None:
             return v
         return sanitize_text(v, max_length=500)
+
+    @field_validator("delivery_district")
+    @classmethod
+    def sanitize_delivery_district(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        return sanitize_string(v, max_length=100)
 
 
 # ── Nested response schemas ──────────────────────────────────────────
@@ -37,6 +45,7 @@ class UserStub(BaseModel):
     name: str
     email: Optional[str] = None
     phone: Optional[str] = None
+    is_verified_buyer: bool = False
 
     class Config:
         from_attributes = True
@@ -65,6 +74,7 @@ class OfferResponse(BaseModel):
     offered_price_per_kg: float
     message: Optional[str]
     status: OfferStatus
+    delivery_district: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -131,6 +141,7 @@ def create_offer(
         buyer_id=current_user.id,
         offered_price_per_kg=payload.offered_price_per_kg,
         message=payload.message,
+        delivery_district=payload.delivery_district,
     )
     db.add(offer)
     db.commit()
@@ -185,6 +196,7 @@ def offers_received(
                 name=buyer.name,
                 email=buyer.email,
                 phone=buyer.phone,
+                is_verified_buyer=buyer.is_verified_buyer,
             ) if buyer else UserStub(id=offer.buyer_id, name="Unknown")
 
             offer_items.append(OfferWithBuyer(

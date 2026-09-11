@@ -19,6 +19,7 @@
     "verification": "व्यवसाय सत्यापित करें",
     "reviewBuyers": "खरीदार समीक्षा",
     "disputes": "विवाद",
+    "myDisputes": "मेरे विवाद",
     "language": "भाषा"
   },
   "footer": {
@@ -265,6 +266,7 @@
     "statusRejected": "अस्वीकृत",
     "statusPaid": "भुगतान हुआ",
     "statusDelivered": "डिलीवर हुआ",
+    "statusFailed": "भुगतान विफल",
     "buyer": {
       "title": "मेरे ऑफर",
       "subtitle": "किसानों के लॉट पर भेजे गए ऑफर।",
@@ -334,7 +336,17 @@
     "created": "लॉट सफलतापूर्वक सूचीबद्ध हुआ!",
     "tooMany": "बहुत ज़्यादा प्रयास। एक मिनट रुककर फिर कोशिश करें।",
     "createFailed": "लॉट बनाने में विफल",
-    "loadFailed": "लॉट लोड करने में विफल"
+    "loadFailed": "लॉट लोड करने में विफल",
+    "pincode": "पिनकोड",
+    "pincodePlaceholder": "उदा. 422001",
+    "pincodeHint": "निकटतम हब का स्वतः पता लगाता है",
+    "checkingHub": "निकटतम लॉजिस्टिक्स हब की जाँच हो रही है...",
+    "nearestHub": "निकटतम हब",
+    "regionalHub": "क्षेत्रीय हब",
+    "autoAssigned": "स्वतः चयनित",
+    "dropOffNote": "ड्रॉप-ऑफ स्थान स्वतः निर्धारित — मैन्युअल लॉजिस्टिक्स की आवश्यकता नहीं",
+    "directFulfillment": "सीधी डिलीवरी",
+    "hubLabel": "हब"
   },
   "tx": {
     "title": "लेन-देन",
@@ -354,6 +366,7 @@
     "awaitingConfirmation": "आपकी पुष्टि की प्रतीक्षा है",
     "paymentComplete": "भुगतान पूर्ण",
     "delivered": "डिलीवर",
+    "failed": "विफल",
     "finalAmount": "अंतिम राशि",
     "created": "बनाया गया {date}",
     "counterparty": "साथी पक्ष",
@@ -373,7 +386,29 @@
     "updateFailed": "स्थिति अपडेट करने में विफल",
     "loadFailed": "लेन-देन लोड करने में विफल",
     "rateDeal": "इस सौदे को रेट करें",
-    "loadingPickup": "लोड हो रहा है…"
+    "loadingPickup": "लोड हो रहा है…",
+    "deliveryMethodRequired": "कृपया डिलीवरी का तरीका दर्ज करें।",
+    "dispatched": "सफलतापूर्वक डिस्पैच किया गया।",
+    "dispatchFailed": "डिस्पैच विफल रहा।",
+    "actionFailed": "कार्रवाई विफल रही।",
+    "rejectReasonRequired": "कृपया कम से कम 10 अक्षरों में कारण बताएँ।",
+    "disputeRaised": "विवाद सफलतापूर्वक दर्ज किया गया।",
+    "rejectFailed": "अस्वीकार विफल रहा।",
+    "dispatch": "डिस्पैच",
+    "dispatchShipmentTitle": "शिपमेंट डिस्पैच करें",
+    "dispatchShipmentDesc": "डिलीवरी का तरीका दर्ज करें (जैसे \"किसान रेल\", \"लोकल ट्रांसपोर्टर\")",
+    "deliveryMethodLabel": "डिलीवरी का तरीका",
+    "deliveryMethodPlaceholder": "जैसे किसान रेल से डिस्पैच",
+    "confirmDispatch": "डिस्पैच की पुष्टि करें",
+    "markedInTransit": "ट्रांज़िट में चिह्नित किया गया।",
+    "markInTransit": "ट्रांज़िट में मार्क करें",
+    "markedAsDelivered": "डिलीवर के रूप में चिह्नित किया गया।",
+    "confirmDelivery": "डिलीवरी की पुष्टि करें",
+    "raiseDisputeBtn": "विवाद दर्ज करें",
+    "raiseDisputeDesc": "समस्या का वर्णन करें। इससे ऑर्डर विवादित स्थिति में जाएगा।",
+    "counterpartyDisputeOpen": "दूसरी पार्टी ने विवाद दर्ज किया",
+    "reasonLabel": "कारण",
+    "rejectReasonPlaceholder": "समस्या बताएँ (न्यूनतम 10 अक्षर)..."
   },
   "notif": {
     "title": "सूचनाएँ",
@@ -544,6 +579,13 @@
     "noFault": "बिना दोष के बंद",
     "resolvedToast": "विवाद निपटाया गया।",
     "failToast": "विवाद अपडेट करने में विफल",
-    "loadFailed": "विवाद लोड करने में विफल"
+    "loadFailed": "विवाद लोड करने में विफल",
+    "myDisputesTitle": "मेरे विवाद",
+    "myDisputesSubtitle": "अपने सौदों पर दर्ज विवादों को देखें और ट्रैक करें।",
+    "youRaisedThis": "आपने यह विवाद दर्ज किया",
+    "otherRaisedThis": "{name} ने यह विवाद दर्ज किया",
+    "counterpartyRaisedThis": "दूसरी पार्टी ने विवाद दर्ज किया",
+    "viewTransaction": "लेन-देन देखें",
+    "emptyMyDisputes": "इस फ़िल्टर में कोई विवाद नहीं है।"
   }
 }
