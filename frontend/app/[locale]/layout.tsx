@@ -129,7 +129,7 @@ export default async function LocaleLayout({
           <AuthProvider>
             <NextIntlClientProvider locale={locale} messages={messages}>
               <Navbar />
-              <main className="container mx-auto px-4 py-6 max-w-7xl flex-1">
+              <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1">
                 {children}
               </main>
               <Footer />

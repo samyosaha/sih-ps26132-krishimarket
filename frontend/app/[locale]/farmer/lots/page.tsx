@@ -215,14 +215,14 @@ function FarmerLotsInner() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="gap-2 shrink-0 self-start sm:self-auto">
               <Plus className="h-4 w-4" />
               {t("createLot")}
             </Button>
@@ -505,7 +505,7 @@ function FarmerLotsInner() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {lots.map((lot) => {
             const location = [lot.district, lot.state]
               .filter(Boolean)
@@ -513,82 +513,92 @@ function FarmerLotsInner() {
             return (
               <Card
                 key={lot.id}
-                className="overflow-hidden transition-shadow hover:shadow-md"
+                className="flex flex-col justify-between overflow-hidden transition-all duration-200 hover:shadow-md border border-border/80"
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <CardTitle className="truncate text-lg">
-                        {lot.commodity}
-                      </CardTitle>
-                      <CardDescription className="mt-1 inline-flex items-center gap-1 text-sm">
-                        <Sprout className="h-3.5 w-3.5" />
-                        {lot.commodity}
-                        {lot.variety ? (
-                          <span className="text-muted-foreground">
-                            {" · "}{lot.variety}
+                <div>
+                  <CardHeader className="pb-3.5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <CardTitle className="truncate text-lg font-semibold tracking-tight">
+                          {lot.commodity}
+                        </CardTitle>
+                        <CardDescription className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground truncate">
+                          <Sprout className="h-3.5 w-3.5 shrink-0 text-primary" />
+                          <span className="truncate">
+                            {lot.commodity}
+                            {lot.variety ? (
+                              <span className="text-muted-foreground">
+                                {" · "}{lot.variety}
+                              </span>
+                            ) : null}
                           </span>
-                        ) : null}
-                      </CardDescription>
+                        </CardDescription>
+                      </div>
+                      <Badge
+                        variant="secondary"
+                        className={`shrink-0 capitalize ${LOT_STATUS_STYLES[lot.status]}`}
+                      >
+                        {lot.status === "available"
+                          ? tLots("statusAvailable")
+                          : lot.status === "reserved"
+                          ? tLots("statusReserved")
+                          : tLots("statusSold")}
+                      </Badge>
                     </div>
-                    <Badge
-                      variant="secondary"
-                      className={`shrink-0 ${LOT_STATUS_STYLES[lot.status]}`}
-                    >
-                      {lot.status === "available"
-                        ? tLots("statusAvailable")
-                        : lot.status === "reserved"
-                        ? tLots("statusReserved")
-                        : tLots("statusSold")}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3 pt-0">
-                  <div className="flex items-center gap-4 text-sm">
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <Scale className="h-4 w-4" />
-                      <span>
-                        <span className="font-medium text-foreground">
-                          {lot.quantity_kg}
-                        </span>{" "}
-                        {tCommon("kg")}
-                      </span>
+                  </CardHeader>
+                  <CardContent className="space-y-3.5 pt-0">
+                    <div className="grid grid-cols-2 gap-2.5 rounded-lg border border-border/60 bg-secondary/35 p-3">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Scale className="h-3.5 w-3.5 shrink-0" />
+                          <span>{tLots("detail.availableQty")}</span>
+                        </div>
+                        <p className="text-base font-semibold tracking-tight text-foreground">
+                          {lot.quantity_kg}{" "}
+                          <span className="text-xs font-normal text-muted-foreground">
+                            {tCommon("kg")}
+                          </span>
+                        </p>
+                      </div>
+                      <div className="space-y-0.5 border-l border-border/60 pl-3">
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Tag className="h-3.5 w-3.5 shrink-0" />
+                          <span>{tLots("detail.askingPrice")}</span>
+                        </div>
+                        <p className="text-base font-bold tracking-tight text-primary">
+                          {formatINR(lot.asking_price_per_kg)}{" "}
+                          <span className="text-xs font-normal text-muted-foreground">
+                            {tCommon("perKg")}
+                          </span>
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <Tag className="h-4 w-4" />
-                      <span>
-                        <span className="font-semibold text-primary">
-                          {formatINR(lot.asking_price_per_kg)}
+
+                    <div className="flex items-center justify-between text-xs pt-1">
+                      <Badge
+                        variant="outline"
+                        className={gradeBadgeClass(lot.quality_grade)}
+                      >
+                        {tLots("grade", { grade: lot.quality_grade })}
+                      </Badge>
+                      {location ? (
+                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground truncate max-w-[55%]">
+                          <MapPin className="h-3.5 w-3.5 shrink-0" />
+                          <span className="truncate">{location}</span>
                         </span>
-                        {tCommon("perKg")}
-                      </span>
+                      ) : null}
                     </div>
-                  </div>
 
-                  <div className="flex items-center justify-between text-xs">
-                    <Badge
-                      variant="outline"
-                      className={gradeBadgeClass(lot.quality_grade)}
-                    >
-                      {tLots("grade", { grade: lot.quality_grade })}
-                    </Badge>
-                    {location ? (
-                      <span className="inline-flex items-center gap-1 text-muted-foreground">
-                        <MapPin className="h-3.5 w-3.5" />
-                        {location}
-                      </span>
+                    {lot.hub_name ? (
+                      <div className="flex items-center gap-1.5 rounded-md bg-primary/10 px-2.5 py-1.5 text-xs font-medium text-primary">
+                        <Truck className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate">
+                          {t("hubLabel")}: {lot.hub_name}
+                        </span>
+                      </div>
                     ) : null}
-                  </div>
-
-                  {lot.hub_name ? (
-                    <div className="flex items-center gap-1.5 rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                      <Truck className="h-3.5 w-3.5" />
-                      <span className="truncate">
-                        {t("hubLabel")}: {lot.hub_name}
-                      </span>
-                    </div>
-                  ) : null}
-                </CardContent>
+                  </CardContent>
+                </div>
               </Card>
             );
           })}

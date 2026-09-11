@@ -7,7 +7,7 @@ export async function Footer() {
 
   return (
     <footer className="border-t border-border/50 bg-card/50">
-      <div className="container mx-auto flex max-w-7xl flex-col items-center gap-3 px-4 py-6 sm:flex-row sm:justify-between sm:px-6">
+      <div className="w-full max-w-7xl mx-auto flex flex-col items-center gap-3 px-4 py-6 sm:flex-row sm:justify-between sm:px-6">
         {/* Brand */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Sprout className="h-3.5 w-3.5 text-primary/70" />

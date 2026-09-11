@@ -169,29 +169,29 @@ function FarmerOffersInner() {
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+        <Card className="flex flex-col justify-between">
+          <CardHeader className="pb-3">
             <CardDescription className="text-xs uppercase tracking-wide">
               {t("lotsWithOffers")}
             </CardDescription>
-            <CardTitle className="text-3xl">{groups.length}</CardTitle>
+            <CardTitle className="text-2xl sm:text-3xl font-bold">{groups.length}</CardTitle>
           </CardHeader>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
+        <Card className="flex flex-col justify-between">
+          <CardHeader className="pb-3">
             <CardDescription className="text-xs uppercase tracking-wide">
               {t("total")}
             </CardDescription>
-            <CardTitle className="text-3xl">{totalOffers}</CardTitle>
+            <CardTitle className="text-2xl sm:text-3xl font-bold">{totalOffers}</CardTitle>
           </CardHeader>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
+        <Card className="flex flex-col justify-between">
+          <CardHeader className="pb-3">
             <CardDescription className="text-xs uppercase tracking-wide">
               {t("awaiting")}
             </CardDescription>
-            <CardTitle className="text-3xl text-amber-600">
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-amber-600">
               {pendingOffers}
             </CardTitle>
           </CardHeader>
@@ -206,11 +206,13 @@ function FarmerOffersInner() {
           </div>
         </div>
       ) : groups.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <Inbox className="mb-4 h-12 w-12 text-slate-300" />
-            <h3 className="text-lg font-semibold">{t("emptyTitle")}</h3>
-            <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+        <Card className="border border-border/80">
+          <CardContent className="flex flex-col items-center justify-center py-14 px-4 text-center max-w-md mx-auto">
+            <div className="mb-3.5 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <Inbox className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <h3 className="text-base font-semibold">{t("emptyTitle")}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               {t("emptyDesc")}
             </p>
           </CardContent>
@@ -220,44 +222,44 @@ function FarmerOffersInner() {
           {groups.map((group) => (
             <section
               key={group.lot.id}
-              className="space-y-4 rounded-xl border bg-card p-5"
+              className="space-y-4 rounded-xl border border-border/80 bg-card p-5 sm:p-6 shadow-xs"
             >
-              <header className="flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-start sm:justify-between">
+              <header className="flex flex-col gap-3 border-b border-border/60 pb-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-lg font-semibold">
+                    <h2 className="text-lg font-semibold tracking-tight">
                       {group.lot.commodity}
                     </h2>
                     {group.lot.status ? (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs capitalize">
                         {String(group.lot.status)}
                       </Badge>
                     ) : null}
                   </div>
-                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                     <span className="inline-flex items-center gap-1">
-                      <Sprout className="h-3.5 w-3.5" />
+                      <Sprout className="h-3.5 w-3.5 shrink-0 text-primary" />
                       {group.lot.commodity}
                       {group.lot.variety ? ` · ${group.lot.variety}` : ""}
                     </span>
                     <span className="inline-flex items-center gap-1">
-                      <Scale className="h-3.5 w-3.5" />
+                      <Scale className="h-3.5 w-3.5 shrink-0" />
                       {t("listed", { qty: group.lot.quantity_kg })}
                     </span>
                     <span className="inline-flex items-center gap-1">
-                      <Tag className="h-3.5 w-3.5" />
+                      <Tag className="h-3.5 w-3.5 shrink-0" />
                       {t("asking", { price: formatINR(group.lot.asking_price_per_kg) })}
                     </span>
                   </div>
                 </div>
-                <Badge variant="secondary">
+                <Badge variant="secondary" className="shrink-0 self-start sm:self-auto font-medium">
                   {group.offers.length === 1
                     ? t("countOne", { count: group.offers.length })
                     : t("count", { count: group.offers.length })}
                 </Badge>
               </header>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                 {group.offers.map((offer) => {
                   const isPending = offer.status === "pending";
                   const isActing = actingOnId === offer.id;
@@ -306,20 +308,23 @@ function FarmerOffersInner() {
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-4 pt-0">
-                        <div className="flex flex-wrap items-baseline gap-3 rounded-lg bg-secondary/50 px-3 py-2.5">
+                        <div className="flex items-center justify-between gap-3 rounded-lg border border-border/50 bg-secondary/40 px-3.5 py-2.5">
                           <div>
                             <span className="text-xs uppercase tracking-wide text-muted-foreground">
                               {t("offeredLabel")}
                             </span>
                             <div className="text-lg font-bold text-primary">
-                              {formatINR(offer.offered_price_per_kg)}{tCommon("perKg")}
+                              {formatINR(offer.offered_price_per_kg)}{" "}
+                              <span className="text-xs font-normal text-muted-foreground">
+                                {tCommon("perKg")}
+                              </span>
                             </div>
                           </div>
                           <div className="text-right">
                             <span className="text-xs uppercase tracking-wide text-muted-foreground">
                               {t("totalLabel")}
                             </span>
-                            <div className="text-sm font-semibold">
+                            <div className="text-base font-semibold text-foreground">
                               ≈{" "}
                               {formatINR(
                                 Number(offer.offered_price_per_kg) *

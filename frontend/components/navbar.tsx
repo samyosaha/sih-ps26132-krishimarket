@@ -134,7 +134,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/50 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80">
-      <div className="container mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
+      <div className="w-full max-w-7xl mx-auto flex h-14 items-center justify-between px-4 sm:px-6">
         {/* Logo + desktop nav */}
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2 shrink-0" aria-label="KrishiMarket home">

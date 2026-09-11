@@ -323,50 +323,50 @@ function TransactionsInner() {
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <Card className="flex flex-col justify-between">
+          <CardHeader className="pb-3">
             <CardDescription className="flex items-center gap-1.5 text-xs uppercase tracking-wide">
-              <Receipt className="h-3 w-3" />
+              <Receipt className="h-3.5 w-3.5" />
               {t("totalDeals")}
             </CardDescription>
-            <CardTitle className="text-3xl">{counts.all}</CardTitle>
+            <CardTitle className="text-2xl sm:text-3xl font-bold">{counts.all}</CardTitle>
           </CardHeader>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
+        <Card className="flex flex-col justify-between">
+          <CardHeader className="pb-3">
             <CardDescription className="flex items-center gap-1.5 text-xs uppercase tracking-wide">
-              <Banknote className="h-3 w-3" />
+              <Banknote className="h-3.5 w-3.5" />
               {t("totalValue")}
             </CardDescription>
-            <CardTitle className="text-2xl">
+            <CardTitle className="text-2xl sm:text-3xl font-bold truncate">
               {formatINR(counts.volume)}
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs uppercase tracking-wide">
+        <Card className="flex flex-col justify-between">
+          <CardHeader className="pb-3">
+            <CardDescription className="flex items-center gap-1.5 text-xs uppercase tracking-wide">
               {t("pendingPayment")}
             </CardDescription>
-            <CardTitle className="text-3xl text-accent">
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-accent">
               {counts.pending}
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="text-xs uppercase tracking-wide">
+        <Card className="flex flex-col justify-between">
+          <CardHeader className="pb-3">
+            <CardDescription className="flex items-center gap-1.5 text-xs uppercase tracking-wide">
               {t("completed")}
             </CardDescription>
-            <CardTitle className="text-3xl text-primary">
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-primary">
               {counts.paid}
             </CardTitle>
           </CardHeader>
         </Card>
       </div>
 
-      <div className="flex gap-0 border-b border-border/50 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+      <div className="flex gap-1 border-b border-border/50 overflow-x-auto scrollbar-hide">
         {FILTER_TABS.map((tab) => {
           const active = filter === tab.key;
           return (
@@ -403,17 +403,17 @@ function TransactionsInner() {
           </div>
         </div>
       ) : filtered.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-muted">
-              <Receipt className="h-5 w-5 text-muted-foreground" />
+        <Card className="border border-border/80">
+          <CardContent className="flex flex-col items-center justify-center py-14 px-4 text-center max-w-md mx-auto">
+            <div className="mb-3.5 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <Receipt className="h-6 w-6 text-muted-foreground" />
             </div>
             <h3 className="text-base font-semibold">
               {filter === "all"
                 ? t("emptyTitle")
                 : t("emptyTitleFiltered")}
             </h3>
-            <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground">
               {filter === "all"
                 ? t("emptyDesc")
                 : t("emptyDescFiltered", { filter })}
@@ -464,8 +464,8 @@ function TransactionsInner() {
                     className="mb-4"
                   />
 
-                  <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr_auto] lg:items-center">
-                    <div className="space-y-3">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+                    <div className="min-w-0 flex-1 space-y-3">
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="font-semibold">{lotTitle}</h3>
                         <Badge
@@ -488,7 +488,7 @@ function TransactionsInner() {
                           )}
                           <span>
                             {getCounterpartyLabel()}:{" "}
-                           <span className="inline-flex items-center gap-1 font-medium text-foreground">
+                            <span className="inline-flex items-center gap-1 font-medium text-foreground">
                               <User className="h-3.5 w-3.5" />
                               {counterparty?.name || tCommon("unknown")}
                               <VerifiedBadge verified={!!counterparty?.is_verified_buyer} compact />
@@ -525,16 +525,17 @@ function TransactionsInner() {
                       </div>
                     </div>
 
-                    <div className="rounded-lg bg-secondary/50 p-4">
-                      <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                        {t("finalAmount")}
+                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-4 lg:gap-5 self-stretch lg:self-auto justify-between lg:justify-end shrink-0">
+                      <div className="shrink-0 rounded-lg border border-border/50 bg-secondary/40 px-4 py-3 min-w-[140px] sm:min-w-[170px] text-left sm:text-right">
+                        <div className="text-xs uppercase tracking-wide text-muted-foreground">
+                          {t("finalAmount")}
+                        </div>
+                        <div className="mt-0.5 text-2xl font-bold text-primary">
+                          {item.total_amount ? formatINR(item.total_amount) : "—"}
+                        </div>
                       </div>
-                      <div className="mt-1 text-3xl font-bold text-primary">
-                        {item.total_amount ? formatINR(item.total_amount) : "—"}
-                      </div>
-                    </div>
 
-                    <div className="flex flex-col items-stretch gap-2 lg:min-w-[12rem]">
+                      <div className="flex flex-col items-stretch gap-2 w-full sm:w-auto min-w-[140px] lg:min-w-[11.5rem]">
                       {canMarkPaid(item) ? (
                         <Button
                           onClick={() => handleMarkPaid(item.id)}
@@ -781,6 +782,7 @@ function TransactionsInner() {
                       )}
                     </div>
                   </div>
+                </div>
                 </CardContent>
               </Card>
             );
